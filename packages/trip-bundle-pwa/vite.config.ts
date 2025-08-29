@@ -6,7 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 export default defineConfig(({ command, mode }) => {
   // Determine base path for GitHub Pages deployment
   const base = command === 'build' && process.env.GITHUB_PAGES 
-    ? `/trip-bundle${process.env.VITE_MOCK === 'true' ? '-mock' : ''}/`
+    ? '/trip-bundle/'
     : '/'
 
   return {
