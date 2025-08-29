@@ -11,7 +11,7 @@
     "build:prod": "cp .env.production .env && GITHUB_PAGES=true tsc && vite build",
     "preview": "vite preview",
     "predeploy:mock": "npm run build:mock",
-    "deploy:mock": "gh-pages -d dist -b gh-pages-mock",
+    "deploy:mock": "gh-pages -d dist -b gh-pages",
     "predeploy:prod": "npm run build:prod", 
     "deploy:prod": "gh-pages -d dist -b gh-pages-prod",
     "build:both": "npm run build:mock && mkdir -p builds/mock && cp -r dist/* builds/mock/ && npm run build:prod && mkdir -p builds/prod && cp -r dist/* builds/prod/",
