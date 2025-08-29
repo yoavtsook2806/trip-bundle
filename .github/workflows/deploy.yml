@@ -37,6 +37,7 @@ jobs:
           cd packages/trip-bundle-pwa
           echo "# Mock mode - no API keys needed" > .env
           echo "VITE_MOCK=true" >> .env
+          echo "GITHUB_PAGES=true" >> .env
         
       - name: Build PWA (Mock Mode)
         run: yarn workspace trip-bundle-pwa build
