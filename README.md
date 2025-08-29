@@ -22,7 +22,31 @@ Trip Bundle is your comprehensive travel companion, helping you plan, organize, 
 ```bash
 # Install dependencies
 yarn install
+```
 
+### Environment Setup
+
+1. **OpenAI API Key** (Required for AI trip generation)
+   - Go to [OpenAI Platform](https://platform.openai.com/api-keys)
+   - Create an account or sign in
+   - Generate a new API key
+   - Create a `.env` file in the project root:
+   ```bash
+   VITE_OPENAI_API_KEY=your_openai_api_key_here
+   ```
+
+2. **Spotify API** (Optional for music preferences)
+   - Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
+   - Create a new app
+   - Add these to your `.env` file:
+   ```bash
+   VITE_SPOTIFY_CLIENT_ID=your_spotify_client_id_here
+   VITE_SPOTIFY_CLIENT_SECRET=your_spotify_client_secret_here
+   ```
+
+### Start Development
+
+```bash
 # Start development server
 yarn dev
 ```

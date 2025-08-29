@@ -99,9 +99,9 @@ export class TripActions {
     nextFiveDays.setDate(nextFiveDays.getDate() + 5);
     const formattedDate = nextFiveDays.toISOString().split('T')[0];
 
-    return `Based on the countries: ${countriesList}, give me a suggestion for a trip in some city for the next five days from today (until ${formattedDate}) with 2-3 attractions from the following entertainment types: ${entertainmentTypes}.
+    return `You are a travel expert AI that creates personalized trip bundles. Based on the countries: ${countriesList}, give me a suggestion for a trip in some city for the next five days from today (until ${formattedDate}) with 2-3 attractions from the following entertainment types: ${entertainmentTypes}.
 
-Please respond with a JSON object in the following format:
+You MUST respond with a valid JSON object only, no additional text. Use this exact format:
 {
   "bundles": [
     {

@@ -73,13 +73,14 @@ class GPTService {
 
   async generateTripBundles(systemPrompt: string, userPrompt: string = ''): Promise<GPTResponse> {
     if (!this.apiKey) {
-      console.warn('OpenAI API key not configured, using mock data');
-      return this.getMockResponse(Date.now());
+      throw new Error('OpenAI API key not configured. Please set VITE_OPENAI_API_KEY environment variable.');
     }
 
     const startTime = Date.now();
 
     try {
+      console.log('🤖 Calling OpenAI API...');
+      
       const response = await fetch(this.baseUrl, {
         method: 'POST',
         headers: {
@@ -87,7 +88,7 @@ class GPTService {
           'Authorization': `Bearer ${this.apiKey}`
         },
         body: JSON.stringify({
-          model: 'gpt-4',
+          model: 'gpt-4o-mini', // Using the more cost-effective model
           messages: [
             {
               role: 'system',
@@ -99,23 +100,33 @@ class GPTService {
             }
           ],
           temperature: 0.7,
-          max_tokens: 4000
+          max_tokens: 4000,
+          response_format: { type: 'json_object' } // Ensure JSON response
         })
       });
 
       if (!response.ok) {
-        throw new Error(`GPT API error: ${response.status} ${response.statusText}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`OpenAI API error: ${response.status} ${response.statusText}. ${errorData.error?.message || ''}`);
       }
 
       const data = await response.json();
       const content = data.choices[0]?.message?.content;
 
       if (!content) {
-        throw new Error('No content received from GPT API');
+        throw new Error('No content received from OpenAI API');
       }
 
+      console.log('✅ OpenAI API response received');
+
       // Parse the JSON response
-      const parsedResponse = JSON.parse(content);
+      let parsedResponse;
+      try {
+        parsedResponse = JSON.parse(content);
+      } catch (parseError) {
+        console.error('Failed to parse OpenAI response as JSON:', content);
+        throw new Error('OpenAI returned invalid JSON response');
+      }
       
       return {
         ...parsedResponse,
@@ -123,103 +134,14 @@ class GPTService {
       };
 
     } catch (error) {
-      console.error('GPT Service Error:', error);
-      
-      // Return mock data for development/testing
-      return this.getMockResponse(Date.now() - startTime);
+      console.error('❌ GPT Service Error:', error);
+      throw error; // Don't fall back to mock data, let the error bubble up
     }
   }
 
 
 
-  private getMockResponse(processingTime: number): GPTResponse {
-    // Mock response for development/testing
-    const mockBundle: TripBundle = {
-      id: 'mock-bundle-1',
-      title: 'London Music & Sports Weekend',
-      description: 'Experience the best of London with a Premier League match and West End show',
-      country: 'United Kingdom',
-      city: 'London',
-      duration: 4,
-      startDate: '2024-04-15',
-      endDate: '2024-04-18',
-      totalCost: {
-        amount: 1200,
-        currency: 'USD',
-        breakdown: {
-          accommodation: 480,
-          entertainment: 300,
-          food: 200,
-          transport: 220
-        }
-      },
-      entertainments: [
-        {
-          entertainment: {
-            id: 'football-premier',
-            name: 'Premier League Match',
-            category: 'sports',
-            subcategory: 'football',
-            description: 'Arsenal vs Manchester United',
-            averageDuration: 2,
-            averageCost: { min: 50, max: 200, currency: 'USD' },
-            seasonality: 'seasonal',
-            popularCountries: ['GB']
-          },
-          date: '2024-04-16',
-          time: '15:00',
-          venue: 'Emirates Stadium',
-          cost: 120,
-          bookingUrl: 'https://arsenal.com/tickets'
-        },
-        {
-          entertainment: {
-            id: 'theater-westend',
-            name: 'The Lion King',
-            category: 'culture',
-            subcategory: 'theater',
-            description: 'Award-winning West End musical',
-            averageDuration: 2.5,
-            averageCost: { min: 50, max: 150, currency: 'USD' },
-            seasonality: 'year-round',
-            popularCountries: ['GB', 'US']
-          },
-          date: '2024-04-17',
-          time: '19:30',
-          venue: 'Lyceum Theatre',
-          cost: 90,
-          bookingUrl: 'https://lionking.co.uk/tickets'
-        }
-      ],
-      accommodation: {
-        name: 'The Z Hotel Piccadilly',
-        type: 'hotel',
-        rating: 4.2,
-        pricePerNight: 120,
-        location: 'Central London',
-        amenities: ['WiFi', 'Air Conditioning', '24/7 Reception']
-      },
-      transportation: {
-        type: 'flight',
-        details: 'Round-trip economy flight',
-        cost: 220
-      },
-      recommendations: {
-        restaurants: ['Dishoom', 'Sketch', 'Borough Market'],
-        localTips: ['Book tube tickets in advance', 'Visit during off-peak hours', 'Try traditional fish and chips'],
-        weatherInfo: 'Mild spring weather, pack layers',
-        packingList: ['Light rain jacket', 'Comfortable walking shoes', 'Smart casual clothes']
-      },
-      confidence: 92
-    };
 
-    return {
-      bundles: [mockBundle],
-      reasoning: 'This bundle combines your sports interest with cultural entertainment in London, staying within your budget range.',
-      alternatives: ['Paris weekend with Louvre and PSG match', 'Barcelona with Camp Nou tour and flamenco show'],
-      processingTime
-    };
-  }
 
   // Utility method to validate API key
   isConfigured(): boolean {
