@@ -15,7 +15,7 @@ export default defineConfig(({ command, mode }) => {
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+      includeAssets: ['TripBundleIcon.jpeg'],
       manifest: {
         name: 'Trip Bundle AI',
         short_name: 'TripBundle',
@@ -30,22 +30,22 @@ export default defineConfig(({ command, mode }) => {
         lang: 'en-US',
         icons: [
           {
-            src: 'icon-192x192.png',
+            src: 'TripBundleIcon.jpeg',
             sizes: '192x192',
-            type: 'image/png',
-            purpose: 'maskable any'
+            type: 'image/jpeg',
+            purpose: 'any'
           },
           {
-            src: 'icon-512x512.png',
+            src: 'TripBundleIcon.jpeg',
             sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable any'
+            type: 'image/jpeg',
+            purpose: 'any'
           },
           {
-            src: 'apple-touch-icon.png',
+            src: 'TripBundleIcon.jpeg',
             sizes: '180x180',
-            type: 'image/png',
-            purpose: 'apple touch icon'
+            type: 'image/jpeg',
+            purpose: 'any'
           }
         ],
         screenshots: [
@@ -64,7 +64,7 @@ export default defineConfig(({ command, mode }) => {
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpeg}']
       }
     })
   ]
