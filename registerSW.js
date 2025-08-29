@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/trip-bundle-mock/sw.js', { scope: '/trip-bundle-mock/' })})}
