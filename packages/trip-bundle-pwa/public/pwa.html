@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/jpeg" href="/trip-bundle/TripBundleIcon.jpeg" />
+    <!-- Enhanced mobile viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="description" content="Trip Bundle AI - Your AI-powered travel companion" />
+    <meta name="theme-color" content="#667eea" />
+    
+    <!-- iOS specific meta tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Trip Bundle AI" />
+    <link rel="apple-touch-icon" href="/trip-bundle/TripBundleIcon.jpeg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/trip-bundle/TripBundleIcon.jpeg" />
+    
+    <!-- PWA manifest -->
+    <link rel="manifest" href="pwa-manifest.json" />
+    
+    <!-- Prevent iOS zoom on input focus -->
+    <meta name="format-detection" content="telephone=no" />
+    
+    <title>Trip Bundle AI</title>
+    
+    <!-- Load the main app assets directly -->
+    <script type="module" crossorigin src="/trip-bundle/assets/index-TXPiz3nB.js"></script>
+    <link rel="stylesheet" crossorigin href="/trip-bundle/assets/index-wJRwK3ZO.css">
+    
+    <!-- Service Worker Registration -->
+    <script>
+        // Register service worker manually for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/trip-bundle/sw.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
