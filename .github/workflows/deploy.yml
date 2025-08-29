@@ -32,6 +32,12 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
         
+      - name: Create mock environment file
+        run: |
+          cd packages/trip-bundle-pwa
+          echo "# Mock mode - no API keys needed" > .env
+          echo "VITE_MOCK=true" >> .env
+        
       - name: Build PWA (Mock Mode)
         run: yarn workspace trip-bundle-pwa build
         
