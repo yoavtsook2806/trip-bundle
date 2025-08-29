@@ -7,7 +7,7 @@ import { UserPreferencesStore, BundleSuggestionsStore } from './store';
 import { GPTService } from './services';
 import { SpotifyIntegration } from './integrations';
 import { TripActions } from './actions';
-import { BundleOffer, TabNavigation, UserPreferencesForm } from './components';
+import { BundleOffer, TabNavigation, UserPreferencesForm, SearchForm, EventDetails, EventDetailsData } from './components';
 import { usePWA } from './hooks/usePWA';
 
 // Import the TripBundle icon
@@ -30,6 +30,9 @@ const tripActions = new TripActions(
 const App: React.FC = observer(() => {
   const [hasStarted, setHasStarted] = useState(false);
   const [activeTab, setActiveTab] = useState('trips');
+  const [searchResults, setSearchResults] = useState<EventDetailsData[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<EventDetailsData | null>(null);
   const pwaInfo = usePWA();
 
   // Infinite scroll functionality
@@ -89,9 +92,46 @@ const App: React.FC = observer(() => {
   const hasBundles = tripActions.hasBundles();
   const selectedBundle = tripActions.getSelectedBundle();
 
+  // Handle event search
+  const handleEventSearch = async (city: string, startDate: string, endDate: string) => {
+    setIsSearching(true);
+    try {
+      const result = await gptService.getEvents(city, startDate, endDate);
+      const eventDetails: EventDetailsData[] = result.events.map(event => ({
+        entertainment: event.entertainment,
+        date: event.date,
+        time: event.time,
+        venue: event.venue,
+        cost: event.cost,
+        currency: event.currency,
+        bookingUrl: event.bookingUrl
+      }));
+      setSearchResults(eventDetails);
+    } catch (error) {
+      console.error('Error searching events:', error);
+      // Handle error - could show an error message
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Handle event selection from BundleOffer
+  const handleEventClick = (entertainment: any, date: string, time: string, venue: string, cost: number) => {
+    const eventDetails: EventDetailsData = {
+      entertainment,
+      date,
+      time,
+      venue,
+      cost,
+      currency: 'EUR' // Default currency
+    };
+    setSelectedEvent(eventDetails);
+  };
+
   // Tab configuration
   const tabs = [
     { id: 'trips', label: 'Trip Bundles', icon: '🧳' },
+    { id: 'search', label: 'Search Events', icon: '🔍' },
     { id: 'preferences', label: 'Preferences', icon: '⚙️' }
   ];
 
@@ -124,6 +164,51 @@ const App: React.FC = observer(() => {
             onPreferencesUpdate={handlePreferencesUpdate}
             onClose={() => setActiveTab('trips')}
           />
+        ) : activeTab === 'search' ? (
+          <div className="search-tab-content">
+            <SearchForm 
+              onSearch={handleEventSearch}
+              isLoading={isSearching}
+            />
+            
+            {/* Search Results */}
+            {searchResults.length > 0 && (
+              <div className="search-results">
+                <h3>🎉 Found {searchResults.length} Events</h3>
+                <div className="events-grid">
+                  {searchResults.map((event, index) => (
+                    <div 
+                      key={index} 
+                      className="event-card"
+                      onClick={() => setSelectedEvent(event)}
+                    >
+                      <div className="event-card-header">
+                        <span className="event-category">
+                          {event.entertainment.category === 'music' && '🎵'}
+                          {event.entertainment.category === 'sports' && '⚽'}
+                          {event.entertainment.category === 'culture' && '🎭'}
+                          {event.entertainment.category === 'food' && '🍽️'}
+                          {event.entertainment.category === 'nightlife' && '🌙'}
+                          {event.entertainment.category === 'nature' && '🌿'}
+                          {event.entertainment.category === 'adventure' && '🏔️'}
+                        </span>
+                        <span className="event-cost">
+                          €{event.cost}
+                        </span>
+                      </div>
+                      <h4 className="event-name">{event.entertainment.name}</h4>
+                      <p className="event-description">{event.entertainment.description}</p>
+                      <div className="event-details">
+                        <span>📍 {event.venue}</span>
+                        <span>📅 {new Date(event.date).toLocaleDateString()}</span>
+                        <span>⏰ {event.time}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         ) : (
           <>
             {/* Loading State */}
@@ -162,6 +247,7 @@ const App: React.FC = observer(() => {
                       bundle={bundle}
                       onSelect={handleSelectBundle}
                       onBookmark={handleBookmarkBundle}
+                      onEventClick={handleEventClick}
                       isSelected={selectedBundle?.id === bundle.id}
                       isBookmarked={tripActions.isBookmarked(bundle.id)}
                     />
@@ -187,6 +273,19 @@ const App: React.FC = observer(() => {
           </>
         )}
       </header>
+
+      {/* Event Details Modal */}
+      {selectedEvent && (
+        <EventDetails
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+          onBook={(event) => {
+            console.log('Booking event:', event.entertainment.name);
+            // Here you could add logic to add the event to a trip or booking system
+            setSelectedEvent(null);
+          }}
+        />
+      )}
     </div>
   );
 });

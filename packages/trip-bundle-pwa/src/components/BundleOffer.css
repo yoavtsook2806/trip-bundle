@@ -473,6 +473,17 @@
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
+.entertainment-item.clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.entertainment-item.clickable:hover {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: rgba(102, 126, 234, 0.3);
+  transform: translateX(4px);
+}
+
 .hotel-info {
   background: rgba(255, 255, 255, 0.7);
   border-radius: 8px;

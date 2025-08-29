@@ -8,6 +8,7 @@ interface BundleOfferProps {
   bundle: TripBundle;
   onSelect?: (bundle: TripBundle) => void;
   onBookmark?: (bundle: TripBundle) => void;
+  onEventClick?: (entertainment: any, date: string, time: string, venue: string, cost: number) => void;
   isSelected?: boolean;
   isBookmarked?: boolean;
 }
@@ -16,6 +17,7 @@ const BundleOffer: React.FC<BundleOfferProps> = observer(({
   bundle,
   onSelect,
   onBookmark,
+  onEventClick,
   isSelected = false,
   isBookmarked = false
 }) => {
@@ -114,7 +116,7 @@ const BundleOffer: React.FC<BundleOfferProps> = observer(({
               <span className="compact-cost">💰 {formatCurrency(bundle.totalCost.amount, bundle.totalCost.currency)}</span>
             </div>
             <div className="compact-activities">
-              🎉 {bundle.entertainments.length} activities • 🏨 {bundle.accommodation.name}
+              🎉 {bundle.entertainments.length} activities
             </div>
           </div>
           <div className="expand-hint">
@@ -165,7 +167,21 @@ const BundleOffer: React.FC<BundleOfferProps> = observer(({
             <h4 className="section-title">🎉 Activities</h4>
             <div className="entertainment-list">
               {bundle.entertainments.map((entertainment, index) => (
-                <div key={index} className="entertainment-item">
+                <div 
+                  key={index} 
+                  className="entertainment-item clickable"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEventClick?.(
+                      entertainment.entertainment,
+                      entertainment.date,
+                      entertainment.time,
+                      entertainment.venue,
+                      entertainment.cost
+                    );
+                  }}
+                  title="Click to view event details"
+                >
                   <span className="entertainment-icon">
                     {getCategoryIcon(entertainment.entertainment.category)}
                   </span>
@@ -183,18 +199,7 @@ const BundleOffer: React.FC<BundleOfferProps> = observer(({
             </div>
           </div>
 
-          {/* Hotel Info - Full Details */}
-          <div className="hotel-section">
-            <h4 className="section-title">🏨 Hotel</h4>
-            <div className="hotel-info">
-              <div className="hotel-name">{bundle.accommodation.name}</div>
-              <div className="hotel-details">
-                {'⭐'.repeat(Math.floor(bundle.accommodation.rating))} {bundle.accommodation.rating.toFixed(1)} • 
-                {bundle.accommodation.location} • 
-                {formatCurrency(bundle.accommodation.pricePerNight, bundle.totalCost.currency)}/night
-              </div>
-            </div>
-          </div>
+
 
           {/* Action Button */}
           <div className="bundle-footer">

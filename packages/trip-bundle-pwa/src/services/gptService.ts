@@ -1174,6 +1174,201 @@ class GPTService {
     return isMockMode || (this.apiKey !== null && this.apiKey.length > 0);
   }
 
+  // Method to get events for a specific city and date range
+  async getEvents(city: string, startDate: string, endDate: string): Promise<{
+    events: {
+      entertainment: Entertainment;
+      date: string;
+      time: string;
+      venue: string;
+      cost: number;
+      currency: string;
+      bookingUrl?: string;
+    }[];
+    reasoning: string;
+    processingTime: number;
+  }> {
+    const startTime = Date.now();
+    const isMockMode = (import.meta as any).env?.VITE_MOCK === 'true';
+
+    if (isMockMode || !this.isConfigured()) {
+      // Return mock events for the specified city and date range
+      return this.getMockEvents(city, startDate, endDate);
+    }
+
+    try {
+      const prompt = `Find entertainment events in ${city} between ${startDate} and ${endDate}.
+      
+Please provide a list of events with the following information for each:
+- Event name and description
+- Category (music, sports, culture, food, nightlife, nature, adventure)
+- Date and time
+- Venue/location
+- Estimated cost in EUR
+- Booking URL if available
+
+Focus on diverse entertainment options that would appeal to travelers.
+
+Return the response in this JSON format:
+{
+  "events": [
+    {
+      "name": "Event Name",
+      "description": "Event description",
+      "category": "music",
+      "date": "2024-01-15",
+      "time": "19:00",
+      "venue": "Venue Name",
+      "cost": 50,
+      "bookingUrl": "https://example.com/book"
+    }
+  ],
+  "reasoning": "Brief explanation of event selection"
+}`;
+
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a travel expert specializing in finding entertainment events in cities worldwide. Provide accurate, current information about events and activities.'
+            },
+            {
+              role: 'user',
+              content: prompt
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 2000
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const content = data.choices[0].message.content;
+      
+      // Parse the JSON response
+      const parsedResponse = JSON.parse(content);
+      const processingTime = Date.now() - startTime;
+
+      // Convert to our format
+      const events = parsedResponse.events.map((event: any) => ({
+        entertainment: {
+          id: event.name.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+          name: event.name,
+          description: event.description,
+          category: event.category,
+          tags: [],
+          duration: 120 // Default duration in minutes
+        },
+        date: event.date,
+        time: event.time,
+        venue: event.venue,
+        cost: event.cost,
+        currency: 'EUR',
+        bookingUrl: event.bookingUrl
+      }));
+
+      return {
+        events,
+        reasoning: parsedResponse.reasoning,
+        processingTime
+      };
+
+    } catch (error) {
+      console.error('Error fetching events from GPT:', error);
+      // Fallback to mock data on error
+      return this.getMockEvents(city, startDate, endDate);
+    }
+  }
+
+  // Mock events for development
+  private getMockEvents(city: string, startDate: string, endDate: string): {
+    events: {
+      entertainment: Entertainment;
+      date: string;
+      time: string;
+      venue: string;
+      cost: number;
+      currency: string;
+      bookingUrl?: string;
+    }[];
+    reasoning: string;
+    processingTime: number;
+  } {
+    const processingTime = Math.random() * 1000 + 500; // Simulate processing time
+
+    // Create mock events based on the city
+    const mockEvents = [
+      {
+        entertainment: this.createMockEntertainment('concert-hall-event', `${city} Symphony Orchestra`, 'music', 'Classical music performance by local orchestra'),
+        date: startDate,
+        time: '19:30',
+        venue: `${city} Concert Hall`,
+        cost: 45,
+        currency: 'EUR',
+        bookingUrl: 'https://example.com/book-symphony'
+      },
+      {
+        entertainment: this.createMockEntertainment('art-gallery-opening', `Modern Art Exhibition`, 'culture', 'Contemporary art exhibition featuring local and international artists'),
+        date: this.addDays(startDate, 1),
+        time: '18:00',
+        venue: `${city} Modern Art Gallery`,
+        cost: 15,
+        currency: 'EUR',
+        bookingUrl: 'https://example.com/book-art'
+      },
+      {
+        entertainment: this.createMockEntertainment('food-festival', `${city} Food Festival`, 'food', 'Local cuisine festival with traditional and modern dishes'),
+        date: this.addDays(startDate, 2),
+        time: '12:00',
+        venue: `${city} Central Square`,
+        cost: 25,
+        currency: 'EUR'
+      },
+      {
+        entertainment: this.createMockEntertainment('jazz-club', `Jazz Night`, 'music', 'Live jazz performance by local musicians'),
+        date: this.addDays(startDate, 2),
+        time: '21:00',
+        venue: `Blue Note ${city}`,
+        cost: 30,
+        currency: 'EUR',
+        bookingUrl: 'https://example.com/book-jazz'
+      },
+      {
+        entertainment: this.createMockEntertainment('walking-tour', `Historical Walking Tour`, 'culture', 'Guided tour through the historic districts'),
+        date: this.addDays(startDate, 3),
+        time: '10:00',
+        venue: `${city} Old Town`,
+        cost: 20,
+        currency: 'EUR',
+        bookingUrl: 'https://example.com/book-tour'
+      }
+    ].filter(event => event.date <= endDate); // Only include events within date range
+
+    return {
+      events: mockEvents,
+      reasoning: `Found ${mockEvents.length} diverse entertainment events in ${city} between ${startDate} and ${endDate}, including music, culture, and food experiences.`,
+      processingTime
+    };
+  }
+
+  // Helper method to add days to a date string
+  private addDays(dateString: string, days: number): string {
+    const date = new Date(dateString);
+    date.setDate(date.getDate() + days);
+    return date.toISOString().split('T')[0];
+  }
+
   // Method to get available models (for future use)
   async getAvailableModels(): Promise<string[]> {
     if (!this.apiKey) {
