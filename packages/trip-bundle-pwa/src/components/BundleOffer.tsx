@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { TripBundle } from '../services/gptService';
 import { CITIES, City } from '../constants/cities';
@@ -19,6 +19,7 @@ const BundleOffer: React.FC<BundleOfferProps> = observer(({
   isSelected = false,
   isBookmarked = false
 }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
   const getCityData = (cityName: string): City | null => {
     return CITIES.find(city => city.name.toLowerCase() === cityName.toLowerCase()) || null;
   };
@@ -60,7 +61,10 @@ const BundleOffer: React.FC<BundleOfferProps> = observer(({
   };
 
   return (
-    <div className={`bundle-offer-simple ${isSelected ? 'selected' : ''}`}>
+    <div 
+      className={`bundle-offer ${isExpanded ? 'expanded' : 'compact'} ${isSelected ? 'selected' : ''}`}
+      onClick={() => !isExpanded && setIsExpanded(true)}
+    >
       {/* City Symbol Background */}
       {cityData?.symbolUrl && (
         <div 
@@ -87,7 +91,10 @@ const BundleOffer: React.FC<BundleOfferProps> = observer(({
         <div className="bundle-actions">
           <button
             className={`bookmark-btn ${isBookmarked ? 'bookmarked' : ''}`}
-            onClick={() => onBookmark?.(bundle)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onBookmark?.(bundle);
+            }}
             title={isBookmarked ? 'Remove bookmark' : 'Bookmark this bundle'}
           >
             {isBookmarked ? '❤️' : '🤍'}
@@ -98,74 +105,111 @@ const BundleOffer: React.FC<BundleOfferProps> = observer(({
         </div>
       </div>
 
-      {/* Description */}
-      <p className="bundle-description">{bundle.description}</p>
-
-      {/* Key Info */}
-      <div className="bundle-key-info">
-        <div className="info-item">
-          <span className="info-label">📅 Duration:</span>
-          <span className="info-value">{bundle.duration} days</span>
-        </div>
-        <div className="info-item">
-          <span className="info-label">🗓️ Dates:</span>
-          <span className="info-value">
-            {formatDate(bundle.startDate)} - {formatDate(bundle.endDate)}
-          </span>
-        </div>
-        <div className="info-item">
-          <span className="info-label">💰 Total Cost:</span>
-          <span className="info-value total-cost">
-            {formatCurrency(bundle.totalCost.amount, bundle.totalCost.currency)}
-          </span>
-        </div>
-      </div>
-
-      {/* Entertainment Activities - Simplified */}
-      <div className="entertainment-section">
-        <h4 className="section-title">🎉 Activities</h4>
-        <div className="entertainment-simple-list">
-          {bundle.entertainments.map((entertainment, index) => (
-            <div key={index} className="entertainment-simple-item">
-              <span className="entertainment-icon">
-                {getCategoryIcon(entertainment.entertainment.category)}
-              </span>
-              <div className="entertainment-info">
-                <div className="entertainment-name">{entertainment.entertainment.name}</div>
-                <div className="entertainment-details">
-                  {entertainment.venue} • {formatDate(entertainment.date)} at {entertainment.time}
-                </div>
-              </div>
-              <div className="entertainment-cost">
-                {formatCurrency(entertainment.cost, bundle.totalCost.currency)}
-              </div>
+      {/* Compact View - Only most important info */}
+      {!isExpanded && (
+        <div className="compact-content">
+          <div className="compact-summary">
+            <div className="compact-info">
+              <span className="compact-duration">📅 {bundle.duration} days</span>
+              <span className="compact-cost">💰 {formatCurrency(bundle.totalCost.amount, bundle.totalCost.currency)}</span>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Hotel Info - Simplified */}
-      <div className="hotel-section">
-        <h4 className="section-title">🏨 Hotel</h4>
-        <div className="hotel-simple-info">
-          <div className="hotel-name">{bundle.accommodation.name}</div>
-          <div className="hotel-details">
-            {'⭐'.repeat(Math.floor(bundle.accommodation.rating))} {bundle.accommodation.rating.toFixed(1)} • 
-            {bundle.accommodation.location} • 
-            {formatCurrency(bundle.accommodation.pricePerNight, bundle.totalCost.currency)}/night
+            <div className="compact-activities">
+              🎉 {bundle.entertainments.length} activities • 🏨 {bundle.accommodation.name}
+            </div>
+          </div>
+          <div className="expand-hint">
+            <span>👆 Tap to see details</span>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Action Button */}
-      <div className="bundle-footer">
-        <button
-          className="select-bundle-btn"
-          onClick={() => onSelect?.(bundle)}
-        >
-          Select This Bundle
-        </button>
-      </div>
+      {/* Expanded View - Full details */}
+      {isExpanded && (
+        <div className="expanded-content">
+          {/* Collapse Button */}
+          <button 
+            className="collapse-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(false);
+            }}
+          >
+            ▲ Show Less
+          </button>
+
+          {/* Description */}
+          <p className="bundle-description">{bundle.description}</p>
+
+          {/* Key Info */}
+          <div className="bundle-key-info">
+            <div className="info-item">
+              <span className="info-label">📅 Duration:</span>
+              <span className="info-value">{bundle.duration} days</span>
+            </div>
+            <div className="info-item">
+              <span className="info-label">🗓️ Dates:</span>
+              <span className="info-value">
+                {formatDate(bundle.startDate)} - {formatDate(bundle.endDate)}
+              </span>
+            </div>
+            <div className="info-item">
+              <span className="info-label">💰 Total Cost:</span>
+              <span className="info-value total-cost">
+                {formatCurrency(bundle.totalCost.amount, bundle.totalCost.currency)}
+              </span>
+            </div>
+          </div>
+
+          {/* Entertainment Activities - Full Details */}
+          <div className="entertainment-section">
+            <h4 className="section-title">🎉 Activities</h4>
+            <div className="entertainment-list">
+              {bundle.entertainments.map((entertainment, index) => (
+                <div key={index} className="entertainment-item">
+                  <span className="entertainment-icon">
+                    {getCategoryIcon(entertainment.entertainment.category)}
+                  </span>
+                  <div className="entertainment-info">
+                    <div className="entertainment-name">{entertainment.entertainment.name}</div>
+                    <div className="entertainment-details">
+                      {entertainment.venue} • {formatDate(entertainment.date)} at {entertainment.time}
+                    </div>
+                  </div>
+                  <div className="entertainment-cost">
+                    {formatCurrency(entertainment.cost, bundle.totalCost.currency)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Hotel Info - Full Details */}
+          <div className="hotel-section">
+            <h4 className="section-title">🏨 Hotel</h4>
+            <div className="hotel-info">
+              <div className="hotel-name">{bundle.accommodation.name}</div>
+              <div className="hotel-details">
+                {'⭐'.repeat(Math.floor(bundle.accommodation.rating))} {bundle.accommodation.rating.toFixed(1)} • 
+                {bundle.accommodation.location} • 
+                {formatCurrency(bundle.accommodation.pricePerNight, bundle.totalCost.currency)}/night
+              </div>
+            </div>
+          </div>
+
+          {/* Action Button */}
+          <div className="bundle-footer">
+            <button
+              className="select-bundle-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelect?.(bundle);
+              }}
+            >
+              Select This Bundle
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 });
