@@ -28,7 +28,7 @@ export default defineConfig(({ command, mode }) => {
         display: 'standalone',
         orientation: 'portrait-primary',
         scope: command === 'build' && process.env.GITHUB_PAGES ? '/trip-bundle/' : '/',
-        start_url: command === 'build' && process.env.GITHUB_PAGES ? '/trip-bundle/' : '/',
+        start_url: command === 'build' && process.env.GITHUB_PAGES ? '/trip-bundle/index.html' : '/',
         categories: ['travel', 'productivity', 'lifestyle'],
         lang: 'en-US',
         icons: [
@@ -69,7 +69,8 @@ export default defineConfig(({ command, mode }) => {
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpeg}'],
-        navigateFallback: null,
+        navigateFallback: command === 'build' && process.env.GITHUB_PAGES ? '/trip-bundle/index.html' : '/index.html',
+        navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/yoavtsook2806\.github\.io\/trip-bundle\//,
