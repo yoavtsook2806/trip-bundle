@@ -27,8 +27,8 @@ export default defineConfig(({ command, mode }) => {
         background_color: '#667eea',
         display: 'standalone',
         orientation: 'portrait-primary',
-        scope: '/',
-        start_url: '/',
+        scope: command === 'build' && process.env.GITHUB_PAGES ? '/trip-bundle/' : '/',
+        start_url: command === 'build' && process.env.GITHUB_PAGES ? '/trip-bundle/' : '/',
         categories: ['travel', 'productivity', 'lifestyle'],
         lang: 'en-US',
         icons: [
