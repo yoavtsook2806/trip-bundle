@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "vite",
     "dev-mock": "VITE_MOCK=true vite",
-    "build": "VITE_MOCK=true GITHUB_PAGES=true tsc && vite build && node scripts/copy-to-pwa.js",
-    "build:mock": "VITE_MOCK=true GITHUB_PAGES=true tsc && vite build && node scripts/copy-to-pwa.js",
-    "build:prod": "VITE_MOCK=false GITHUB_PAGES=true tsc && vite build && node scripts/copy-to-pwa.js",
+    "build": "VITE_MOCK=true GITHUB_PAGES=true tsc && vite build && node scripts/copy-to-pwa.cjs",
+    "build:mock": "VITE_MOCK=true GITHUB_PAGES=true tsc && vite build && node scripts/copy-to-pwa.cjs",
+    "build:prod": "VITE_MOCK=false GITHUB_PAGES=true tsc && vite build && node scripts/copy-to-pwa.cjs",
     "preview": "vite preview",
     "serve:local": "python3 -m http.server 8080 -d dist",
     "predeploy:mock": "npm run build:mock",
