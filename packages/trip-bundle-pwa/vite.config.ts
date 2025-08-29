@@ -5,9 +5,12 @@ import { VitePWA } from 'vite-plugin-pwa'
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   // Determine base path for GitHub Pages deployment
-  const base = command === 'build' && process.env.GITHUB_PAGES 
-    ? '/trip-bundle/'
-    : '/'
+  let base = '/'
+  
+  if (command === 'build' && process.env.GITHUB_PAGES) {
+    // For now, deploy everything to /trip-bundle/ since that's what GitHub Pages is configured for
+    base = '/trip-bundle/'
+  }
 
   return {
     base,
@@ -48,20 +51,21 @@ export default defineConfig(({ command, mode }) => {
             purpose: 'any'
           }
         ],
-        screenshots: [
-          {
-            src: 'screenshot-wide.png',
-            sizes: '1280x720',
-            type: 'image/png',
-            form_factor: 'wide'
-          },
-          {
-            src: 'screenshot-narrow.png',
-            sizes: '750x1334',
-            type: 'image/png',
-            form_factor: 'narrow'
-          }
-        ]
+        // Screenshots removed - add them when available
+        // screenshots: [
+        //   {
+        //     src: 'screenshot-wide.png',
+        //     sizes: '1280x720',
+        //     type: 'image/png',
+        //     form_factor: 'wide'
+        //   },
+        //   {
+        //     src: 'screenshot-narrow.png',
+        //     sizes: '750x1334',
+        //     type: 'image/png',
+        //     form_factor: 'narrow'
+        //   }
+        // ]
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpeg}']
