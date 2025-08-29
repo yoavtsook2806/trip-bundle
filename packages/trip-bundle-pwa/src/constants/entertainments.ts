@@ -204,7 +204,7 @@ export const getEntertainmentsByCategory = (category: string): Entertainment[] =
 
 export const getEntertainmentsByCountry = (countryCode: string): Entertainment[] => {
   return ALL_ENTERTAINMENTS.filter(entertainment => 
-    entertainment.popularCountries.includes(countryCode)
+    entertainment.popularCountries?.includes(countryCode)
   );
 };
 
@@ -213,6 +213,6 @@ export const searchEntertainments = (query: string): Entertainment[] => {
   return ALL_ENTERTAINMENTS.filter(entertainment =>
     entertainment.name.toLowerCase().includes(lowercaseQuery) ||
     entertainment.description.toLowerCase().includes(lowercaseQuery) ||
-    entertainment.subcategory.toLowerCase().includes(lowercaseQuery)
+    entertainment.subcategory?.toLowerCase().includes(lowercaseQuery)
   );
 };

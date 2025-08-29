@@ -1,6 +1,7 @@
 import UserPreferencesStore from '../store/userPreferences';
 import BundleSuggestionsStore from '../store/bundleSuggestions';
-import GPTService, { TripBundle } from '../services/gptService';
+import GPTService from '../services/gptService';
+import { TripBundle } from '../types';
 import SpotifyIntegration from '../integrations/spotify';
 import { CITIES } from '../constants/cities';
 import { ALL_ENTERTAINMENTS } from '../constants/entertainments';

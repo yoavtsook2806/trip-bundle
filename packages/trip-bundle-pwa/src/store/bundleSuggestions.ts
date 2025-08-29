@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx';
-import { TripBundle } from '../services/gptService';
+import { TripBundle } from '../types';
 
 export interface BundleSuggestionsState {
   bundles: TripBundle[];
@@ -218,7 +218,7 @@ class BundleSuggestionsStore {
       bundle.description.toLowerCase().includes(lowercaseQuery) ||
       bundle.city.toLowerCase().includes(lowercaseQuery) ||
       bundle.country.toLowerCase().includes(lowercaseQuery) ||
-      bundle.entertainments.some(ent => 
+      bundle.events.some(ent => 
         ent.entertainment.name.toLowerCase().includes(lowercaseQuery)
       )
     );
@@ -240,7 +240,7 @@ class BundleSuggestionsStore {
 
   filterBundlesByEntertainmentCategory(category: string): TripBundle[] {
     return this.bundles.filter(bundle =>
-      bundle.entertainments.some(ent => ent.entertainment.category === category)
+      bundle.events.some(ent => ent.entertainment.category === category)
     );
   }
 
