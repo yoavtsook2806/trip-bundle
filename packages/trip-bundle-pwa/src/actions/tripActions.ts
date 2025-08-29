@@ -4,6 +4,7 @@ import GPTService, { TripBundle } from '../services/gptService';
 import SpotifyIntegration from '../integrations/spotify';
 import { CITIES } from '../constants/cities';
 import { ALL_ENTERTAINMENTS } from '../constants/entertainments';
+import { UserPreferencesStorage, UserPreferencesHelpers, type UserPreferences } from '../storage';
 
 export class TripActions {
   private userPreferencesStore: UserPreferencesStore;
@@ -181,13 +182,17 @@ You MUST respond with a valid JSON object only, no additional text. Use this exa
 Focus on realistic pricing, actual venues, and current entertainment options.`;
   }
 
-  async generateTripBundles(userPrompt = ''): Promise<void> {
+  async generateTripBundles(): Promise<void> {
     try {
       this.bundleSuggestionsStore.setLoading(true);
 
       if (!this.gptService.isConfigured()) {
         console.warn('GPT service not configured, using mock data');
       }
+
+      // Generate user prompt from stored preferences
+      const userPrompt = await UserPreferencesHelpers.generateUserPrompt();
+      console.log('Generated user prompt from preferences:', userPrompt);
 
       const systemPrompt = this.buildSystemPrompt();
       const response = await this.gptService.generateTripBundles(systemPrompt, userPrompt);
@@ -202,9 +207,43 @@ Focus on realistic pricing, actual venues, and current entertainment options.`;
     }
   }
 
-  // User Preference Actions
+  // New Storage-based User Preference Actions
+  async updateUserPreferences(preferences: Partial<UserPreferences>): Promise<boolean> {
+    const success = await UserPreferencesStorage.setUserPreferences(preferences);
+    if (success) {
+      // Also update the old store for backward compatibility
+      this.syncWithLegacyStore(preferences);
+    }
+    return success;
+  }
+
+  async getUserPreferences(): Promise<UserPreferences> {
+    return UserPreferencesStorage.getUserPreferences();
+  }
+
+  async hasStoredPreferences(): Promise<boolean> {
+    return UserPreferencesStorage.hasUserPreferences();
+  }
+
+  async getPreferencesCompletion(): Promise<number> {
+    return UserPreferencesHelpers.getCompletionPercentage();
+  }
+
+  async clearStoredPreferences(): Promise<boolean> {
+    const success = await UserPreferencesStorage.clearUserPreferences();
+    if (success) {
+      this.userPreferencesStore.reset();
+    }
+    return success;
+  }
+
+  // Legacy User Preference Actions (for backward compatibility)
   updateBudget(min: number, max: number, currency = 'USD'): void {
     this.userPreferencesStore.setBudgetRange(min, max, currency);
+    // Also update in new storage
+    this.updateUserPreferences({
+      budgetRange: { min, max, currency }
+    });
   }
 
   updateDuration(min: number, max: number): void {
@@ -278,6 +317,55 @@ Focus on realistic pricing, actual venues, and current entertainment options.`;
   }
 
   // Private helper methods
+  private syncWithLegacyStore(preferences: Partial<UserPreferences>): void {
+    // Sync new storage preferences with legacy MobX store for backward compatibility
+    if (preferences.budgetRange) {
+      this.userPreferencesStore.setBudgetRange(
+        preferences.budgetRange.min,
+        preferences.budgetRange.max,
+        preferences.budgetRange.currency
+      );
+    }
+
+    if (preferences.durationRange) {
+      this.userPreferencesStore.setDurationRange(
+        preferences.durationRange.min,
+        preferences.durationRange.max
+      );
+    }
+
+    if (preferences.groupSize !== undefined) {
+      this.userPreferencesStore.setGroupSize(preferences.groupSize);
+    }
+
+    if (preferences.travelDates) {
+      const startDate = preferences.travelDates.startDate ? new Date(preferences.travelDates.startDate) : undefined;
+      const endDate = preferences.travelDates.endDate ? new Date(preferences.travelDates.endDate) : undefined;
+      this.userPreferencesStore.setTravelDates(startDate, endDate, preferences.travelDates.flexible);
+    }
+
+    if (preferences.preferredCountries) {
+      // Clear and re-add preferred countries
+      this.userPreferencesStore.reset();
+      preferences.preferredCountries.forEach(country => {
+        this.userPreferencesStore.addPreferredCountry(country);
+      });
+    }
+
+    if (preferences.musicGenres) {
+      this.userPreferencesStore.setMusicGenres(preferences.musicGenres);
+    }
+
+    if (preferences.spotify) {
+      this.userPreferencesStore.setSpotifyConnection(preferences.spotify.connected, {
+        id: preferences.spotify.userId || '',
+        displayName: preferences.spotify.displayName || '',
+        topGenres: preferences.spotify.topGenres || [],
+        topArtists: preferences.spotify.topArtists || []
+      });
+    }
+  }
+
   private addMusicBasedPreferences(musicProfile: any): void {
     // Add entertainment preferences based on Spotify music profile
     if (musicProfile.energy > 0.7) {

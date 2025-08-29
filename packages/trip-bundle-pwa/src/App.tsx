@@ -7,7 +7,8 @@ import { UserPreferencesStore, BundleSuggestionsStore } from './store';
 import { GPTService } from './services';
 import { SpotifyIntegration } from './integrations';
 import { TripActions } from './actions';
-import { BundleOffer } from './components';
+import { BundleOffer, TabNavigation, UserPreferencesForm } from './components';
+import { usePWA } from './hooks/usePWA';
 
 // Import the TripBundle icon
 import TripBundleIcon from './images/TripBundleIcon.jpeg';
@@ -28,6 +29,8 @@ const tripActions = new TripActions(
 
 const App: React.FC = observer(() => {
   const [hasStarted, setHasStarted] = useState(false);
+  const [activeTab, setActiveTab] = useState('trips');
+  const pwaInfo = usePWA();
 
   // Generate trip bundle on component mount
   useEffect(() => {
@@ -66,57 +69,87 @@ const App: React.FC = observer(() => {
   const hasBundles = tripActions.hasBundles();
   const selectedBundle = tripActions.getSelectedBundle();
 
+  // Tab configuration
+  const tabs = [
+    { id: 'trips', label: 'Trip Bundles', icon: '🧳' },
+    { id: 'preferences', label: 'Preferences', icon: '⚙️' }
+  ];
+
+  const handlePreferencesUpdate = () => {
+    // When preferences are updated, regenerate trips if we're on the trips tab
+    if (activeTab === 'trips') {
+      tripActions.generateTripBundles();
+    }
+  };
+
   return (
-    <div className="App">
+    <div className={`App ${pwaInfo.isStandalone ? 'standalone' : 'browser'}`}>
       <header className="App-header">
         <img src={TripBundleIcon} alt="Trip Bundle" className="app-icon" />
         <div className="title-section">
           <h1>Trip Bundle AI</h1>
           <p>Your personalized travel companion</p>
         </div>
+
+        {/* Tab Navigation */}
+        <TabNavigation
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
         
-        {/* Loading State */}
-        {isLoading && (
-          <div className="loading-container">
-            <div className="loader"></div>
-            <h2>Creating trip bundle for you</h2>
-            <p>Our AI is finding the perfect entertainment and destinations</p>
-          </div>
-        )}
+        {/* Tab Content */}
+        {activeTab === 'preferences' ? (
+          <UserPreferencesForm
+            onPreferencesUpdate={handlePreferencesUpdate}
+            onClose={() => setActiveTab('trips')}
+          />
+        ) : (
+          <>
+            {/* Loading State */}
+            {isLoading && (
+              <div className="loading-container">
+                <div className="loader"></div>
+                <h2>Creating trip bundle for you</h2>
+                <p>Our AI is finding the perfect entertainment and destinations</p>
+              </div>
+            )}
 
-        {/* Error State */}
-        {error && (
-          <div className="error-container">
-            <h2>❌ Oops! Something went wrong</h2>
-            <p>{error}</p>
-            <button 
-              className="retry-btn"
-              onClick={handleRetry}
-            >
-              Try Again
-            </button>
-          </div>
-        )}
+            {/* Error State */}
+            {error && (
+              <div className="error-container">
+                <h2>❌ Oops! Something went wrong</h2>
+                <p>{error}</p>
+                <button 
+                  className="retry-btn"
+                  onClick={handleRetry}
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
 
-        {/* Bundle Results */}
-        {hasBundles && !isLoading && (
-          <div className="bundles-container">
-            <h2>🎉 Your Perfect Trip Bundles</h2>
-            <p>Choose from these AI-generated travel options</p>
-            
-            <div className="bundles-row">
-              {bundles.map(bundle => (
-                <BundleOffer
-                  key={bundle.id}
-                  bundle={bundle}
-                  onSelect={handleSelectBundle}
-                  onBookmark={handleBookmarkBundle}
-                  isSelected={selectedBundle?.id === bundle.id}
-                  isBookmarked={tripActions.isBookmarked(bundle.id)}
-                />
-              ))}
-            </div>
-          </div>
+            {/* Bundle Results */}
+            {hasBundles && !isLoading && (
+              <div className="bundles-container">
+                <h2>🎉 Your Perfect Trip Bundles</h2>
+                <p>Choose from these AI-generated travel options</p>
+                
+                <div className="bundles-row">
+                  {bundles.map(bundle => (
+                    <BundleOffer
+                      key={bundle.id}
+                      bundle={bundle}
+                      onSelect={handleSelectBundle}
+                      onBookmark={handleBookmarkBundle}
+                      isSelected={selectedBundle?.id === bundle.id}
+                      isBookmarked={tripActions.isBookmarked(bundle.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </header>
     </div>

@@ -3,12 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Trip Bundle - Your travel companion PWA" />
-    <meta name="theme-color" content="#000000" />
+    <!-- Enhanced mobile viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="description" content="Trip Bundle AI - Your AI-powered travel companion" />
+    <meta name="theme-color" content="#667eea" />
+    
+    <!-- iOS specific meta tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Trip Bundle AI" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    
+    <!-- PWA manifest -->
     <link rel="manifest" href="/manifest.json" />
-    <title>Trip Bundle</title>
+    
+    <!-- Prevent iOS zoom on input focus -->
+    <meta name="format-detection" content="telephone=no" />
+    
+    <title>Trip Bundle AI</title>
   </head>
   <body>
     <div id="root"></div>
