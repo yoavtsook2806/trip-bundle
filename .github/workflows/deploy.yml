@@ -40,7 +40,7 @@ jobs:
           echo "GITHUB_PAGES=true" >> .env
         
       - name: Build PWA (Mock Mode)
-        run: yarn workspace trip-bundle-pwa build
+        run: VITE_MOCK=true GITHUB_PAGES=true yarn workspace trip-bundle-pwa build
         
       - name: Setup Pages
         uses: actions/configure-pages@v4
