@@ -1,5 +1,5 @@
 import React from 'react';
-import { EventDetailsData, EventDetailsProps } from '../types';
+import { EventDetailsProps } from '../types';
 import './EventDetails.css';
 
 const EventDetails: React.FC<EventDetailsProps> = ({

@@ -137,7 +137,7 @@ class GPTService {
             transport: 320
           }
         },
-        entertainments: [
+        events: [
           {
             entertainment: {
               id: 'arsenal-chelsea-derby',
@@ -216,7 +216,7 @@ class GPTService {
             transport: 200
           }
         },
-        entertainments: [
+        events: [
           {
             entertainment: {
               id: 'paris-fashion-week-2024',
@@ -295,7 +295,7 @@ class GPTService {
             transport: 360
           }
         },
-        entertainments: [
+        events: [
           {
             entertainment: {
               id: 'gladiator-3-premiere',
@@ -374,7 +374,7 @@ class GPTService {
             transport: 200
           }
         },
-        entertainments: [
+        events: [
           {
             entertainment: {
               id: 'el-clasico-2024',
@@ -453,7 +453,7 @@ class GPTService {
             transport: 200
           }
         },
-        entertainments: [
+        events: [
           {
             entertainment: {
               id: 'van-gogh-final-exhibition',
@@ -532,7 +532,7 @@ class GPTService {
             transport: 180
           }
         },
-        entertainments: [
+        events: [
           {
             entertainment: {
               id: 'vienna-opera',
@@ -611,7 +611,7 @@ class GPTService {
             transport: 150
           }
         },
-        entertainments: [
+        events: [
           {
             entertainment: {
               id: 'prague-castle',
@@ -691,7 +691,7 @@ class GPTService {
             transport: 400
           }
         },
-        entertainments: [
+        events: [
           {
             entertainment: this.createMockEntertainment('anime-expo-tokyo', 'Tokyo Anime Expo 2024', 'culture', 'Largest anime convention in Asia'),
             date: '2024-10-12',
@@ -750,7 +750,7 @@ class GPTService {
             transport: 300
           }
         },
-        entertainments: [
+        events: [
           {
             entertainment: this.createMockEntertainment('hamilton-broadway', 'Hamilton', 'culture', 'Award-winning Broadway musical'),
             date: '2024-11-21',
@@ -809,7 +809,7 @@ class GPTService {
             transport: 500
           }
         },
-        entertainments: [
+        events: [
           {
             entertainment: this.createMockEntertainment('opera-house-gala', 'Sydney Opera House Gala', 'culture', 'Prestigious opera performance'),
             date: '2024-12-03',
@@ -869,7 +869,7 @@ class GPTService {
             transport: 400
           }
         },
-        entertainments: [
+        events: [
           {
             entertainment: this.createMockEntertainment('berghain-techno', 'Berghain Techno Night', 'nightlife', 'World famous techno club'),
             date: '2024-09-26',
@@ -920,7 +920,7 @@ class GPTService {
             transport: 200
           }
         },
-        entertainments: [
+        events: [
           {
             entertainment: this.createMockEntertainment('hagia-sophia', 'Hagia Sophia Tour', 'culture', 'Historic Byzantine cathedral'),
             date: '2024-10-06',
@@ -971,7 +971,7 @@ class GPTService {
             transport: 400
           }
         },
-        entertainments: [
+        events: [
           {
             entertainment: this.createMockEntertainment('northern-lights-tour', 'Northern Lights Tour', 'nature', 'Aurora Borealis viewing experience'),
             date: '2024-11-16',
@@ -1014,7 +1014,7 @@ class GPTService {
         startDate: '2024-10-20',
         endDate: '2024-10-22',
         totalCost: { amount: 900, currency: 'EUR', breakdown: { accommodation: 240, entertainment: 200, food: 180, transport: 280 } },
-        entertainments: [{ entertainment: this.createMockEntertainment('irish-music', 'Traditional Irish Music Night', 'music', 'Authentic Irish folk music'), date: '2024-10-21', time: '20:00', venue: 'Temple Bar', cost: 30, currency: 'EUR' }],
+        events: [{ entertainment: this.createMockEntertainment('irish-music', 'Traditional Irish Music Night', 'music', 'Authentic Irish folk music'), date: '2024-10-21', time: '20:00', venue: 'Temple Bar', cost: 30, currency: 'EUR' }],
         accommodation: { name: 'Dublin City Hotel', type: 'hotel', rating: 4.1, pricePerNight: 80, location: 'Temple Bar', amenities: ['Free WiFi', 'Pub', 'Breakfast'] },
         transportation: { type: 'flight', details: 'Round-trip to Dublin Airport', cost: 280, currency: 'EUR' },
         recommendations: { restaurants: ['The Brazen Head', 'Guinness Storehouse'], localTips: ['Say Sláinte when toasting', 'Tip in pubs'], weatherInfo: 'Rainy autumn weather', packingList: ['Raincoat', 'Umbrella'] },
@@ -1030,7 +1030,7 @@ class GPTService {
         startDate: '2024-11-01',
         endDate: '2024-11-05',
         totalCost: { amount: 1100, currency: 'EUR', breakdown: { accommodation: 350, entertainment: 250, food: 300, transport: 200 } },
-        entertainments: [{ entertainment: this.createMockEntertainment('fado-night', 'Fado Performance', 'music', 'Traditional Portuguese music'), date: '2024-11-02', time: '21:00', venue: 'Alfama District', cost: 40, currency: 'EUR' }],
+        events: [{ entertainment: this.createMockEntertainment('fado-night', 'Fado Performance', 'music', 'Traditional Portuguese music'), date: '2024-11-02', time: '21:00', venue: 'Alfama District', cost: 40, currency: 'EUR' }],
         accommodation: { name: 'Lisbon Heritage Hotel', type: 'hotel', rating: 4.3, pricePerNight: 70, location: 'Alfama', amenities: ['Rooftop Terrace', 'Traditional Decor'] },
         transportation: { type: 'flight', details: 'Round-trip to Lisbon Airport', cost: 200, currency: 'EUR' },
         recommendations: { restaurants: ['Pastéis de Belém', 'Time Out Market'], localTips: ['Try pastéis de nata', 'Take Tram 28'], weatherInfo: 'Mild autumn weather', packingList: ['Light jacket', 'Sunglasses'] },
@@ -1046,7 +1046,7 @@ class GPTService {
         startDate: '2024-09-30',
         endDate: '2024-10-03',
         totalCost: { amount: 1500, currency: 'EUR', breakdown: { accommodation: 480, entertainment: 300, food: 320, transport: 400 } },
-        entertainments: [{ entertainment: this.createMockEntertainment('design-museum', 'Design Museum Denmark', 'culture', 'Danish design exhibition'), date: '2024-10-01', time: '10:00', venue: 'Bredgade', cost: 25, currency: 'EUR' }],
+        events: [{ entertainment: this.createMockEntertainment('design-museum', 'Design Museum Denmark', 'culture', 'Danish design exhibition'), date: '2024-10-01', time: '10:00', venue: 'Bredgade', cost: 25, currency: 'EUR' }],
         accommodation: { name: 'Copenhagen Design Hotel', type: 'hotel', rating: 4.5, pricePerNight: 120, location: 'Vesterbro', amenities: ['Modern Design', 'Bike Rental', 'Eco-Friendly'] },
         transportation: { type: 'flight', details: 'Round-trip to Copenhagen Airport', cost: 400, currency: 'EUR' },
         recommendations: { restaurants: ['Noma', 'Torvehallerne Market'], localTips: ['Rent a bike', 'Visit Tivoli Gardens'], weatherInfo: 'Cool autumn weather', packingList: ['Layers', 'Rain jacket'] },
@@ -1062,7 +1062,7 @@ class GPTService {
         startDate: '2024-10-15',
         endDate: '2024-10-18',
         totalCost: { amount: 800, currency: 'EUR', breakdown: { accommodation: 240, entertainment: 180, food: 200, transport: 180 } },
-        entertainments: [{ entertainment: this.createMockEntertainment('wawel-castle', 'Wawel Castle Tour', 'culture', 'Medieval royal castle'), date: '2024-10-16', time: '11:00', venue: 'Wawel Hill', cost: 20, currency: 'EUR' }],
+        events: [{ entertainment: this.createMockEntertainment('wawel-castle', 'Wawel Castle Tour', 'culture', 'Medieval royal castle'), date: '2024-10-16', time: '11:00', venue: 'Wawel Hill', cost: 20, currency: 'EUR' }],
         accommodation: { name: 'Krakow Old Town Hotel', type: 'hotel', rating: 4.2, pricePerNight: 60, location: 'Old Town', amenities: ['Historic Building', 'Central Location'] },
         transportation: { type: 'flight', details: 'Round-trip to Krakow Airport', cost: 180, currency: 'EUR' },
         recommendations: { restaurants: ['Pierogi Heaven', 'Pod Aniołami'], localTips: ['Try different pierogi types', 'Visit Main Market Square'], weatherInfo: 'Cool autumn weather', packingList: ['Comfortable walking shoes', 'Warm jacket'] },
@@ -1078,7 +1078,7 @@ class GPTService {
         startDate: '2024-11-10',
         endDate: '2024-11-13',
         totalCost: { amount: 1000, currency: 'EUR', breakdown: { accommodation: 280, entertainment: 220, food: 200, transport: 300 } },
-        entertainments: [{ entertainment: this.createMockEntertainment('szechenyi-baths', 'Széchenyi Thermal Baths', 'nature', 'Historic thermal spa complex'), date: '2024-11-11', time: '14:00', venue: 'City Park', cost: 25, currency: 'EUR' }],
+        events: [{ entertainment: this.createMockEntertainment('szechenyi-baths', 'Széchenyi Thermal Baths', 'nature', 'Historic thermal spa complex'), date: '2024-11-11', time: '14:00', venue: 'City Park', cost: 25, currency: 'EUR' }],
         accommodation: { name: 'Budapest River Hotel', type: 'hotel', rating: 4.4, pricePerNight: 70, location: 'Pest Side', amenities: ['River View', 'Spa Access'] },
         transportation: { type: 'flight', details: 'Round-trip to Budapest Airport', cost: 300, currency: 'EUR' },
         recommendations: { restaurants: ['Central Market Hall', 'Frici Papa'], localTips: ['Bring swimwear to baths', 'Try goulash'], weatherInfo: 'Cool November weather', packingList: ['Swimwear', 'Flip-flops', 'Warm clothes'] },
@@ -1094,7 +1094,7 @@ class GPTService {
         startDate: '2024-12-10',
         endDate: '2024-12-14',
         totalCost: { amount: 1600, currency: 'EUR', breakdown: { accommodation: 500, entertainment: 350, food: 400, transport: 350 } },
-        entertainments: [{ entertainment: this.createMockEntertainment('abba-museum', 'ABBA The Museum', 'music', 'Interactive ABBA experience'), date: '2024-12-11', time: '13:00', venue: 'Djurgården', cost: 30, currency: 'EUR' }],
+        events: [{ entertainment: this.createMockEntertainment('abba-museum', 'ABBA The Museum', 'music', 'Interactive ABBA experience'), date: '2024-12-11', time: '13:00', venue: 'Djurgården', cost: 30, currency: 'EUR' }],
         accommodation: { name: 'Stockholm Waterfront Hotel', type: 'hotel', rating: 4.6, pricePerNight: 100, location: 'Gamla Stan', amenities: ['Harbor View', 'Sauna', 'Fine Dining'] },
         transportation: { type: 'flight', details: 'Round-trip to Stockholm Arlanda', cost: 350, currency: 'EUR' },
         recommendations: { restaurants: ['Oaxen Krog', 'Meatballs for the People'], localTips: ['Buy Stockholm Pass', 'Try Swedish meatballs'], weatherInfo: 'Cold December weather, possible snow', packingList: ['Very warm clothes', 'Winter boots', 'Gloves'] },
@@ -1110,7 +1110,7 @@ class GPTService {
         startDate: '2024-12-20',
         endDate: '2024-12-23',
         totalCost: { amount: 2000, currency: 'EUR', breakdown: { accommodation: 600, entertainment: 400, food: 500, transport: 500 } },
-        entertainments: [{ entertainment: this.createMockEntertainment('lindt-factory', 'Lindt Chocolate Factory Tour', 'food', 'Swiss chocolate making experience'), date: '2024-12-21', time: '10:00', venue: 'Kilchberg', cost: 45, currency: 'EUR' }],
+        events: [{ entertainment: this.createMockEntertainment('lindt-factory', 'Lindt Chocolate Factory Tour', 'food', 'Swiss chocolate making experience'), date: '2024-12-21', time: '10:00', venue: 'Kilchberg', cost: 45, currency: 'EUR' }],
         accommodation: { name: 'Zurich Luxury Hotel', type: 'hotel', rating: 4.8, pricePerNight: 150, location: 'City Center', amenities: ['Alpine View', 'Michelin Restaurant', 'Spa'] },
         transportation: { type: 'flight', details: 'Round-trip to Zurich Airport', cost: 500, currency: 'EUR' },
         recommendations: { restaurants: ['Kronenhalle', 'Zeughauskeller'], localTips: ['Everything is expensive', 'Try fondue', 'Take train to Alps'], weatherInfo: 'Cold winter weather, snow likely', packingList: ['Warm winter gear', 'Snow boots', 'Expensive wallet'] },

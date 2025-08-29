@@ -46,17 +46,6 @@ export interface Event {
   bookingUrl?: string;
 }
 
-// Event Details Data (for EventDetails component)
-export interface EventDetailsData {
-  entertainment: Entertainment;
-  date: string;
-  time: string;
-  venue: string;
-  cost: number;
-  currency: string;
-  bookingUrl?: string;
-}
-
 
 // Trip Bundle Type
 export interface TripBundle {
@@ -78,7 +67,7 @@ export interface TripBundle {
       transport: number;
     };
   };
-  entertainments: Event[];
+  events: Event[];
   accommodation: {
     name: string;
     type: 'hotel' | 'hostel' | 'apartment' | 'resort';
@@ -173,9 +162,9 @@ export interface BundleOfferProps {
 
 // Event Details Props
 export interface EventDetailsProps {
-  event: EventDetailsData;
+  event: Event;
   onClose?: () => void;
-  onBook?: (event: EventDetailsData) => void;
+  onBook?: (event: Event) => void;
 }
 
 // Search Form Props

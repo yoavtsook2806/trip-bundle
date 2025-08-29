@@ -8,7 +8,7 @@ import { GPTService } from './services';
 import { SpotifyIntegration } from './integrations';
 import { TripActions } from './actions';
 import { BundleOffer, TabNavigation, UserPreferencesForm, SearchForm, EventDetails } from './components';
-import { EventDetailsData } from './types';
+import { Event } from './types';
 import { usePWA } from './hooks/usePWA';
 
 // Import the TripBundle icon
@@ -31,9 +31,9 @@ const tripActions = new TripActions(
 const App: React.FC = observer(() => {
   const [hasStarted, setHasStarted] = useState(false);
   const [activeTab, setActiveTab] = useState('trips');
-  const [searchResults, setSearchResults] = useState<EventDetailsData[]>([]);
+  const [searchResults, setSearchResults] = useState<Event[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<EventDetailsData | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const pwaInfo = usePWA();
 
   // Infinite scroll functionality
@@ -98,16 +98,7 @@ const App: React.FC = observer(() => {
     setIsSearching(true);
     try {
       const result = await gptService.getEvents(city, startDate, endDate);
-      const eventDetails: EventDetailsData[] = result.events.map(event => ({
-        entertainment: event.entertainment,
-        date: event.date,
-        time: event.time,
-        venue: event.venue,
-        cost: event.cost,
-        currency: event.currency,
-        bookingUrl: event.bookingUrl
-      }));
-      setSearchResults(eventDetails);
+      setSearchResults(result.events);
     } catch (error) {
       console.error('Error searching events:', error);
       // Handle error - could show an error message
@@ -118,7 +109,7 @@ const App: React.FC = observer(() => {
 
   // Handle event selection from BundleOffer
   const handleEventClick = (entertainment: any, date: string, time: string, venue: string, cost: number) => {
-    const eventDetails: EventDetailsData = {
+    const event: Event = {
       entertainment,
       date,
       time,
@@ -126,7 +117,7 @@ const App: React.FC = observer(() => {
       cost,
       currency: 'EUR' // Default currency
     };
-    setSelectedEvent(eventDetails);
+    setSelectedEvent(event);
   };
 
   // Tab configuration

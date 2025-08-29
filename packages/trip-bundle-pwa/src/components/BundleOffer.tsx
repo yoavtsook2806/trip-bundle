@@ -107,7 +107,7 @@ const BundleOffer: React.FC<BundleOfferProps> = observer(({
               <span className="compact-cost">💰 {formatCurrency(bundle.totalCost.amount, bundle.totalCost.currency)}</span>
             </div>
             <div className="compact-activities">
-              🎉 {bundle.entertainments.length} activities
+              🎉 {bundle.events.length} activities
             </div>
           </div>
           <div className="expand-hint">
@@ -157,33 +157,33 @@ const BundleOffer: React.FC<BundleOfferProps> = observer(({
           <div className="entertainment-section">
             <h4 className="section-title">🎉 Activities</h4>
             <div className="entertainment-list">
-              {bundle.entertainments.map((entertainment, index) => (
+              {bundle.events.map((event, index) => (
                 <div 
                   key={index} 
                   className="entertainment-item clickable"
                   onClick={(e) => {
                     e.stopPropagation();
                     onEventClick?.(
-                      entertainment.entertainment,
-                      entertainment.date,
-                      entertainment.time,
-                      entertainment.venue,
-                      entertainment.cost
+                      event.entertainment,
+                      event.date,
+                      event.time,
+                      event.venue,
+                      event.cost
                     );
                   }}
                   title="Click to view event details"
                 >
                   <span className="entertainment-icon">
-                    {getCategoryIcon(entertainment.entertainment.category)}
+                    {getCategoryIcon(event.entertainment.category)}
                   </span>
                   <div className="entertainment-info">
-                    <div className="entertainment-name">{entertainment.entertainment.name}</div>
+                    <div className="entertainment-name">{event.entertainment.name}</div>
                     <div className="entertainment-details">
-                      {entertainment.venue} • {formatDate(entertainment.date)} at {entertainment.time}
+                      {event.venue} • {formatDate(event.date)} at {event.time}
                     </div>
                   </div>
                   <div className="entertainment-cost">
-                    {formatCurrency(entertainment.cost, bundle.totalCost.currency)}
+                    {formatCurrency(event.cost, bundle.totalCost.currency)}
                   </div>
                 </div>
               ))}
