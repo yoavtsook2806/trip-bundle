@@ -1,68 +1,4 @@
-import { Entertainment } from '../constants/entertainments';
-
-export interface TripBundle {
-  id: string;
-  title: string;
-  description: string;
-  country: string;
-  city: string;
-  duration: number; // days
-  startDate: string;
-  endDate: string;
-  totalCost: {
-    amount: number;
-    currency: string;
-    breakdown: {
-      accommodation: number;
-      entertainment: number;
-      food: number;
-      transport: number;
-    };
-  };
-  entertainments: {
-    entertainment: Entertainment;
-    date: string;
-    time: string;
-    venue: string;
-    cost: number;
-    bookingUrl?: string;
-  }[];
-  accommodation: {
-    name: string;
-    type: 'hotel' | 'hostel' | 'apartment' | 'resort';
-    rating: number;
-    pricePerNight: number;
-    location: string;
-    amenities: string[];
-  };
-  transportation: {
-    type: 'flight' | 'train' | 'bus' | 'car';
-    details: string;
-    cost: number;
-  };
-  recommendations: {
-    restaurants: string[];
-    localTips: string[];
-    weatherInfo: string;
-    packingList: string[];
-  };
-  confidence: number; // 0-100 how well it matches user preferences
-}
-
-
-
-export interface GPTResponse {
-  bundles: TripBundle[];
-  reasoning: string;
-  alternatives: string[];
-  processingTime: number;
-  pagination?: {
-    page: number;
-    limit: number;
-    total: number;
-    hasMore: boolean;
-  };
-}
+import { Entertainment, TripBundle, GPTResponse, EventsResponse } from '../types';
 
 class GPTService {
   private apiKey: string | null = null;
@@ -217,7 +153,8 @@ class GPTService {
             date: '2024-09-16',
             time: '16:30',
             venue: 'Emirates Stadium',
-            cost: 280
+            cost: 280,
+            currency: 'EUR'
           },
           {
             entertainment: {
@@ -234,7 +171,8 @@ class GPTService {
             date: '2024-09-17',
             time: '20:00',
             venue: 'Wembley Stadium',
-            cost: 450
+            cost: 450,
+            currency: 'EUR'
           }
         ],
         accommodation: {
@@ -248,7 +186,8 @@ class GPTService {
         transportation: {
           type: 'flight',
           details: 'Round-trip economy flight',
-          cost: 220
+          cost: 220,
+          currency: 'EUR'
         },
         recommendations: {
           restaurants: ['Dishoom', 'Borough Market'],
@@ -293,7 +232,8 @@ class GPTService {
             date: '2024-09-21',
             time: '15:00',
             venue: 'Grand Palais',
-            cost: 600
+            cost: 600,
+            currency: 'EUR'
           },
           {
             entertainment: {
@@ -310,7 +250,8 @@ class GPTService {
             date: '2024-09-22',
             time: '21:00',
             venue: 'AccorHotels Arena',
-            cost: 380
+            cost: 380,
+            currency: 'EUR'
           }
         ],
         accommodation: {
@@ -324,7 +265,8 @@ class GPTService {
         transportation: {
           type: 'train',
           details: 'Eurostar from London',
-          cost: 200
+          cost: 200,
+          currency: 'EUR'
         },
         recommendations: {
           restaurants: ['L\'Ami Jean', 'Du Pain et des Idées'],
@@ -369,7 +311,8 @@ class GPTService {
             date: '2024-09-26',
             time: '20:00',
             venue: 'Colosseum Arena Floor',
-            cost: 650
+            cost: 650,
+            currency: 'EUR'
           },
           {
             entertainment: {
@@ -386,7 +329,8 @@ class GPTService {
             date: '2024-09-27',
             time: '20:30',
             venue: 'Baths of Caracalla',
-            cost: 280
+            cost: 280,
+            currency: 'EUR'
           }
         ],
         accommodation: {
@@ -400,7 +344,8 @@ class GPTService {
         transportation: {
           type: 'flight',
           details: 'Round-trip economy flight',
-          cost: 280
+          cost: 280,
+          currency: 'EUR'
         },
         recommendations: {
           restaurants: ['Da Enzo', 'Trattoria Monti'],
@@ -445,7 +390,8 @@ class GPTService {
             date: '2024-10-01',
             time: '21:00',
             venue: 'Camp Nou',
-            cost: 520
+            cost: 520,
+            currency: 'EUR'
           },
           {
             entertainment: {
@@ -462,7 +408,8 @@ class GPTService {
             date: '2024-10-02',
             time: '18:00',
             venue: 'Parc del Fòrum',
-            cost: 320
+            cost: 320,
+            currency: 'EUR'
           }
         ],
         accommodation: {
@@ -476,7 +423,8 @@ class GPTService {
         transportation: {
           type: 'train',
           details: 'High-speed train from Madrid',
-          cost: 200
+          cost: 200,
+          currency: 'EUR'
         },
         recommendations: {
           restaurants: ['Cal Pep', 'Disfrutar'],
@@ -521,7 +469,8 @@ class GPTService {
             date: '2024-10-05',
             time: '10:00',
             venue: 'Van Gogh Museum',
-            cost: 65
+            cost: 65,
+            currency: 'EUR'
           },
           {
             entertainment: {
@@ -538,7 +487,8 @@ class GPTService {
             date: '2024-10-06',
             time: '21:00',
             venue: 'Ziggo Dome',
-            cost: 140
+            cost: 140,
+            currency: 'EUR'
           }
         ],
         accommodation: {
@@ -552,7 +502,8 @@ class GPTService {
         transportation: {
           type: 'train',
           details: 'Direct train from Brussels',
-          cost: 200
+          cost: 200,
+          currency: 'EUR'
         },
         recommendations: {
           restaurants: ['Café de Reiger', 'Restaurant Greetje'],
@@ -597,7 +548,8 @@ class GPTService {
             date: '2024-10-11',
             time: '19:00',
             venue: 'Vienna State Opera',
-            cost: 180
+            cost: 180,
+            currency: 'EUR'
           },
           {
             entertainment: {
@@ -614,7 +566,8 @@ class GPTService {
             date: '2024-10-12',
             time: '10:00',
             venue: 'Schönbrunn Palace',
-            cost: 35
+            cost: 35,
+            currency: 'EUR'
           }
         ],
         accommodation: {
@@ -628,7 +581,8 @@ class GPTService {
         transportation: {
           type: 'train',
           details: 'Direct train from Munich',
-          cost: 180
+          cost: 180,
+          currency: 'EUR'
         },
         recommendations: {
           restaurants: ['Figlmüller', 'Steirereck'],
@@ -673,7 +627,8 @@ class GPTService {
             date: '2024-10-15',
             time: '10:00',
             venue: 'Prague Castle',
-            cost: 25
+            cost: 25,
+            currency: 'EUR'
           },
           {
             entertainment: {
@@ -690,7 +645,8 @@ class GPTService {
             date: '2024-10-16',
             time: '18:00',
             venue: 'U Fleků Brewery',
-            cost: 35
+            cost: 35,
+            currency: 'EUR'
           }
         ],
         accommodation: {
@@ -704,7 +660,8 @@ class GPTService {
         transportation: {
           type: 'train',
           details: 'Direct train from Vienna',
-          cost: 150
+          cost: 150,
+          currency: 'EUR'
         },
         recommendations: {
           restaurants: ['Lokál', 'Café Savoy'],
@@ -740,14 +697,16 @@ class GPTService {
             date: '2024-10-12',
             time: '10:00',
             venue: 'Tokyo Big Sight',
-            cost: 80
+            cost: 80,
+            currency: 'EUR'
           },
           {
             entertainment: this.createMockEntertainment('sumo-tournament', 'Grand Sumo Tournament', 'sports', 'Traditional Japanese sumo wrestling'),
             date: '2024-10-14',
             time: '16:00',
             venue: 'Ryogoku Kokugikan',
-            cost: 120
+            cost: 120,
+            currency: 'EUR'
           }
         ],
         accommodation: {
@@ -761,7 +720,8 @@ class GPTService {
         transportation: {
           type: 'flight',
           details: 'Round-trip flight to Tokyo Narita',
-          cost: 400
+          cost: 400,
+          currency: 'EUR'
         },
         recommendations: {
           restaurants: ['Sushi Jiro', 'Ramen Yokocho', 'Tempura Kondo'],
@@ -796,14 +756,16 @@ class GPTService {
             date: '2024-11-21',
             time: '20:00',
             venue: 'Richard Rodgers Theatre',
-            cost: 200
+            cost: 200,
+            currency: 'EUR'
           },
           {
             entertainment: this.createMockEntertainment('knicks-vs-lakers', 'Knicks vs Lakers', 'sports', 'NBA basketball game'),
             date: '2024-11-23',
             time: '19:30',
             venue: 'Madison Square Garden',
-            cost: 150
+            cost: 150,
+            currency: 'EUR'
           }
         ],
         accommodation: {
@@ -817,7 +779,8 @@ class GPTService {
         transportation: {
           type: 'flight',
           details: 'Round-trip flight to JFK',
-          cost: 300
+          cost: 300,
+          currency: 'EUR'
         },
         recommendations: {
           restaurants: ['Katz\'s Delicatessen', 'Joe\'s Pizza', 'The Halal Guys'],
@@ -852,14 +815,16 @@ class GPTService {
             date: '2024-12-03',
             time: '19:30',
             venue: 'Sydney Opera House',
-            cost: 180
+            cost: 180,
+            currency: 'EUR'
           },
           {
             entertainment: this.createMockEntertainment('bondi-surfing', 'Bondi Beach Surfing Lessons', 'adventure', 'Learn to surf at famous Bondi Beach'),
             date: '2024-12-05',
             time: '09:00',
             venue: 'Bondi Beach',
-            cost: 80
+            cost: 80,
+            currency: 'EUR'
           }
         ],
         accommodation: {
@@ -873,8 +838,9 @@ class GPTService {
         transportation: {
           type: 'flight',
           details: 'Round-trip flight to Sydney Kingsford Smith',
-          cost: 500
-        },
+                      cost: 500,
+            currency: 'EUR'
+          },
         recommendations: {
           restaurants: ['Quay Restaurant', 'Bennelong', 'Fish Market'],
           localTips: ['Sun protection essential', 'Tipping not required', 'Watch for wildlife'],
@@ -909,7 +875,8 @@ class GPTService {
             date: '2024-09-26',
             time: '23:00',
             venue: 'Berghain',
-            cost: 25
+            cost: 25,
+            currency: 'EUR'
           }
         ],
         accommodation: {
@@ -923,7 +890,8 @@ class GPTService {
         transportation: {
           type: 'flight',
           details: 'Round-trip to Berlin Brandenburg',
-          cost: 400
+          cost: 400,
+          currency: 'EUR'
         },
         recommendations: {
           restaurants: ['Curry 36', 'Döner Kebab', 'Prater Garten'],
@@ -958,7 +926,8 @@ class GPTService {
             date: '2024-10-06',
             time: '10:00',
             venue: 'Hagia Sophia',
-            cost: 50
+            cost: 50,
+            currency: 'EUR'
           }
         ],
         accommodation: {
@@ -972,7 +941,8 @@ class GPTService {
         transportation: {
           type: 'flight',
           details: 'Round-trip to Istanbul Airport',
-          cost: 200
+          cost: 200,
+          currency: 'EUR'
         },
         recommendations: {
           restaurants: ['Pandeli', 'Hamdi Restaurant', 'Balik Ekmek'],
@@ -1007,7 +977,8 @@ class GPTService {
             date: '2024-11-16',
             time: '20:00',
             venue: 'Outside Reykjavik',
-            cost: 120
+            cost: 120,
+            currency: 'EUR'
           }
         ],
         accommodation: {
@@ -1021,7 +992,8 @@ class GPTService {
         transportation: {
           type: 'flight',
           details: 'Round-trip to Keflavik Airport',
-          cost: 400
+          cost: 400,
+          currency: 'EUR'
         },
         recommendations: {
           restaurants: ['Dill Restaurant', 'Bæjarins Beztu Pylsur', 'Café Loki'],
@@ -1042,9 +1014,9 @@ class GPTService {
         startDate: '2024-10-20',
         endDate: '2024-10-22',
         totalCost: { amount: 900, currency: 'EUR', breakdown: { accommodation: 240, entertainment: 200, food: 180, transport: 280 } },
-        entertainments: [{ entertainment: this.createMockEntertainment('irish-music', 'Traditional Irish Music Night', 'music', 'Authentic Irish folk music'), date: '2024-10-21', time: '20:00', venue: 'Temple Bar', cost: 30 }],
+        entertainments: [{ entertainment: this.createMockEntertainment('irish-music', 'Traditional Irish Music Night', 'music', 'Authentic Irish folk music'), date: '2024-10-21', time: '20:00', venue: 'Temple Bar', cost: 30, currency: 'EUR' }],
         accommodation: { name: 'Dublin City Hotel', type: 'hotel', rating: 4.1, pricePerNight: 80, location: 'Temple Bar', amenities: ['Free WiFi', 'Pub', 'Breakfast'] },
-        transportation: { type: 'flight', details: 'Round-trip to Dublin Airport', cost: 280 },
+        transportation: { type: 'flight', details: 'Round-trip to Dublin Airport', cost: 280, currency: 'EUR' },
         recommendations: { restaurants: ['The Brazen Head', 'Guinness Storehouse'], localTips: ['Say Sláinte when toasting', 'Tip in pubs'], weatherInfo: 'Rainy autumn weather', packingList: ['Raincoat', 'Umbrella'] },
         confidence: 86
       },
@@ -1058,9 +1030,9 @@ class GPTService {
         startDate: '2024-11-01',
         endDate: '2024-11-05',
         totalCost: { amount: 1100, currency: 'EUR', breakdown: { accommodation: 350, entertainment: 250, food: 300, transport: 200 } },
-        entertainments: [{ entertainment: this.createMockEntertainment('fado-night', 'Fado Performance', 'music', 'Traditional Portuguese music'), date: '2024-11-02', time: '21:00', venue: 'Alfama District', cost: 40 }],
+        entertainments: [{ entertainment: this.createMockEntertainment('fado-night', 'Fado Performance', 'music', 'Traditional Portuguese music'), date: '2024-11-02', time: '21:00', venue: 'Alfama District', cost: 40, currency: 'EUR' }],
         accommodation: { name: 'Lisbon Heritage Hotel', type: 'hotel', rating: 4.3, pricePerNight: 70, location: 'Alfama', amenities: ['Rooftop Terrace', 'Traditional Decor'] },
-        transportation: { type: 'flight', details: 'Round-trip to Lisbon Airport', cost: 200 },
+        transportation: { type: 'flight', details: 'Round-trip to Lisbon Airport', cost: 200, currency: 'EUR' },
         recommendations: { restaurants: ['Pastéis de Belém', 'Time Out Market'], localTips: ['Try pastéis de nata', 'Take Tram 28'], weatherInfo: 'Mild autumn weather', packingList: ['Light jacket', 'Sunglasses'] },
         confidence: 89
       },
@@ -1074,9 +1046,9 @@ class GPTService {
         startDate: '2024-09-30',
         endDate: '2024-10-03',
         totalCost: { amount: 1500, currency: 'EUR', breakdown: { accommodation: 480, entertainment: 300, food: 320, transport: 400 } },
-        entertainments: [{ entertainment: this.createMockEntertainment('design-museum', 'Design Museum Denmark', 'culture', 'Danish design exhibition'), date: '2024-10-01', time: '10:00', venue: 'Bredgade', cost: 25 }],
+        entertainments: [{ entertainment: this.createMockEntertainment('design-museum', 'Design Museum Denmark', 'culture', 'Danish design exhibition'), date: '2024-10-01', time: '10:00', venue: 'Bredgade', cost: 25, currency: 'EUR' }],
         accommodation: { name: 'Copenhagen Design Hotel', type: 'hotel', rating: 4.5, pricePerNight: 120, location: 'Vesterbro', amenities: ['Modern Design', 'Bike Rental', 'Eco-Friendly'] },
-        transportation: { type: 'flight', details: 'Round-trip to Copenhagen Airport', cost: 400 },
+        transportation: { type: 'flight', details: 'Round-trip to Copenhagen Airport', cost: 400, currency: 'EUR' },
         recommendations: { restaurants: ['Noma', 'Torvehallerne Market'], localTips: ['Rent a bike', 'Visit Tivoli Gardens'], weatherInfo: 'Cool autumn weather', packingList: ['Layers', 'Rain jacket'] },
         confidence: 91
       },
@@ -1090,9 +1062,9 @@ class GPTService {
         startDate: '2024-10-15',
         endDate: '2024-10-18',
         totalCost: { amount: 800, currency: 'EUR', breakdown: { accommodation: 240, entertainment: 180, food: 200, transport: 180 } },
-        entertainments: [{ entertainment: this.createMockEntertainment('wawel-castle', 'Wawel Castle Tour', 'culture', 'Medieval royal castle'), date: '2024-10-16', time: '11:00', venue: 'Wawel Hill', cost: 20 }],
+        entertainments: [{ entertainment: this.createMockEntertainment('wawel-castle', 'Wawel Castle Tour', 'culture', 'Medieval royal castle'), date: '2024-10-16', time: '11:00', venue: 'Wawel Hill', cost: 20, currency: 'EUR' }],
         accommodation: { name: 'Krakow Old Town Hotel', type: 'hotel', rating: 4.2, pricePerNight: 60, location: 'Old Town', amenities: ['Historic Building', 'Central Location'] },
-        transportation: { type: 'flight', details: 'Round-trip to Krakow Airport', cost: 180 },
+        transportation: { type: 'flight', details: 'Round-trip to Krakow Airport', cost: 180, currency: 'EUR' },
         recommendations: { restaurants: ['Pierogi Heaven', 'Pod Aniołami'], localTips: ['Try different pierogi types', 'Visit Main Market Square'], weatherInfo: 'Cool autumn weather', packingList: ['Comfortable walking shoes', 'Warm jacket'] },
         confidence: 88
       },
@@ -1106,9 +1078,9 @@ class GPTService {
         startDate: '2024-11-10',
         endDate: '2024-11-13',
         totalCost: { amount: 1000, currency: 'EUR', breakdown: { accommodation: 280, entertainment: 220, food: 200, transport: 300 } },
-        entertainments: [{ entertainment: this.createMockEntertainment('szechenyi-baths', 'Széchenyi Thermal Baths', 'nature', 'Historic thermal spa complex'), date: '2024-11-11', time: '14:00', venue: 'City Park', cost: 25 }],
+        entertainments: [{ entertainment: this.createMockEntertainment('szechenyi-baths', 'Széchenyi Thermal Baths', 'nature', 'Historic thermal spa complex'), date: '2024-11-11', time: '14:00', venue: 'City Park', cost: 25, currency: 'EUR' }],
         accommodation: { name: 'Budapest River Hotel', type: 'hotel', rating: 4.4, pricePerNight: 70, location: 'Pest Side', amenities: ['River View', 'Spa Access'] },
-        transportation: { type: 'flight', details: 'Round-trip to Budapest Airport', cost: 300 },
+        transportation: { type: 'flight', details: 'Round-trip to Budapest Airport', cost: 300, currency: 'EUR' },
         recommendations: { restaurants: ['Central Market Hall', 'Frici Papa'], localTips: ['Bring swimwear to baths', 'Try goulash'], weatherInfo: 'Cool November weather', packingList: ['Swimwear', 'Flip-flops', 'Warm clothes'] },
         confidence: 90
       },
@@ -1122,9 +1094,9 @@ class GPTService {
         startDate: '2024-12-10',
         endDate: '2024-12-14',
         totalCost: { amount: 1600, currency: 'EUR', breakdown: { accommodation: 500, entertainment: 350, food: 400, transport: 350 } },
-        entertainments: [{ entertainment: this.createMockEntertainment('abba-museum', 'ABBA The Museum', 'music', 'Interactive ABBA experience'), date: '2024-12-11', time: '13:00', venue: 'Djurgården', cost: 30 }],
+        entertainments: [{ entertainment: this.createMockEntertainment('abba-museum', 'ABBA The Museum', 'music', 'Interactive ABBA experience'), date: '2024-12-11', time: '13:00', venue: 'Djurgården', cost: 30, currency: 'EUR' }],
         accommodation: { name: 'Stockholm Waterfront Hotel', type: 'hotel', rating: 4.6, pricePerNight: 100, location: 'Gamla Stan', amenities: ['Harbor View', 'Sauna', 'Fine Dining'] },
-        transportation: { type: 'flight', details: 'Round-trip to Stockholm Arlanda', cost: 350 },
+        transportation: { type: 'flight', details: 'Round-trip to Stockholm Arlanda', cost: 350, currency: 'EUR' },
         recommendations: { restaurants: ['Oaxen Krog', 'Meatballs for the People'], localTips: ['Buy Stockholm Pass', 'Try Swedish meatballs'], weatherInfo: 'Cold December weather, possible snow', packingList: ['Very warm clothes', 'Winter boots', 'Gloves'] },
         confidence: 93
       },
@@ -1138,9 +1110,9 @@ class GPTService {
         startDate: '2024-12-20',
         endDate: '2024-12-23',
         totalCost: { amount: 2000, currency: 'EUR', breakdown: { accommodation: 600, entertainment: 400, food: 500, transport: 500 } },
-        entertainments: [{ entertainment: this.createMockEntertainment('lindt-factory', 'Lindt Chocolate Factory Tour', 'food', 'Swiss chocolate making experience'), date: '2024-12-21', time: '10:00', venue: 'Kilchberg', cost: 45 }],
+        entertainments: [{ entertainment: this.createMockEntertainment('lindt-factory', 'Lindt Chocolate Factory Tour', 'food', 'Swiss chocolate making experience'), date: '2024-12-21', time: '10:00', venue: 'Kilchberg', cost: 45, currency: 'EUR' }],
         accommodation: { name: 'Zurich Luxury Hotel', type: 'hotel', rating: 4.8, pricePerNight: 150, location: 'City Center', amenities: ['Alpine View', 'Michelin Restaurant', 'Spa'] },
-        transportation: { type: 'flight', details: 'Round-trip to Zurich Airport', cost: 500 },
+        transportation: { type: 'flight', details: 'Round-trip to Zurich Airport', cost: 500, currency: 'EUR' },
         recommendations: { restaurants: ['Kronenhalle', 'Zeughauskeller'], localTips: ['Everything is expensive', 'Try fondue', 'Take train to Alps'], weatherInfo: 'Cold winter weather, snow likely', packingList: ['Warm winter gear', 'Snow boots', 'Expensive wallet'] },
         confidence: 95
       }
@@ -1175,19 +1147,7 @@ class GPTService {
   }
 
   // Method to get events for a specific city and date range
-  async getEvents(city: string, startDate: string, endDate: string): Promise<{
-    events: {
-      entertainment: Entertainment;
-      date: string;
-      time: string;
-      venue: string;
-      cost: number;
-      currency: string;
-      bookingUrl?: string;
-    }[];
-    reasoning: string;
-    processingTime: number;
-  }> {
+  async getEvents(city: string, startDate: string, endDate: string): Promise<EventsResponse> {
     const startTime = Date.now();
     const isMockMode = (import.meta as any).env?.VITE_MOCK === 'true';
 
@@ -1292,19 +1252,7 @@ Return the response in this JSON format:
   }
 
   // Mock events for development
-  private getMockEvents(city: string, startDate: string, endDate: string): {
-    events: {
-      entertainment: Entertainment;
-      date: string;
-      time: string;
-      venue: string;
-      cost: number;
-      currency: string;
-      bookingUrl?: string;
-    }[];
-    reasoning: string;
-    processingTime: number;
-  } {
+  private getMockEvents(city: string, startDate: string, endDate: string): EventsResponse {
     const processingTime = Math.random() * 1000 + 500; // Simulate processing time
 
     // Create mock events based on the city

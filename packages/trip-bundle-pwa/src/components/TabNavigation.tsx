@@ -1,12 +1,6 @@
 import React from 'react';
+import { Tab } from '../types';
 import './TabNavigation.css';
-
-export interface Tab {
-  id: string;
-  label: string;
-  icon?: string;
-  badge?: string | number;
-}
 
 interface TabNavigationProps {
   tabs: Tab[];

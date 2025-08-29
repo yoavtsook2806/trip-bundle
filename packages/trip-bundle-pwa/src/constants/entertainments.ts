@@ -1,18 +1,4 @@
-export interface Entertainment {
-  id: string;
-  name: string;
-  category: 'music' | 'sports' | 'culture' | 'food' | 'nature' | 'nightlife' | 'adventure';
-  subcategory: string;
-  description: string;
-  averageDuration: number; // in hours
-  averageCost: {
-    min: number;
-    max: number;
-    currency: string;
-  };
-  seasonality: 'year-round' | 'seasonal' | 'summer' | 'winter' | 'limited' | 'exclusive' | 'anniversary' | 'annual';
-  popularCountries: string[]; // country codes
-}
+import { Entertainment } from '../types';
 
 export const MUSIC_ENTERTAINMENTS: Entertainment[] = [
   {

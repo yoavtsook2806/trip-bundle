@@ -7,7 +7,8 @@ import { UserPreferencesStore, BundleSuggestionsStore } from './store';
 import { GPTService } from './services';
 import { SpotifyIntegration } from './integrations';
 import { TripActions } from './actions';
-import { BundleOffer, TabNavigation, UserPreferencesForm, SearchForm, EventDetails, EventDetailsData } from './components';
+import { BundleOffer, TabNavigation, UserPreferencesForm, SearchForm, EventDetails } from './components';
+import { EventDetailsData } from './types';
 import { usePWA } from './hooks/usePWA';
 
 // Import the TripBundle icon

@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
+import { SearchFormProps } from '../types';
 import { CITIES } from '../constants/cities';
 import './SearchForm.css';
-
-interface SearchFormProps {
-  onSearch: (city: string, startDate: string, endDate: string) => void;
-  isLoading?: boolean;
-}
 
 export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading = false }) => {
   const [city, setCity] = useState('');

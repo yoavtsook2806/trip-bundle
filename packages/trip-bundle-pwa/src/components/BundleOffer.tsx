@@ -1,17 +1,8 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { TripBundle } from '../services/gptService';
-import { CITIES, City } from '../constants/cities';
+import { BundleOfferProps, City } from '../types';
+import { CITIES } from '../constants/cities';
 import './BundleOffer.css';
-
-interface BundleOfferProps {
-  bundle: TripBundle;
-  onSelect?: (bundle: TripBundle) => void;
-  onBookmark?: (bundle: TripBundle) => void;
-  onEventClick?: (entertainment: any, date: string, time: string, venue: string, cost: number) => void;
-  isSelected?: boolean;
-  isBookmarked?: boolean;
-}
 
 const BundleOffer: React.FC<BundleOfferProps> = observer(({
   bundle,

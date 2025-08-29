@@ -1,22 +1,6 @@
 import React from 'react';
-import { Entertainment } from '../constants/entertainments';
+import { EventDetailsData, EventDetailsProps } from '../types';
 import './EventDetails.css';
-
-export interface EventDetailsData {
-  entertainment: Entertainment;
-  date: string;
-  time: string;
-  venue: string;
-  cost: number;
-  currency: string;
-  bookingUrl?: string;
-}
-
-interface EventDetailsProps {
-  event: EventDetailsData;
-  onClose?: () => void;
-  onBook?: (event: EventDetailsData) => void;
-}
 
 const EventDetails: React.FC<EventDetailsProps> = ({
   event,

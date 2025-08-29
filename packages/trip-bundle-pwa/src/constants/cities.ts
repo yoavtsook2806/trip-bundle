@@ -1,15 +1,4 @@
-export interface City {
-  code: string;
-  name: string;
-  country: string;
-  countryCode: string;
-  continent: string;
-  currency: string;
-  timeZone: string;
-  language: string[];
-  flagUrl: string;
-  symbolUrl: string;
-}
+import { City } from '../types';
 
 export const CITIES: City[] = [
   // Western Europe Capital Cities
