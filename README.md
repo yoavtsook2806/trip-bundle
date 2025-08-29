@@ -93,3 +93,5 @@ The trip-bundle-pwa includes:
 ## 📄 License
 
 This project is licensed under the MIT License.
+
+<!-- Force deployment update for PWA fix -->
