@@ -36,19 +36,19 @@ export default defineConfig(({ command, mode }) => {
             src: 'TripBundleIcon.jpeg',
             sizes: '192x192',
             type: 'image/jpeg',
-            purpose: 'any'
+            purpose: 'any maskable'
           },
           {
             src: 'TripBundleIcon.jpeg',
             sizes: '512x512',
             type: 'image/jpeg',
-            purpose: 'any'
+            purpose: 'any maskable'
           },
           {
             src: 'TripBundleIcon.jpeg',
             sizes: '180x180',
             type: 'image/jpeg',
-            purpose: 'any'
+            purpose: 'any maskable'
           }
         ],
         // Screenshots removed - add them when available
@@ -68,7 +68,17 @@ export default defineConfig(({ command, mode }) => {
         // ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpeg}']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpeg}'],
+        navigateFallback: null,
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/yoavtsook2806\.github\.io\/trip-bundle\//,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'trip-bundle-cache'
+            }
+          }
+        ]
       }
     })
   ]
