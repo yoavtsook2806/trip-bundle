@@ -1,0 +1,24 @@
+{
+  "name": "trip-bundle",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A trip bundle monorepo",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "yarn workspaces foreach run build",
+    "dev": "yarn workspaces foreach run dev",
+    "test": "yarn workspaces foreach run test",
+    "lint": "yarn workspaces foreach run lint"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "packageManager": "yarn@4.0.0",
+  "engines": {
+    "node": ">=18.0.0",
+    "yarn": ">=4.0.0"
+  }
+}

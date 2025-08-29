@@ -1,0 +1,27 @@
+{
+  "name": "Trip Bundle",
+  "short_name": "TripBundle",
+  "description": "Your travel companion PWA",
+  "theme_color": "#667eea",
+  "background_color": "#667eea",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["travel", "productivity"],
+  "lang": "en-US"
+}
