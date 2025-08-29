@@ -1,0 +1,59 @@
+# Trip Bundle Monorepo - Cursor Rules
+
+## Yarn Workspace Commands
+
+**ALWAYS** use yarn workspace commands when running package-specific scripts in this monorepo.
+
+### Command Format
+```bash
+yarn workspace ${packageName} ${commandName}
+```
+
+### Examples
+- `yarn workspace trip-bundle-pwa dev` (NOT `cd packages/trip-bundle-pwa && yarn dev`)
+- `yarn workspace trip-bundle-pwa build` (NOT `cd packages/trip-bundle-pwa && yarn build`)
+- `yarn workspace trip-bundle-pwa test` (NOT `cd packages/trip-bundle-pwa && yarn test`)
+- `yarn workspace trip-bundle-pwa lint` (NOT `cd packages/trip-bundle-pwa && yarn lint`)
+
+### Available Packages
+- `trip-bundle-pwa` - Progressive Web App for trip planning
+
+### Root-level Commands
+Use these from the repository root for operations across all workspaces:
+- `yarn dev` - Start all packages in development mode
+- `yarn build` - Build all packages
+- `yarn test` - Run tests for all packages
+- `yarn lint` - Lint all packages
+
+### Why This Approach?
+- ✅ Maintains proper dependency resolution
+- ✅ Ensures consistent environment across packages
+- ✅ Leverages yarn workspace benefits (hoisting, linking)
+- ✅ Avoids potential path and dependency issues
+- ✅ Works from any directory in the monorepo
+
+### Package Management
+- Use `yarn add <package>` in workspace root for shared dependencies
+- Use `yarn workspace ${packageName} add <package>` for package-specific dependencies
+- Use `yarn workspace ${packageName} add -D <package>` for dev dependencies
+
+## Development Workflow
+
+1. **Install dependencies**: `yarn install` (from root)
+2. **Start development**: `yarn workspace trip-bundle-pwa dev`
+3. **Build for production**: `yarn workspace trip-bundle-pwa build`
+4. **Run tests**: `yarn workspace trip-bundle-pwa test`
+
+## Code Style & Standards
+
+- Use TypeScript for all new code
+- Follow React best practices and hooks patterns
+- Implement PWA best practices (offline-first, responsive)
+- Use semantic commit messages
+- Always test PWA features in multiple browsers
+
+## File Organization
+
+- Keep package-specific code in `packages/${packageName}/`
+- Shared utilities and types can go in a future `packages/shared/` package
+- Configuration files at root level apply to all packages
