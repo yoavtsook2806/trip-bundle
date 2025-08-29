@@ -328,3 +328,48 @@ h2 {
   outline: 2px solid #fff;
   outline-offset: 2px;
 }
+
+/* Pagination Styles */
+.loading-more-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  margin: 2rem 0;
+}
+
+.loading-more-container .loader {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 1rem;
+}
+
+.loading-more-container p {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+
+
+.end-of-results {
+  text-align: center;
+  padding: 2rem;
+  margin: 2rem 0;
+  color: #666;
+  font-style: italic;
+}
+
+.end-of-results p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Mobile responsive pagination */
+@media (max-width: 768px) {
+  .loading-more-container,
+  .end-of-results {
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+}

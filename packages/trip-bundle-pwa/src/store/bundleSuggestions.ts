@@ -8,6 +8,12 @@ export interface BundleSuggestionsState {
   lastGenerated: Date | null;
   selectedBundle: TripBundle | null;
   bookmarkedBundles: string[]; // bundle IDs
+  pagination: {
+    currentPage: number;
+    hasMore: boolean;
+    total: number;
+    isLoadingMore: boolean;
+  };
 }
 
 class BundleSuggestionsStore {
@@ -17,6 +23,12 @@ class BundleSuggestionsStore {
   lastGenerated: Date | null = null;
   selectedBundle: TripBundle | null = null;
   bookmarkedBundles: string[] = [];
+  pagination = {
+    currentPage: 0,
+    hasMore: true,
+    total: 0,
+    isLoadingMore: false
+  };
 
   constructor() {
     makeAutoObservable(this);
@@ -38,10 +50,24 @@ class BundleSuggestionsStore {
   }
 
   // Bundle management actions
-  setBundles(bundles: TripBundle[]) {
-    this.bundles = bundles;
+  setBundles(bundles: TripBundle[], paginationInfo?: { page: number; total: number; hasMore: boolean }, append = false) {
+    if (append) {
+      // Append new bundles (for pagination)
+      this.bundles = [...this.bundles, ...bundles];
+    } else {
+      // Replace all bundles (for initial load)
+      this.bundles = bundles;
+    }
+    
+    if (paginationInfo) {
+      this.pagination.currentPage = paginationInfo.page;
+      this.pagination.total = paginationInfo.total;
+      this.pagination.hasMore = paginationInfo.hasMore;
+    }
+    
     this.lastGenerated = new Date();
     this.isLoading = false;
+    this.pagination.isLoadingMore = false;
     this.error = null;
   }
 
@@ -68,6 +94,28 @@ class BundleSuggestionsStore {
     this.selectedBundle = null;
     this.error = null;
     this.lastGenerated = null;
+    this.pagination = {
+      currentPage: 0,
+      hasMore: true,
+      total: 0,
+      isLoadingMore: false
+    };
+  }
+
+  // Pagination actions
+  setLoadingMore(loading: boolean) {
+    this.pagination.isLoadingMore = loading;
+    if (loading) {
+      this.error = null;
+    }
+  }
+
+  get canLoadMore(): boolean {
+    return this.pagination.hasMore && !this.pagination.isLoadingMore && !this.isLoading;
+  }
+
+  get nextPage(): number {
+    return this.pagination.currentPage + 1;
   }
 
   // Selection actions

@@ -182,9 +182,14 @@ You MUST respond with a valid JSON object only, no additional text. Use this exa
 Focus on realistic pricing, actual venues, and current entertainment options.`;
   }
 
-  async generateTripBundles(): Promise<void> {
+  async generateTripBundles(loadMore = false): Promise<void> {
     try {
-      this.bundleSuggestionsStore.setLoading(true);
+      if (loadMore) {
+        this.bundleSuggestionsStore.setLoadingMore(true);
+      } else {
+        this.bundleSuggestionsStore.setLoading(true);
+        this.bundleSuggestionsStore.clearBundles(); // Clear existing bundles for fresh load
+      }
 
       if (!this.gptService.isConfigured()) {
         console.warn('GPT service not configured, using mock data');
@@ -195,16 +200,36 @@ Focus on realistic pricing, actual venues, and current entertainment options.`;
       console.log('Generated user prompt from preferences:', userPrompt);
 
       const systemPrompt = this.buildSystemPrompt();
-      const response = await this.gptService.generateTripBundles(systemPrompt, userPrompt);
+      
+      // Determine page to load
+      const page = loadMore ? this.bundleSuggestionsStore.nextPage : 1;
+      const limit = 5; // Always load 5 bundles per page
+      
+      const response = await this.gptService.generateTripBundles(systemPrompt, userPrompt, { page, limit });
       
       // Save the bundles to the store
-      this.bundleSuggestionsStore.setBundles(response.bundles);
+      const paginationInfo = response.pagination ? {
+        page: response.pagination.page,
+        total: response.pagination.total,
+        hasMore: response.pagination.hasMore
+      } : undefined;
+      
+      this.bundleSuggestionsStore.setBundles(response.bundles, paginationInfo, loadMore);
       this.bundleSuggestionsStore.saveBundlesToStorage();
       
     } catch (error) {
       console.error('Failed to generate trip bundle:', error);
       this.bundleSuggestionsStore.setError('Failed to generate trip bundle. Please try again.');
     }
+  }
+
+  async loadMoreBundles(): Promise<void> {
+    if (!this.bundleSuggestionsStore.canLoadMore) {
+      console.log('Cannot load more bundles - already loading or no more available');
+      return;
+    }
+    
+    return this.generateTripBundles(true);
   }
 
   // New Storage-based User Preference Actions
@@ -421,6 +446,23 @@ Focus on realistic pricing, actual venues, and current entertainment options.`;
 
   hasBundles(): boolean {
     return this.bundleSuggestionsStore.hasBundles;
+  }
+
+  isLoadingMore(): boolean {
+    return this.bundleSuggestionsStore.pagination.isLoadingMore;
+  }
+
+  canLoadMore(): boolean {
+    return this.bundleSuggestionsStore.canLoadMore;
+  }
+
+  getPaginationInfo() {
+    return {
+      currentPage: this.bundleSuggestionsStore.pagination.currentPage,
+      total: this.bundleSuggestionsStore.pagination.total,
+      hasMore: this.bundleSuggestionsStore.pagination.hasMore,
+      isLoadingMore: this.bundleSuggestionsStore.pagination.isLoadingMore
+    };
   }
 
   getSelectedBundle(): TripBundle | null {

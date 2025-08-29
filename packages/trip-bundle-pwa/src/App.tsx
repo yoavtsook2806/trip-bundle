@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import './App.css';
 
@@ -32,6 +32,18 @@ const App: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState('trips');
   const pwaInfo = usePWA();
 
+  // Infinite scroll functionality
+  const handleScroll = useCallback(() => {
+    if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight) {
+      return;
+    }
+    
+    // User has scrolled to the bottom, load more bundles
+    if (bundleSuggestionsStore.canLoadMore) {
+      tripActions.loadMoreBundles();
+    }
+  }, [bundleSuggestionsStore.canLoadMore, tripActions]);
+
   // Generate trip bundle on component mount
   useEffect(() => {
     const initializeTripGeneration = async () => {
@@ -44,6 +56,12 @@ const App: React.FC = observer(() => {
 
     initializeTripGeneration();
   }, [hasStarted]);
+
+  // Add scroll event listener for infinite scroll
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
 
   // Handle bundle selection - delegate to actions
   const handleSelectBundle = (bundle: any) => {
@@ -64,6 +82,8 @@ const App: React.FC = observer(() => {
 
   // Get data from actions (which get from stores)
   const isLoading = tripActions.isBundlesLoading();
+  const isLoadingMore = tripActions.isLoadingMore();
+  const canLoadMore = tripActions.canLoadMore();
   const error = tripActions.getBundlesError();
   const bundles = tripActions.getBundles();
   const hasBundles = tripActions.hasBundles();
@@ -147,6 +167,21 @@ const App: React.FC = observer(() => {
                     />
                   ))}
                 </div>
+
+                {/* Loading More Indicator */}
+                {isLoadingMore && (
+                  <div className="loading-more-container">
+                    <div className="loader"></div>
+                    <p>Loading more bundles...</p>
+                  </div>
+                )}
+
+                {/* End of Results Indicator */}
+                {!canLoadMore && hasBundles && !isLoading && (
+                  <div className="end-of-results">
+                    <p>🎯 You've seen all available bundles!</p>
+                  </div>
+                )}
               </div>
             )}
           </>

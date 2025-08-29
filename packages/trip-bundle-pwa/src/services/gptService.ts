@@ -56,6 +56,12 @@ export interface GPTResponse {
   reasoning: string;
   alternatives: string[];
   processingTime: number;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    hasMore: boolean;
+  };
 }
 
 class GPTService {
@@ -72,17 +78,22 @@ class GPTService {
     this.apiKey = key;
   }
 
-  async generateTripBundles(systemPrompt: string, userPrompt: string = ''): Promise<GPTResponse> {
+  async generateTripBundles(
+    systemPrompt: string, 
+    userPrompt: string = '', 
+    options: { page?: number; limit?: number } = {}
+  ): Promise<GPTResponse> {
+    const { page = 1, limit = 5 } = options;
     const startTime = Date.now();
 
     // Check if we're in mock mode
     const isMockMode = (import.meta as any).env?.VITE_MOCK === 'true';
     
     if (isMockMode) {
-      console.log('🎭 Using mock data (VITE_MOCK=true)');
+      console.log(`🎭 Using mock data (VITE_MOCK=true) - Page ${page}, Limit ${limit}`);
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      return this.getMockResponse(Date.now() - startTime);
+      return this.getMockResponse(Date.now() - startTime, page, limit);
     }
 
     if (!this.apiKey) {
@@ -154,7 +165,22 @@ class GPTService {
 
 
 
-  private getMockResponse(processingTime: number): GPTResponse {
+  // Helper function to create complete entertainment objects for mock data
+  private createMockEntertainment(id: string, name: string, category: Entertainment['category'], description: string): Entertainment {
+    return {
+      id,
+      name,
+      category,
+      subcategory: 'general',
+      description,
+      averageDuration: 2,
+      averageCost: { min: 20, max: 100, currency: 'EUR' },
+      seasonality: 'year-round',
+      popularCountries: ['GB', 'FR', 'DE', 'IT', 'ES']
+    };
+  }
+
+  private getMockResponse(processingTime: number, page: number = 1, limit: number = 5): GPTResponse {
     const mockBundles: TripBundle[] = [
       {
         id: 'london-arsenal-coldplay',
@@ -687,14 +713,457 @@ class GPTService {
           packingList: ['Warm jacket', 'Camera for architecture']
         },
         confidence: 89
+      },
+      // Additional bundles for pagination testing (8-20)
+      {
+        id: 'tokyo-anime-sumo',
+        title: 'Tokyo: Anime Convention & Sumo Tournament',
+        description: 'Immerse in Japanese culture with anime events and traditional sumo wrestling',
+        country: 'Japan',
+        city: 'Tokyo',
+        duration: 6,
+        startDate: '2024-10-10',
+        endDate: '2024-10-15',
+        totalCost: {
+          amount: 2200,
+          currency: 'EUR',
+          breakdown: {
+            accommodation: 720,
+            entertainment: 600,
+            food: 480,
+            transport: 400
+          }
+        },
+        entertainments: [
+          {
+            entertainment: this.createMockEntertainment('anime-expo-tokyo', 'Tokyo Anime Expo 2024', 'culture', 'Largest anime convention in Asia'),
+            date: '2024-10-12',
+            time: '10:00',
+            venue: 'Tokyo Big Sight',
+            cost: 80
+          },
+          {
+            entertainment: this.createMockEntertainment('sumo-tournament', 'Grand Sumo Tournament', 'sports', 'Traditional Japanese sumo wrestling'),
+            date: '2024-10-14',
+            time: '16:00',
+            venue: 'Ryogoku Kokugikan',
+            cost: 120
+          }
+        ],
+        accommodation: {
+          name: 'Tokyo Grand Hotel',
+          type: 'hotel',
+          rating: 4.3,
+          pricePerNight: 120,
+          location: 'Shibuya',
+          amenities: ['Free WiFi', 'Traditional Bath', 'City View']
+        },
+        transportation: {
+          type: 'flight',
+          details: 'Round-trip flight to Tokyo Narita',
+          cost: 400
+        },
+        recommendations: {
+          restaurants: ['Sushi Jiro', 'Ramen Yokocho', 'Tempura Kondo'],
+          localTips: ['Learn basic Japanese phrases', 'Bow when greeting', 'Remove shoes indoors'],
+          weatherInfo: 'Pleasant autumn weather, mild temperatures',
+          packingList: ['Comfortable walking shoes', 'Light jacket', 'Portable WiFi device']
+        },
+        confidence: 92
+      },
+      {
+        id: 'new-york-broadway-knicks',
+        title: 'New York: Broadway Shows & Knicks Game',
+        description: 'Experience the best of NYC entertainment with Broadway and NBA basketball',
+        country: 'United States',
+        city: 'New York',
+        duration: 5,
+        startDate: '2024-11-20',
+        endDate: '2024-11-24',
+        totalCost: {
+          amount: 1900,
+          currency: 'EUR',
+          breakdown: {
+            accommodation: 600,
+            entertainment: 700,
+            food: 300,
+            transport: 300
+          }
+        },
+        entertainments: [
+          {
+            entertainment: this.createMockEntertainment('hamilton-broadway', 'Hamilton', 'culture', 'Award-winning Broadway musical'),
+            date: '2024-11-21',
+            time: '20:00',
+            venue: 'Richard Rodgers Theatre',
+            cost: 200
+          },
+          {
+            entertainment: this.createMockEntertainment('knicks-vs-lakers', 'Knicks vs Lakers', 'sports', 'NBA basketball game'),
+            date: '2024-11-23',
+            time: '19:30',
+            venue: 'Madison Square Garden',
+            cost: 150
+          }
+        ],
+        accommodation: {
+          name: 'Times Square Hotel',
+          type: 'hotel',
+          rating: 4.1,
+          pricePerNight: 120,
+          location: 'Midtown Manhattan',
+          amenities: ['24/7 Concierge', 'Fitness Center', 'Restaurant']
+        },
+        transportation: {
+          type: 'flight',
+          details: 'Round-trip flight to JFK',
+          cost: 300
+        },
+        recommendations: {
+          restaurants: ['Katz\'s Delicatessen', 'Joe\'s Pizza', 'The Halal Guys'],
+          localTips: ['Use MetroCard for subway', 'Tip 18-20%', 'Walk fast on sidewalks'],
+          weatherInfo: 'Cool November weather, dress warmly',
+          packingList: ['Warm coat', 'Comfortable walking shoes', 'Umbrella']
+        },
+        confidence: 88
+      },
+      {
+        id: 'sydney-opera-surfing',
+        title: 'Sydney: Opera House Gala & Surfing Lessons',
+        description: 'Combine high culture with beach lifestyle in beautiful Sydney',
+        country: 'Australia',
+        city: 'Sydney',
+        duration: 7,
+        startDate: '2024-12-01',
+        endDate: '2024-12-07',
+        totalCost: {
+          amount: 2400,
+          currency: 'EUR',
+          breakdown: {
+            accommodation: 840,
+            entertainment: 500,
+            food: 560,
+            transport: 500
+          }
+        },
+        entertainments: [
+          {
+            entertainment: this.createMockEntertainment('opera-house-gala', 'Sydney Opera House Gala', 'culture', 'Prestigious opera performance'),
+            date: '2024-12-03',
+            time: '19:30',
+            venue: 'Sydney Opera House',
+            cost: 180
+          },
+          {
+            entertainment: this.createMockEntertainment('bondi-surfing', 'Bondi Beach Surfing Lessons', 'adventure', 'Learn to surf at famous Bondi Beach'),
+            date: '2024-12-05',
+            time: '09:00',
+            venue: 'Bondi Beach',
+            cost: 80
+          }
+        ],
+        accommodation: {
+          name: 'Sydney Harbour Hotel',
+          type: 'hotel',
+          rating: 4.6,
+          pricePerNight: 120,
+          location: 'Circular Quay',
+          amenities: ['Harbour View', 'Pool', 'Spa', 'Fine Dining']
+        },
+        transportation: {
+          type: 'flight',
+          details: 'Round-trip flight to Sydney Kingsford Smith',
+          cost: 500
+        },
+        recommendations: {
+          restaurants: ['Quay Restaurant', 'Bennelong', 'Fish Market'],
+          localTips: ['Sun protection essential', 'Tipping not required', 'Watch for wildlife'],
+          weatherInfo: 'Summer season, warm and sunny',
+          packingList: ['Sunscreen', 'Swimwear', 'Light summer clothes', 'Hat']
+        },
+        confidence: 91
+      },
+      // More bundles (11-20)
+      {
+        id: 'berlin-techno-history',
+        title: 'Berlin: Techno Clubs & Historical Tours',
+        description: 'Experience Berlin\'s legendary nightlife and rich history',
+        country: 'Germany',
+        city: 'Berlin',
+        duration: 4,
+        startDate: '2024-09-25',
+        endDate: '2024-09-28',
+        totalCost: {
+          amount: 1400,
+          currency: 'EUR',
+          breakdown: {
+            accommodation: 320,
+            entertainment: 400,
+            food: 280,
+            transport: 400
+          }
+        },
+        entertainments: [
+          {
+            entertainment: this.createMockEntertainment('berghain-techno', 'Berghain Techno Night', 'nightlife', 'World famous techno club'),
+            date: '2024-09-26',
+            time: '23:00',
+            venue: 'Berghain',
+            cost: 25
+          }
+        ],
+        accommodation: {
+          name: 'Berlin Central Hostel',
+          type: 'hostel',
+          rating: 4.2,
+          pricePerNight: 80,
+          location: 'Mitte',
+          amenities: ['Free WiFi', 'Bar', 'Kitchen']
+        },
+        transportation: {
+          type: 'flight',
+          details: 'Round-trip to Berlin Brandenburg',
+          cost: 400
+        },
+        recommendations: {
+          restaurants: ['Curry 36', 'Döner Kebab', 'Prater Garten'],
+          localTips: ['Bring cash', 'Learn basic German', 'Respect club dress codes'],
+          weatherInfo: 'Cool autumn weather',
+          packingList: ['Dark clothes for clubs', 'Comfortable shoes']
+        },
+        confidence: 87
+      },
+      {
+        id: 'istanbul-culture-food',
+        title: 'Istanbul: Cultural Sites & Food Tour',
+        description: 'Explore the crossroads of Europe and Asia with amazing cuisine',
+        country: 'Turkey',
+        city: 'Istanbul',
+        duration: 5,
+        startDate: '2024-10-05',
+        endDate: '2024-10-09',
+        totalCost: {
+          amount: 1200,
+          currency: 'EUR',
+          breakdown: {
+            accommodation: 300,
+            entertainment: 300,
+            food: 400,
+            transport: 200
+          }
+        },
+        entertainments: [
+          {
+            entertainment: this.createMockEntertainment('hagia-sophia', 'Hagia Sophia Tour', 'culture', 'Historic Byzantine cathedral'),
+            date: '2024-10-06',
+            time: '10:00',
+            venue: 'Hagia Sophia',
+            cost: 50
+          }
+        ],
+        accommodation: {
+          name: 'Sultanahmet Hotel',
+          type: 'hotel',
+          rating: 4.0,
+          pricePerNight: 60,
+          location: 'Old City',
+          amenities: ['Rooftop View', 'Turkish Bath', 'Restaurant']
+        },
+        transportation: {
+          type: 'flight',
+          details: 'Round-trip to Istanbul Airport',
+          cost: 200
+        },
+        recommendations: {
+          restaurants: ['Pandeli', 'Hamdi Restaurant', 'Balik Ekmek'],
+          localTips: ['Haggle in Grand Bazaar', 'Remove shoes in mosques', 'Try Turkish tea'],
+          weatherInfo: 'Pleasant autumn weather',
+          packingList: ['Modest clothing', 'Comfortable walking shoes']
+        },
+        confidence: 90
+      },
+      {
+        id: 'reykjavik-northern-lights',
+        title: 'Reykjavik: Northern Lights & Blue Lagoon',
+        description: 'Witness Aurora Borealis and relax in geothermal spas',
+        country: 'Iceland',
+        city: 'Reykjavik',
+        duration: 4,
+        startDate: '2024-11-15',
+        endDate: '2024-11-18',
+        totalCost: {
+          amount: 1800,
+          currency: 'EUR',
+          breakdown: {
+            accommodation: 480,
+            entertainment: 600,
+            food: 320,
+            transport: 400
+          }
+        },
+        entertainments: [
+          {
+            entertainment: this.createMockEntertainment('northern-lights-tour', 'Northern Lights Tour', 'nature', 'Aurora Borealis viewing experience'),
+            date: '2024-11-16',
+            time: '20:00',
+            venue: 'Outside Reykjavik',
+            cost: 120
+          }
+        ],
+        accommodation: {
+          name: 'Reykjavik Marina Hotel',
+          type: 'hotel',
+          rating: 4.4,
+          pricePerNight: 120,
+          location: 'City Center',
+          amenities: ['Spa', 'Restaurant', 'Harbor View']
+        },
+        transportation: {
+          type: 'flight',
+          details: 'Round-trip to Keflavik Airport',
+          cost: 400
+        },
+        recommendations: {
+          restaurants: ['Dill Restaurant', 'Bæjarins Beztu Pylsur', 'Café Loki'],
+          localTips: ['Dress very warmly', 'Book tours early', 'Try local fish'],
+          weatherInfo: 'Cold November weather, possible snow',
+          packingList: ['Warm winter clothes', 'Waterproof jacket', 'Thermal underwear']
+        },
+        confidence: 94
+      },
+      // Bundles 14-20 (compact format for brevity)
+      {
+        id: 'dublin-music-pubs',
+        title: 'Dublin: Traditional Music & Pub Crawl',
+        description: 'Experience authentic Irish culture with music and hospitality',
+        country: 'Ireland',
+        city: 'Dublin',
+        duration: 3,
+        startDate: '2024-10-20',
+        endDate: '2024-10-22',
+        totalCost: { amount: 900, currency: 'EUR', breakdown: { accommodation: 240, entertainment: 200, food: 180, transport: 280 } },
+        entertainments: [{ entertainment: this.createMockEntertainment('irish-music', 'Traditional Irish Music Night', 'music', 'Authentic Irish folk music'), date: '2024-10-21', time: '20:00', venue: 'Temple Bar', cost: 30 }],
+        accommodation: { name: 'Dublin City Hotel', type: 'hotel', rating: 4.1, pricePerNight: 80, location: 'Temple Bar', amenities: ['Free WiFi', 'Pub', 'Breakfast'] },
+        transportation: { type: 'flight', details: 'Round-trip to Dublin Airport', cost: 280 },
+        recommendations: { restaurants: ['The Brazen Head', 'Guinness Storehouse'], localTips: ['Say Sláinte when toasting', 'Tip in pubs'], weatherInfo: 'Rainy autumn weather', packingList: ['Raincoat', 'Umbrella'] },
+        confidence: 86
+      },
+      {
+        id: 'lisbon-fado-beaches',
+        title: 'Lisbon: Fado Music & Coastal Beaches',
+        description: 'Soulful Portuguese music and beautiful Atlantic coastline',
+        country: 'Portugal',
+        city: 'Lisbon',
+        duration: 5,
+        startDate: '2024-11-01',
+        endDate: '2024-11-05',
+        totalCost: { amount: 1100, currency: 'EUR', breakdown: { accommodation: 350, entertainment: 250, food: 300, transport: 200 } },
+        entertainments: [{ entertainment: this.createMockEntertainment('fado-night', 'Fado Performance', 'music', 'Traditional Portuguese music'), date: '2024-11-02', time: '21:00', venue: 'Alfama District', cost: 40 }],
+        accommodation: { name: 'Lisbon Heritage Hotel', type: 'hotel', rating: 4.3, pricePerNight: 70, location: 'Alfama', amenities: ['Rooftop Terrace', 'Traditional Decor'] },
+        transportation: { type: 'flight', details: 'Round-trip to Lisbon Airport', cost: 200 },
+        recommendations: { restaurants: ['Pastéis de Belém', 'Time Out Market'], localTips: ['Try pastéis de nata', 'Take Tram 28'], weatherInfo: 'Mild autumn weather', packingList: ['Light jacket', 'Sunglasses'] },
+        confidence: 89
+      },
+      {
+        id: 'copenhagen-design-cycling',
+        title: 'Copenhagen: Design Museums & Cycling Tours',
+        description: 'Scandinavian design culture and eco-friendly city exploration',
+        country: 'Denmark',
+        city: 'Copenhagen',
+        duration: 4,
+        startDate: '2024-09-30',
+        endDate: '2024-10-03',
+        totalCost: { amount: 1500, currency: 'EUR', breakdown: { accommodation: 480, entertainment: 300, food: 320, transport: 400 } },
+        entertainments: [{ entertainment: this.createMockEntertainment('design-museum', 'Design Museum Denmark', 'culture', 'Danish design exhibition'), date: '2024-10-01', time: '10:00', venue: 'Bredgade', cost: 25 }],
+        accommodation: { name: 'Copenhagen Design Hotel', type: 'hotel', rating: 4.5, pricePerNight: 120, location: 'Vesterbro', amenities: ['Modern Design', 'Bike Rental', 'Eco-Friendly'] },
+        transportation: { type: 'flight', details: 'Round-trip to Copenhagen Airport', cost: 400 },
+        recommendations: { restaurants: ['Noma', 'Torvehallerne Market'], localTips: ['Rent a bike', 'Visit Tivoli Gardens'], weatherInfo: 'Cool autumn weather', packingList: ['Layers', 'Rain jacket'] },
+        confidence: 91
+      },
+      {
+        id: 'krakow-history-pierogi',
+        title: 'Krakow: Medieval History & Polish Cuisine',
+        description: 'Explore medieval architecture and taste traditional Polish food',
+        country: 'Poland',
+        city: 'Krakow',
+        duration: 4,
+        startDate: '2024-10-15',
+        endDate: '2024-10-18',
+        totalCost: { amount: 800, currency: 'EUR', breakdown: { accommodation: 240, entertainment: 180, food: 200, transport: 180 } },
+        entertainments: [{ entertainment: this.createMockEntertainment('wawel-castle', 'Wawel Castle Tour', 'culture', 'Medieval royal castle'), date: '2024-10-16', time: '11:00', venue: 'Wawel Hill', cost: 20 }],
+        accommodation: { name: 'Krakow Old Town Hotel', type: 'hotel', rating: 4.2, pricePerNight: 60, location: 'Old Town', amenities: ['Historic Building', 'Central Location'] },
+        transportation: { type: 'flight', details: 'Round-trip to Krakow Airport', cost: 180 },
+        recommendations: { restaurants: ['Pierogi Heaven', 'Pod Aniołami'], localTips: ['Try different pierogi types', 'Visit Main Market Square'], weatherInfo: 'Cool autumn weather', packingList: ['Comfortable walking shoes', 'Warm jacket'] },
+        confidence: 88
+      },
+      {
+        id: 'budapest-thermal-ruin-bars',
+        title: 'Budapest: Thermal Baths & Ruin Bar Scene',
+        description: 'Relax in historic thermal baths and experience unique nightlife',
+        country: 'Hungary',
+        city: 'Budapest',
+        duration: 4,
+        startDate: '2024-11-10',
+        endDate: '2024-11-13',
+        totalCost: { amount: 1000, currency: 'EUR', breakdown: { accommodation: 280, entertainment: 220, food: 200, transport: 300 } },
+        entertainments: [{ entertainment: this.createMockEntertainment('szechenyi-baths', 'Széchenyi Thermal Baths', 'nature', 'Historic thermal spa complex'), date: '2024-11-11', time: '14:00', venue: 'City Park', cost: 25 }],
+        accommodation: { name: 'Budapest River Hotel', type: 'hotel', rating: 4.4, pricePerNight: 70, location: 'Pest Side', amenities: ['River View', 'Spa Access'] },
+        transportation: { type: 'flight', details: 'Round-trip to Budapest Airport', cost: 300 },
+        recommendations: { restaurants: ['Central Market Hall', 'Frici Papa'], localTips: ['Bring swimwear to baths', 'Try goulash'], weatherInfo: 'Cool November weather', packingList: ['Swimwear', 'Flip-flops', 'Warm clothes'] },
+        confidence: 90
+      },
+      {
+        id: 'stockholm-archipelago-abba',
+        title: 'Stockholm: Archipelago Tour & ABBA Museum',
+        description: 'Explore Swedish archipelago and celebrate pop music history',
+        country: 'Sweden',
+        city: 'Stockholm',
+        duration: 5,
+        startDate: '2024-12-10',
+        endDate: '2024-12-14',
+        totalCost: { amount: 1600, currency: 'EUR', breakdown: { accommodation: 500, entertainment: 350, food: 400, transport: 350 } },
+        entertainments: [{ entertainment: this.createMockEntertainment('abba-museum', 'ABBA The Museum', 'music', 'Interactive ABBA experience'), date: '2024-12-11', time: '13:00', venue: 'Djurgården', cost: 30 }],
+        accommodation: { name: 'Stockholm Waterfront Hotel', type: 'hotel', rating: 4.6, pricePerNight: 100, location: 'Gamla Stan', amenities: ['Harbor View', 'Sauna', 'Fine Dining'] },
+        transportation: { type: 'flight', details: 'Round-trip to Stockholm Arlanda', cost: 350 },
+        recommendations: { restaurants: ['Oaxen Krog', 'Meatballs for the People'], localTips: ['Buy Stockholm Pass', 'Try Swedish meatballs'], weatherInfo: 'Cold December weather, possible snow', packingList: ['Very warm clothes', 'Winter boots', 'Gloves'] },
+        confidence: 93
+      },
+      {
+        id: 'zurich-alps-chocolate',
+        title: 'Zurich: Alpine Views & Swiss Chocolate Tour',
+        description: 'Mountain scenery and world-famous Swiss chocolate experiences',
+        country: 'Switzerland',
+        city: 'Zurich',
+        duration: 4,
+        startDate: '2024-12-20',
+        endDate: '2024-12-23',
+        totalCost: { amount: 2000, currency: 'EUR', breakdown: { accommodation: 600, entertainment: 400, food: 500, transport: 500 } },
+        entertainments: [{ entertainment: this.createMockEntertainment('lindt-factory', 'Lindt Chocolate Factory Tour', 'food', 'Swiss chocolate making experience'), date: '2024-12-21', time: '10:00', venue: 'Kilchberg', cost: 45 }],
+        accommodation: { name: 'Zurich Luxury Hotel', type: 'hotel', rating: 4.8, pricePerNight: 150, location: 'City Center', amenities: ['Alpine View', 'Michelin Restaurant', 'Spa'] },
+        transportation: { type: 'flight', details: 'Round-trip to Zurich Airport', cost: 500 },
+        recommendations: { restaurants: ['Kronenhalle', 'Zeughauskeller'], localTips: ['Everything is expensive', 'Try fondue', 'Take train to Alps'], weatherInfo: 'Cold winter weather, snow likely', packingList: ['Warm winter gear', 'Snow boots', 'Expensive wallet'] },
+        confidence: 95
       }
     ];
 
+    // Implement pagination
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedBundles = mockBundles.slice(startIndex, endIndex);
+    const total = mockBundles.length;
+    const hasMore = endIndex < total;
+
     return {
-      bundles: mockBundles,
-      reasoning: 'These bundles offer diverse experiences across different cultures, combining entertainment preferences with local attractions.',
+      bundles: paginatedBundles,
+      reasoning: `Page ${page} of trip bundles offering diverse experiences across different cultures, combining entertainment preferences with local attractions.`,
       alternatives: ['Barcelona music festival weekend', 'New York Broadway and sports', 'Berlin techno and culture tour'],
-      processingTime
+      processingTime,
+      pagination: {
+        page,
+        limit,
+        total,
+        hasMore
+      }
     };
   }
 
