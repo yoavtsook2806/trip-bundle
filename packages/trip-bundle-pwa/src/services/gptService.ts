@@ -1,4 +1,3 @@
-import { TripPreferences } from '../store/userPreferences';
 import { Entertainment } from '../constants/entertainments';
 
 export interface TripBundle {
@@ -50,11 +49,7 @@ export interface TripBundle {
   confidence: number; // 0-100 how well it matches user preferences
 }
 
-export interface GPTRequest {
-  userPreferences: TripPreferences;
-  targetCountries: string[];
-  maxResults?: number;
-}
+
 
 export interface GPTResponse {
   bundles: TripBundle[];
@@ -76,16 +71,15 @@ class GPTService {
     this.apiKey = key;
   }
 
-  async generateTripBundles(request: GPTRequest): Promise<GPTResponse> {
+  async generateTripBundles(systemPrompt: string, userPrompt: string = ''): Promise<GPTResponse> {
     if (!this.apiKey) {
-      throw new Error('OpenAI API key not configured');
+      console.warn('OpenAI API key not configured, using mock data');
+      return this.getMockResponse(Date.now());
     }
 
     const startTime = Date.now();
 
     try {
-      const prompt = this.buildPrompt(request);
-      
       const response = await fetch(this.baseUrl, {
         method: 'POST',
         headers: {
@@ -97,11 +91,11 @@ class GPTService {
           messages: [
             {
               role: 'system',
-              content: 'You are a travel expert AI that creates personalized trip bundles. You have extensive knowledge of entertainment events, costs, and travel logistics worldwide. Always respond with valid JSON.'
+              content: systemPrompt
             },
             {
               role: 'user',
-              content: prompt
+              content: userPrompt || 'Please generate a trip bundle suggestion.'
             }
           ],
           temperature: 0.7,
@@ -132,105 +126,13 @@ class GPTService {
       console.error('GPT Service Error:', error);
       
       // Return mock data for development/testing
-      return this.getMockResponse(request, Date.now() - startTime);
+      return this.getMockResponse(Date.now() - startTime);
     }
   }
 
-  private buildPrompt(request: GPTRequest): string {
-    const { userPreferences, targetCountries, maxResults = 3 } = request;
-    
-    return `
-Create ${maxResults} personalized trip bundles based on these user preferences:
 
-**User Preferences:**
-- Budget: ${userPreferences.budget.min}-${userPreferences.budget.max} ${userPreferences.budget.currency}
-- Duration: ${userPreferences.duration.min}-${userPreferences.duration.max} days
-- Group Size: ${userPreferences.groupSize}
-- Preferred Countries: ${targetCountries.join(', ')}
-- Music Genres: ${userPreferences.musicGenres.join(', ')}
-- Sports Interests: ${userPreferences.sportsInterests.join(', ')}
-- Entertainment Preferences: ${userPreferences.entertainmentPreferences.map(p => `${p.type}: ${p.value} (weight: ${p.weight})`).join(', ')}
 
-**Requirements:**
-1. Each bundle should include 2-3 entertainment activities
-2. Mix different types of entertainment (music, sports, culture, etc.)
-3. Include realistic costs, dates, and venues
-4. Provide accommodation and transportation details
-5. Add local recommendations and tips
-
-**Response Format (JSON):**
-{
-  "bundles": [
-    {
-      "id": "unique-id",
-      "title": "Bundle Title",
-      "description": "Brief description",
-      "country": "Country Name",
-      "city": "City Name",
-      "duration": 5,
-      "startDate": "2024-03-15",
-      "endDate": "2024-03-20",
-      "totalCost": {
-        "amount": 1500,
-        "currency": "USD",
-        "breakdown": {
-          "accommodation": 600,
-          "entertainment": 400,
-          "food": 300,
-          "transport": 200
-        }
-      },
-      "entertainments": [
-        {
-          "entertainment": {
-            "id": "concert-pop",
-            "name": "Pop Concert",
-            "category": "music",
-            "subcategory": "concert",
-            "description": "Live pop music performance",
-            "averageDuration": 3,
-            "averageCost": {"min": 50, "max": 300, "currency": "USD"},
-            "seasonality": "year-round",
-            "popularCountries": ["US", "GB"]
-          },
-          "date": "2024-03-16",
-          "time": "20:00",
-          "venue": "Madison Square Garden",
-          "cost": 150,
-          "bookingUrl": "https://example.com/tickets"
-        }
-      ],
-      "accommodation": {
-        "name": "Hotel Name",
-        "type": "hotel",
-        "rating": 4.5,
-        "pricePerNight": 120,
-        "location": "City Center",
-        "amenities": ["WiFi", "Gym", "Restaurant"]
-      },
-      "transportation": {
-        "type": "flight",
-        "details": "Round-trip flight",
-        "cost": 400
-      },
-      "recommendations": {
-        "restaurants": ["Restaurant 1", "Restaurant 2"],
-        "localTips": ["Tip 1", "Tip 2"],
-        "weatherInfo": "Mild weather expected",
-        "packingList": ["Light jacket", "Comfortable shoes"]
-      },
-      "confidence": 85
-    }
-  ],
-  "reasoning": "Explanation of why these bundles were chosen",
-  "alternatives": ["Alternative suggestion 1", "Alternative suggestion 2"]
-}
-
-Focus on current and upcoming events, realistic pricing, and matching the user's entertainment preferences closely.
-`;
-  }
-
-  private getMockResponse(_request: GPTRequest, processingTime: number): GPTResponse {
+  private getMockResponse(processingTime: number): GPTResponse {
     // Mock response for development/testing
     const mockBundle: TripBundle = {
       id: 'mock-bundle-1',

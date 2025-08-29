@@ -1,5 +1,5 @@
 import UserPreferencesStore from '../store/userPreferences';
-import GPTService, { GPTRequest, TripBundle } from '../services/gptService';
+import GPTService, { TripBundle } from '../services/gptService';
 import SpotifyIntegration from '../integrations/spotify';
 
 export class TripActions {
@@ -83,7 +83,7 @@ export class TripActions {
   }
 
   // Trip Bundle Generation Actions
-  async generateTripBundles(targetCountries: string[], maxResults = 3): Promise<TripBundle[]> {
+  async generateTripBundles(systemPrompt: string, userPrompt = ''): Promise<TripBundle[]> {
     try {
       this.userPreferencesStore.setLoading(true);
 
@@ -91,13 +91,7 @@ export class TripActions {
         console.warn('GPT service not configured, using mock data');
       }
 
-      const request: GPTRequest = {
-        userPreferences: this.userPreferencesStore.preferences,
-        targetCountries,
-        maxResults
-      };
-
-      const response = await this.gptService.generateTripBundles(request);
+      const response = await this.gptService.generateTripBundles(systemPrompt, userPrompt);
       
       this.userPreferencesStore.setLoading(false);
       return response.bundles;
