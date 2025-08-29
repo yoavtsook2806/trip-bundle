@@ -9,7 +9,7 @@ export interface PWAInfo {
 
 export const usePWA = (): PWAInfo => {
   const [isInstallable, setIsInstallable] = useState(false);
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [_deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {

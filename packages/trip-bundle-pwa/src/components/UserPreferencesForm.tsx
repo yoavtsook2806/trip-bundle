@@ -9,7 +9,7 @@ interface UserPreferencesFormProps {
 
 export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
   onPreferencesUpdate,
-  onClose
+  onClose: _onClose
 }) => {
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
   const [loading, setLoading] = useState(true);

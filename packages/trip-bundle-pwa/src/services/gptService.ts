@@ -63,8 +63,9 @@ class GPTService {
   private baseUrl = 'https://api.openai.com/v1/chat/completions';
 
   constructor() {
-    // In a real app, this would come from environment variables or user settings
-    this.apiKey = (import.meta as any).env?.VITE_OPENAI_API_KEY || null;
+    // Initialize API key from environment variable (only if not in mock mode)
+    const isMockMode = (import.meta as any).env?.VITE_MOCK === 'true';
+    this.apiKey = isMockMode ? null : ((import.meta as any).env?.VITE_OPENAI_API_KEY || null);
   }
 
   setApiKey(key: string) {
@@ -699,7 +700,9 @@ class GPTService {
 
   // Utility method to validate API key
   isConfigured(): boolean {
-    return this.apiKey !== null && this.apiKey.length > 0;
+    const isMockMode = (import.meta as any).env?.VITE_MOCK === 'true';
+    // In mock mode, we're always "configured" since we use mock data
+    return isMockMode || (this.apiKey !== null && this.apiKey.length > 0);
   }
 
   // Method to get available models (for future use)

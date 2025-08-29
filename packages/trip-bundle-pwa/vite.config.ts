@@ -3,8 +3,15 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [
+export default defineConfig(({ command, mode }) => {
+  // Determine base path for GitHub Pages deployment
+  const base = command === 'build' && process.env.GITHUB_PAGES 
+    ? `/trip-bundle${process.env.VITE_MOCK === 'true' ? '-mock' : ''}/`
+    : '/'
+
+  return {
+    base,
+    plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
@@ -60,5 +67,6 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg}']
       }
     })
-  ],
+  ]
+  }
 })
