@@ -6,23 +6,56 @@
 }
 
 .App-header {
-  padding: 2rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   min-height: 100vh;
+  position: relative;
+}
+
+/* Title section - perfectly centered */
+.title-section {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* Absolutely positioned icon on the left */
+.app-icon {
+  position: absolute;
+  left: 2rem;
+  top: 2rem;
+  width: 120px;
+  height: 120px;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  /* Remove light background and blend with gradient */
+  filter: contrast(1.1) saturate(1.2);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  z-index: 10;
+}
+
+.app-icon:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
 }
 
 h1 {
-  font-size: 3rem;
-  margin-bottom: 0.5rem;
+  font-size: 2.5rem;
+  margin: 0;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 h2 {
-  font-size: 2rem;
-  margin: 2rem 0 1rem 0;
+  font-size: 1.6rem;
+  margin: 1rem 0 0.5rem 0;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
@@ -110,18 +143,19 @@ h2 {
 /* Bundles Container */
 .bundles-container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
 .bundles-container h2 {
   margin-bottom: 0.5rem;
+  font-size: 1.8rem;
 }
 
 .bundles-container p {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   opacity: 0.9;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
 }
 
 /* Pulse animation for loading states */
@@ -169,6 +203,24 @@ h2 {
 @media (max-width: 768px) {
   .App-header {
     padding: 1rem;
+    padding-top: 8rem; /* Add space for absolutely positioned icon */
+  }
+  
+  .app-icon {
+    left: 50%;
+    top: 1rem;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 100px;
+    position: absolute;
+  }
+  
+  .app-icon:hover {
+    transform: translateX(-50%) translateY(-5px);
+  }
+  
+  .title-section {
+    margin-top: 0;
   }
   
   h1 {

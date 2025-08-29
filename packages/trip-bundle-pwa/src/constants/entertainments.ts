@@ -10,7 +10,7 @@ export interface Entertainment {
     max: number;
     currency: string;
   };
-  seasonality: 'year-round' | 'seasonal' | 'summer' | 'winter';
+  seasonality: 'year-round' | 'seasonal' | 'summer' | 'winter' | 'limited' | 'exclusive' | 'anniversary' | 'annual';
   popularCountries: string[]; // country codes
 }
 

@@ -2,7 +2,7 @@ import UserPreferencesStore from '../store/userPreferences';
 import BundleSuggestionsStore from '../store/bundleSuggestions';
 import GPTService, { TripBundle } from '../services/gptService';
 import SpotifyIntegration from '../integrations/spotify';
-import { COUNTRIES } from '../constants/countries';
+import { CITIES } from '../constants/cities';
 import { ALL_ENTERTAINMENTS } from '../constants/entertainments';
 
 export class TripActions {
@@ -90,7 +90,7 @@ export class TripActions {
 
   // Trip Bundle Generation Actions
   private buildSystemPrompt(): string {
-    const countriesList = COUNTRIES.map(country => `${country.name} (${country.code})`).join(', ');
+    const citiesList = CITIES.map(city => `${city.name}, ${city.country} (${city.code})`).join(', ');
     const entertainmentTypes = ALL_ENTERTAINMENTS.map(ent => 
       `${ent.name} (${ent.category})`
     ).join(', ');
@@ -99,7 +99,17 @@ export class TripActions {
     nextFiveDays.setDate(nextFiveDays.getDate() + 5);
     const formattedDate = nextFiveDays.toISOString().split('T')[0];
 
-    return `You are a travel expert AI that creates personalized trip bundles. Based on the countries: ${countriesList}, give me a suggestion for a trip in some city for the next five days from today (until ${formattedDate}) with 2-3 attractions from the following entertainment types: ${entertainmentTypes}.
+    return `You are a travel expert AI that creates personalized trip bundles focused on SPECIFIC TIME-SENSITIVE EVENTS. Based on the cities: ${citiesList}, give me a suggestion for a trip in one of these cities for the next five days from today (until ${formattedDate}) with 2-3 SPECIFIC attractions from the following entertainment types: ${entertainmentTypes}.
+
+IMPORTANT: Focus on SPECIFIC, TIME-SENSITIVE events that happen only during this period, such as:
+- Specific football/soccer matches (e.g., "Real Madrid vs Barcelona El Clasico")
+- Specific concerts by named artists (e.g., "Coldplay World Tour 2024")
+- Limited-time exhibitions (e.g., "Van Gogh Immersive Experience - Final Week")
+- Special festivals or events (e.g., "Oktoberfest 2024", "Edinburgh Fringe Festival")
+- Theater premieres or limited runs
+- Seasonal events or markets
+
+AVOID generic attractions like "visit the Louvre" or "city walking tour" - focus on unique, dated events that create urgency.
 
 You MUST respond with a valid JSON object only, no additional text. Use this exact format:
 {

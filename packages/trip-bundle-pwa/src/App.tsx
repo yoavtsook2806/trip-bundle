@@ -9,6 +9,9 @@ import { SpotifyIntegration } from './integrations';
 import { TripActions } from './actions';
 import { BundleOffer } from './components';
 
+// Import the TripBundle icon
+import TripBundleIcon from './images/TripBundleIcon.jpeg';
+
 // Create store instances (in a real app, these would be in a context or DI container)
 const userPreferencesStore = new UserPreferencesStore();
 const bundleSuggestionsStore = new BundleSuggestionsStore();
@@ -66,8 +69,11 @@ const App: React.FC = observer(() => {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>🧳 Trip Bundle AI</h1>
-        <p>Your personalized travel companion</p>
+        <img src={TripBundleIcon} alt="Trip Bundle" className="app-icon" />
+        <div className="title-section">
+          <h1>Trip Bundle AI</h1>
+          <p>Your personalized travel companion</p>
+        </div>
         
         {/* Loading State */}
         {isLoading && (
@@ -95,19 +101,21 @@ const App: React.FC = observer(() => {
         {/* Bundle Results */}
         {hasBundles && !isLoading && (
           <div className="bundles-container">
-            <h2>🎉 Your Perfect Trip Bundle</h2>
-            <p>Generated just for you with the best entertainment options</p>
+            <h2>🎉 Your Perfect Trip Bundles</h2>
+            <p>Choose from these AI-generated travel options</p>
             
-            {bundles.map(bundle => (
-              <BundleOffer
-                key={bundle.id}
-                bundle={bundle}
-                onSelect={handleSelectBundle}
-                onBookmark={handleBookmarkBundle}
-                isSelected={selectedBundle?.id === bundle.id}
-                isBookmarked={tripActions.isBookmarked(bundle.id)}
-              />
-            ))}
+            <div className="bundles-row">
+              {bundles.map(bundle => (
+                <BundleOffer
+                  key={bundle.id}
+                  bundle={bundle}
+                  onSelect={handleSelectBundle}
+                  onBookmark={handleBookmarkBundle}
+                  isSelected={selectedBundle?.id === bundle.id}
+                  isBookmarked={tripActions.isBookmarked(bundle.id)}
+                />
+              ))}
+            </div>
           </div>
         )}
       </header>

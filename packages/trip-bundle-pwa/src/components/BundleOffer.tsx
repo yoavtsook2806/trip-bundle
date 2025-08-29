@@ -1,6 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { TripBundle } from '../services/gptService';
+import { CITIES, City } from '../constants/cities';
 import './BundleOffer.css';
 
 interface BundleOfferProps {
@@ -18,6 +19,12 @@ const BundleOffer: React.FC<BundleOfferProps> = observer(({
   isSelected = false,
   isBookmarked = false
 }) => {
+  const getCityData = (cityName: string): City | null => {
+    return CITIES.find(city => city.name.toLowerCase() === cityName.toLowerCase()) || null;
+  };
+
+  const cityData = getCityData(bundle.city);
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
@@ -54,12 +61,27 @@ const BundleOffer: React.FC<BundleOfferProps> = observer(({
 
   return (
     <div className={`bundle-offer-simple ${isSelected ? 'selected' : ''}`}>
+      {/* City Symbol Background */}
+      {cityData?.symbolUrl && (
+        <div 
+          className="city-symbol-background"
+          style={{ backgroundImage: `url(${cityData.symbolUrl})` }}
+        />
+      )}
+      
       {/* Header */}
       <div className="bundle-header">
         <div className="bundle-title-section">
           <h3 className="bundle-title">{bundle.title}</h3>
           <div className="bundle-location">
-            📍 {bundle.city}, {bundle.country}
+            {cityData?.flagUrl && (
+              <img 
+                src={cityData.flagUrl} 
+                alt={`${bundle.country} flag`}
+                className="country-flag"
+              />
+            )}
+            <span>{bundle.city}, {bundle.country}</span>
           </div>
         </div>
         <div className="bundle-actions">
