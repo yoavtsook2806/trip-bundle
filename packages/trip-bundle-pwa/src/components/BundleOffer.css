@@ -1,4 +1,4 @@
-.bundle-offer {
+.bundle-offer-simple {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 20px;
   padding: 24px;
@@ -9,19 +9,21 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  max-width: 600px;
+  margin: 16px auto;
 }
 
-.bundle-offer:hover {
+.bundle-offer-simple:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
 }
 
-.bundle-offer.selected {
+.bundle-offer-simple.selected {
   border: 2px solid #4CAF50;
   box-shadow: 0 8px 32px rgba(76, 175, 80, 0.2);
 }
 
-.bundle-offer::before {
+.bundle-offer-simple::before {
   content: '';
   position: absolute;
   top: 0;
@@ -45,7 +47,7 @@
 
 .bundle-title {
   margin: 0 0 8px 0;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: #2c3e50;
   line-height: 1.2;
@@ -98,8 +100,8 @@
 /* Key Info */
 .bundle-key-info {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
   margin-bottom: 24px;
   padding: 16px;
   background: rgba(103, 126, 234, 0.05);
@@ -138,29 +140,25 @@
   padding-bottom: 8px;
 }
 
-/* Entertainment Section */
+/* Entertainment Section - Simplified */
 .entertainment-section {
   margin-bottom: 24px;
 }
 
-.entertainment-list {
+.entertainment-simple-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.entertainment-item {
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 12px;
-  padding: 16px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.entertainment-header {
+.entertainment-simple-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .entertainment-icon {
@@ -172,9 +170,10 @@
   justify-content: center;
   background: rgba(103, 126, 234, 0.1);
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
-.entertainment-details {
+.entertainment-info {
   flex: 1;
 }
 
@@ -182,167 +181,41 @@
   font-weight: 600;
   color: #2c3e50;
   font-size: 1rem;
+  margin-bottom: 4px;
 }
 
-.entertainment-venue {
+.entertainment-details {
   color: #7f8c8d;
-  font-size: 0.9rem;
-}
-
-.entertainment-meta {
-  text-align: right;
-}
-
-.entertainment-date {
   font-size: 0.85rem;
-  color: #7f8c8d;
 }
 
 .entertainment-cost {
   font-weight: 600;
   color: #27ae60;
   font-size: 0.95rem;
+  text-align: right;
 }
 
-.entertainment-description {
-  color: #7f8c8d;
-  font-size: 0.9rem;
-  font-style: italic;
-  margin-left: 52px;
-}
-
-/* Cost Breakdown */
-.cost-breakdown {
+/* Hotel Section - Simplified */
+.hotel-section {
   margin-bottom: 24px;
 }
 
-.cost-items {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.cost-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 8px;
-}
-
-.cost-item:last-child {
-  border-top: 2px solid #ecf0f1;
-  font-weight: 600;
-  background: rgba(103, 126, 234, 0.1);
-}
-
-/* Accommodation */
-.accommodation-section {
-  margin-bottom: 24px;
-}
-
-.accommodation-info {
+.hotel-simple-info {
   background: rgba(255, 255, 255, 0.7);
   border-radius: 12px;
   padding: 16px;
 }
 
-.accommodation-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.accommodation-name {
+.hotel-name {
   font-weight: 600;
   color: #2c3e50;
   font-size: 1.1rem;
+  margin-bottom: 8px;
 }
 
-.accommodation-rating {
-  color: #f39c12;
-  font-size: 0.9rem;
-}
-
-.accommodation-details {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-}
-
-.accommodation-details > span {
-  font-size: 0.9rem;
+.hotel-details {
   color: #7f8c8d;
-}
-
-.accommodation-price {
-  color: #27ae60 !important;
-  font-weight: 600;
-}
-
-.accommodation-amenities {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.amenity-tag {
-  background: rgba(103, 126, 234, 0.1);
-  color: #667eea;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-
-/* Recommendations */
-.recommendations-section {
-  margin-bottom: 24px;
-}
-
-.recommendations-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.recommendation-category h5 {
-  margin: 0 0 8px 0;
-  color: #2c3e50;
-  font-size: 0.95rem;
-}
-
-.recommendation-category ul {
-  margin: 0;
-  padding-left: 16px;
-  list-style-type: none;
-}
-
-.recommendation-category li {
-  position: relative;
-  padding-left: 16px;
-  margin-bottom: 4px;
-  color: #7f8c8d;
-  font-size: 0.9rem;
-}
-
-.recommendation-category li::before {
-  content: '•';
-  color: #667eea;
-  position: absolute;
-  left: 0;
-  font-weight: bold;
-}
-
-.weather-info {
-  background: rgba(52, 152, 219, 0.1);
-  padding: 12px;
-  border-radius: 8px;
-  color: #2980b9;
   font-size: 0.9rem;
 }
 
@@ -379,9 +252,9 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .bundle-offer {
+  .bundle-offer-simple {
     padding: 16px;
-    margin: 12px 0;
+    margin: 12px 16px;
   }
   
   .bundle-header {
@@ -395,27 +268,16 @@
   
   .bundle-key-info {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 10px;
   }
   
-  .entertainment-header {
+  .entertainment-simple-item {
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
-  }
-  
-  .entertainment-meta {
     text-align: left;
-    width: 100%;
   }
   
-  .accommodation-details {
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .recommendations-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
+  .entertainment-cost {
+    align-self: flex-end;
   }
 }

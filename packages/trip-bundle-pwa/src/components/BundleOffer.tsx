@@ -53,7 +53,7 @@ const BundleOffer: React.FC<BundleOfferProps> = observer(({
   };
 
   return (
-    <div className={`bundle-offer ${isSelected ? 'selected' : ''}`}>
+    <div className={`bundle-offer-simple ${isSelected ? 'selected' : ''}`}>
       {/* Header */}
       <div className="bundle-header">
         <div className="bundle-title-section">
@@ -99,109 +99,39 @@ const BundleOffer: React.FC<BundleOfferProps> = observer(({
         </div>
       </div>
 
-      {/* Entertainment Activities */}
+      {/* Entertainment Activities - Simplified */}
       <div className="entertainment-section">
-        <h4 className="section-title">🎉 Entertainment Activities</h4>
-        <div className="entertainment-list">
+        <h4 className="section-title">🎉 Activities</h4>
+        <div className="entertainment-simple-list">
           {bundle.entertainments.map((entertainment, index) => (
-            <div key={index} className="entertainment-item">
-              <div className="entertainment-header">
-                <span className="entertainment-icon">
-                  {getCategoryIcon(entertainment.entertainment.category)}
-                </span>
+            <div key={index} className="entertainment-simple-item">
+              <span className="entertainment-icon">
+                {getCategoryIcon(entertainment.entertainment.category)}
+              </span>
+              <div className="entertainment-info">
+                <div className="entertainment-name">{entertainment.entertainment.name}</div>
                 <div className="entertainment-details">
-                  <div className="entertainment-name">{entertainment.entertainment.name}</div>
-                  <div className="entertainment-venue">{entertainment.venue}</div>
-                </div>
-                <div className="entertainment-meta">
-                  <div className="entertainment-date">
-                    {formatDate(entertainment.date)} at {entertainment.time}
-                  </div>
-                  <div className="entertainment-cost">
-                    {formatCurrency(entertainment.cost, bundle.totalCost.currency)}
-                  </div>
+                  {entertainment.venue} • {formatDate(entertainment.date)} at {entertainment.time}
                 </div>
               </div>
-              <div className="entertainment-description">
-                {entertainment.entertainment.description}
+              <div className="entertainment-cost">
+                {formatCurrency(entertainment.cost, bundle.totalCost.currency)}
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Cost Breakdown */}
-      <div className="cost-breakdown">
-        <h4 className="section-title">💳 Cost Breakdown</h4>
-        <div className="cost-items">
-          <div className="cost-item">
-            <span>🏨 Accommodation</span>
-            <span>{formatCurrency(bundle.totalCost.breakdown.accommodation, bundle.totalCost.currency)}</span>
+      {/* Hotel Info - Simplified */}
+      <div className="hotel-section">
+        <h4 className="section-title">🏨 Hotel</h4>
+        <div className="hotel-simple-info">
+          <div className="hotel-name">{bundle.accommodation.name}</div>
+          <div className="hotel-details">
+            {'⭐'.repeat(Math.floor(bundle.accommodation.rating))} {bundle.accommodation.rating.toFixed(1)} • 
+            {bundle.accommodation.location} • 
+            {formatCurrency(bundle.accommodation.pricePerNight, bundle.totalCost.currency)}/night
           </div>
-          <div className="cost-item">
-            <span>🎭 Entertainment</span>
-            <span>{formatCurrency(bundle.totalCost.breakdown.entertainment, bundle.totalCost.currency)}</span>
-          </div>
-          <div className="cost-item">
-            <span>🍽️ Food</span>
-            <span>{formatCurrency(bundle.totalCost.breakdown.food, bundle.totalCost.currency)}</span>
-          </div>
-          <div className="cost-item">
-            <span>✈️ Transport</span>
-            <span>{formatCurrency(bundle.totalCost.breakdown.transport, bundle.totalCost.currency)}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Accommodation */}
-      <div className="accommodation-section">
-        <h4 className="section-title">🏨 Accommodation</h4>
-        <div className="accommodation-info">
-          <div className="accommodation-header">
-            <span className="accommodation-name">{bundle.accommodation.name}</span>
-            <div className="accommodation-rating">
-              {'⭐'.repeat(Math.floor(bundle.accommodation.rating))} 
-              {bundle.accommodation.rating.toFixed(1)}
-            </div>
-          </div>
-          <div className="accommodation-details">
-            <span className="accommodation-type">{bundle.accommodation.type}</span>
-            <span className="accommodation-location">📍 {bundle.accommodation.location}</span>
-            <span className="accommodation-price">
-              {formatCurrency(bundle.accommodation.pricePerNight, bundle.totalCost.currency)}/night
-            </span>
-          </div>
-          <div className="accommodation-amenities">
-            {bundle.accommodation.amenities.map((amenity, index) => (
-              <span key={index} className="amenity-tag">{amenity}</span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Recommendations */}
-      <div className="recommendations-section">
-        <h4 className="section-title">💡 Local Recommendations</h4>
-        <div className="recommendations-grid">
-          <div className="recommendation-category">
-            <h5>🍽️ Restaurants</h5>
-            <ul>
-              {bundle.recommendations.restaurants.slice(0, 3).map((restaurant, index) => (
-                <li key={index}>{restaurant}</li>
-              ))}
-            </ul>
-          </div>
-          <div className="recommendation-category">
-            <h5>💡 Local Tips</h5>
-            <ul>
-              {bundle.recommendations.localTips.slice(0, 2).map((tip, index) => (
-                <li key={index}>{tip}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-        <div className="weather-info">
-          <strong>🌤️ Weather:</strong> {bundle.recommendations.weatherInfo}
         </div>
       </div>
 
