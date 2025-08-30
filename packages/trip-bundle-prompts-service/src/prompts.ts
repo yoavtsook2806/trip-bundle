@@ -2,15 +2,15 @@
 // PROMPTS MODULE FOR TRIP BUNDLE SERVICE
 // =============================================================================
 
-import { CITIES, ALL_ENTERTAINMENTS } from './constants';
+import { ALL_ENTERTAINMENTS } from './constants';
 import { UserData } from './types';
 
 /**
  * Generates the system prompt for GPT
  * This is constant and doesn't depend on user data
  */
-export function getSystemPrompt(): string {
-  const citiesList = CITIES.map(city => `${city.name}, ${city.country} (${city.code})`).join(', ');
+export function getSystemPrompt(cities: string[]): string {
+  const citiesList = cities.join(', ');
   const entertainmentTypes = ALL_ENTERTAINMENTS.map(ent => 
     `${ent.name} (${ent.category})`
   ).join(', ');
@@ -107,8 +107,8 @@ Focus on realistic pricing, actual venues, and current entertainment options.`;
  * Generates the user prompt based on user data
  * Converts UserData format to a prompt string
  */
-export function getUserPrompt(userData: UserData): string {
-  const userPreferencesPrompt = generateUserPreferencesPrompt(userData.userPreferences);
+export function getUserPrompt(userData: UserData, cities: string[]): string {
+  const userPreferencesPrompt = generateUserPreferencesPrompt(userData.userPreferences, cities);
   const integrationsContext = generateIntegrationsPromptContext(userData.integrations);
 
   return userPreferencesPrompt + integrationsContext;
@@ -117,7 +117,7 @@ export function getUserPrompt(userData: UserData): string {
 /**
  * Generates user preferences section of the prompt
  */
-function generateUserPreferencesPrompt(prefs: UserData['userPreferences']): string {
+function generateUserPreferencesPrompt(prefs: UserData['userPreferences'], cities: string[]): string {
   const promptParts: string[] = [];
   
   // Budget information

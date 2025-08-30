@@ -25,9 +25,11 @@ export class TripBundlePromptService {
   private temperature: number = 0.7;
   private maxTokens: number = 4000;
   private userData: UserData;
+  private cities: string[];
 
-  constructor(userData: UserData, config?: ServiceConfig) {
+  constructor(userData: UserData, cities: string[], config?: ServiceConfig) {
     this.userData = userData;
+    this.cities = cities;
     
     if (config) {
       this.apiKey = config.apiKey || null;
@@ -65,8 +67,8 @@ export class TripBundlePromptService {
     try {
       console.log('🤖 Calling OpenAI API...');
       
-      const systemPrompt = getSystemPrompt();
-      const userPrompt = getUserPrompt(this.userData);
+      const systemPrompt = getSystemPrompt(this.cities);
+      const userPrompt = getUserPrompt(this.userData, this.cities);
 
       const response = await fetch(this.baseUrl, {
         method: 'POST',

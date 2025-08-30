@@ -22,6 +22,9 @@ export function createTripBundleService(userData: UserData): ITripBundleService 
   // Check if we're in mock mode
   const isMockMode = (import.meta as any).env?.VITE_MOCK === 'true';
   
+  // Extract cities from userData (they were added by convertStoreDataToUserData)
+  const cities = userData.cities;
+  
   if (isMockMode) {
     console.log('🎭 Creating mock trip bundle service (VITE_MOCK=true)');
     return new MockTripBundleService(userData);
@@ -29,7 +32,7 @@ export function createTripBundleService(userData: UserData): ITripBundleService 
     console.log('🤖 Creating real trip bundle service');
     const apiKey = (import.meta as any).env?.VITE_OPENAI_API_KEY || null;
     
-    return new TripBundlePromptService(userData, {
+    return new TripBundlePromptService(userData, cities, {
       apiKey,
       model: 'gpt-4o-mini',
       temperature: 0.7,
