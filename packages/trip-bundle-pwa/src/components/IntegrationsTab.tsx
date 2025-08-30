@@ -3,19 +3,21 @@ import { observer } from 'mobx-react-lite';
 import { IntegrationsStorage } from '../storage';
 import { SpotifyService } from '../services';
 import { UserPreferencesStore } from '../store';
+import { IntegrationActions } from '../actions';
 import './IntegrationsTab.css';
 
 interface IntegrationsTabProps {
   onClose: () => void;
   onIntegrationsUpdate?: () => void;
   userPreferencesStore: UserPreferencesStore;
-  integrationActions?: any; // Will be properly typed later
+  integrationActions?: IntegrationActions;
 }
 
 export const IntegrationsTab: React.FC<IntegrationsTabProps> = observer(({ 
   onClose, 
   onIntegrationsUpdate,
-  userPreferencesStore
+  userPreferencesStore,
+  integrationActions
 }) => {
   // Note: Spotify connection state now comes from userPreferencesStore
   const [isLoading, setIsLoading] = useState(false);
@@ -171,18 +173,19 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = observer(({
   };
 
   const handleSpotifyDisconnect = async () => {
+    if (!integrationActions) {
+      setError('Integration actions not available');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
-      // Disconnect from Spotify
-      spotifyService.disconnect();
+      // Use integration actions to properly disconnect and update all stores
+      await integrationActions.disconnectSpotify();
       
-      // Clear storage
-      await IntegrationsStorage.disconnectSpotify();
-      
-      // Note: Spotify disconnection state now managed by MobX store
-      console.log('🎵 [DISCONNECT] Spotify disconnected, state updated in MobX store');
+      console.log('🎵 [DISCONNECT] Spotify disconnected, all stores updated');
 
       // Notify parent component
       onIntegrationsUpdate?.();
