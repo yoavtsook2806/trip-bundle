@@ -36,8 +36,11 @@ jobs:
     - name: Lint
       run: yarn workspaces foreach --all run lint || true
       
-    - name: Build all packages
-      run: yarn build
+    - name: Build packages in dependency order
+      run: |
+        yarn workspace trip-bundle-prompts-service build
+        yarn workspace trip-bundle-playground build
+        yarn workspace trip-bundle-pwa build
       
     - name: Test
       run: yarn workspaces foreach --all run test || echo "No tests configured"
@@ -61,6 +64,9 @@ jobs:
       
     - name: Install dependencies
       run: yarn install --immutable
+      
+    - name: Build prompts service first
+      run: yarn workspace trip-bundle-prompts-service build
       
     - name: Build PWA (Mock)
       run: yarn workspace trip-bundle-pwa build:mock
