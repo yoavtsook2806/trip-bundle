@@ -46,22 +46,37 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
   };
 
   const handleSpotifyConnect = async () => {
+    console.log('🎵 [INTEGRATION DEBUG] Starting Spotify connection...');
     setIsLoading(true);
     setError(null);
 
     try {
+      // Force clear any existing tokens to ensure fresh authentication
+      console.log('🎵 [INTEGRATION DEBUG] Clearing any existing tokens...');
+      spotifyIntegration.forceClearTokens();
+      
+      console.log('🎵 [INTEGRATION DEBUG] Calling spotifyIntegration.authenticate()...');
       // Start Spotify OAuth flow
       const success = await spotifyIntegration.authenticate();
       
+      console.log('🎵 [INTEGRATION DEBUG] Authentication result:', success);
+      
       if (success) {
+        console.log('🎵 [INTEGRATION DEBUG] Authentication successful, fetching user data...');
         // Get user profile and preferences
         const [profile, preferences] = await Promise.all([
           spotifyIntegration.getUserProfile(),
           spotifyIntegration.getUserPreferences()
         ]);
 
+        console.log('🎵 [INTEGRATION DEBUG] Profile received:', profile);
+        console.log('🎵 [INTEGRATION DEBUG] Preferences received:', preferences);
+
         // Save to integrations storage
+        console.log('🎵 [INTEGRATION DEBUG] Saving to integrations storage...');
         await IntegrationsStorage.connectSpotify(profile, preferences);
+        
+        console.log('🎵 [INTEGRATION DEBUG] Data saved to storage');
         
         // Update local state
         setSpotifyData({
@@ -75,14 +90,16 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
         // Notify parent component
         onIntegrationsUpdate?.();
         
-        console.log('✅ Spotify connected successfully');
+        console.log('✅ [INTEGRATION DEBUG] Spotify connected successfully');
       } else {
+        console.error('🎵 [INTEGRATION DEBUG] Authentication failed');
         setError('Failed to authenticate with Spotify');
       }
     } catch (error) {
-      console.error('Spotify connection error:', error);
+      console.error('🎵 [INTEGRATION DEBUG] Spotify connection error:', error);
       setError(error instanceof Error ? error.message : 'Failed to connect to Spotify');
     } finally {
+      console.log('🎵 [INTEGRATION DEBUG] Setting loading to false');
       setIsLoading(false);
     }
   };
@@ -221,23 +238,35 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
                 {spotifyData.preferences && (
                   <div className="preferences-summary">
                     <div className="spotify-stats">
-                      <div className="stat-item">
-                        <span className="stat-label">Top Genres:</span>
-                        <span className="stat-value">{spotifyData.preferences.topGenres.slice(0, 3).join(', ')}</span>
-                      </div>
-                      <div className="stat-item">
-                        <span className="stat-label">Favorite Artists:</span>
-                        <span className="stat-value">{spotifyData.preferences.topArtists.slice(0, 2).map(a => a.name).join(', ')}</span>
-                      </div>
-                      <div className="stat-item">
-                        <span className="stat-label">Music Vibe:</span>
-                        <span className="stat-value">
-                          {spotifyData.preferences.musicProfile.energy > 0.7 ? '⚡ High Energy' : 
-                           spotifyData.preferences.musicProfile.energy > 0.4 ? '🎵 Moderate' : '🎼 Chill'}
-                          {spotifyData.preferences.musicProfile.valence > 0.6 ? ' • 😊 Positive' : 
-                           spotifyData.preferences.musicProfile.valence > 0.4 ? ' • 😐 Neutral' : ' • 😔 Melancholic'}
-                        </span>
-                      </div>
+                      {spotifyData.preferences.topGenres && spotifyData.preferences.topGenres.length > 0 && (
+                        <div className="stat-item">
+                          <span className="stat-label">Top Genres:</span>
+                          <span className="stat-value">{spotifyData.preferences.topGenres.slice(0, 3).join(', ')}</span>
+                        </div>
+                      )}
+                      {spotifyData.preferences.topArtists && spotifyData.preferences.topArtists.length > 0 && (
+                        <div className="stat-item">
+                          <span className="stat-label">Favorite Artists:</span>
+                          <span className="stat-value">{spotifyData.preferences.topArtists.slice(0, 2).map(a => a.name).join(', ')}</span>
+                        </div>
+                      )}
+                      {spotifyData.preferences.musicProfile && (
+                        <div className="stat-item">
+                          <span className="stat-label">Music Vibe:</span>
+                          <span className="stat-value">
+                            {spotifyData.preferences.musicProfile.energy > 0.7 ? '⚡ High Energy' : 
+                             spotifyData.preferences.musicProfile.energy > 0.4 ? '🎵 Moderate' : '🎼 Chill'}
+                            {spotifyData.preferences.musicProfile.valence > 0.6 ? ' • 😊 Positive' : 
+                             spotifyData.preferences.musicProfile.valence > 0.4 ? ' • 😐 Neutral' : ' • 😔 Melancholic'}
+                          </span>
+                        </div>
+                      )}
+                      {spotifyData.preferences.topTracks && spotifyData.preferences.topTracks.length > 0 && (
+                        <div className="stat-item">
+                          <span className="stat-label">Top Tracks:</span>
+                          <span className="stat-value">{spotifyData.preferences.topTracks.slice(0, 2).map(t => t.name).join(', ')}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}

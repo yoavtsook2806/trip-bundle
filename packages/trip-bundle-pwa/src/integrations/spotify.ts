@@ -56,12 +56,17 @@ class SpotifyIntegration {
     this.loadTokensFromStorage();
   }
 
-  // Get proper redirect URI - Spotify doesn't allow localhost, must use 127.0.0.1
+  // Get proper redirect URI - always use 127.0.0.1 to match Spotify dashboard config
   private getRedirectUri(): string {
     const origin = window.location.origin;
-    // Replace localhost with 127.0.0.1 as Spotify requires explicit IP literals
+    console.log('🎵 [DEBUG] Original origin:', origin);
+    
+    // Always use 127.0.0.1 to match Spotify app configuration
     const spotifyCompatibleOrigin = origin.replace('localhost', '127.0.0.1');
-    return spotifyCompatibleOrigin + '/spotify-callback.html';
+    const redirectUri = spotifyCompatibleOrigin + '/spotify-callback.html';
+    
+    console.log('🎵 [DEBUG] Generated redirect URI:', redirectUri);
+    return redirectUri;
   }
 
   // Configuration
@@ -96,34 +101,50 @@ class SpotifyIntegration {
 
   // Authentication
   async authenticate(): Promise<boolean> {
-    console.log('🎵 Using real Spotify integration - Client ID:', this.clientId);
+    console.log('🎵 [DEBUG] Starting Spotify authentication...');
+    console.log('🎵 [DEBUG] Client ID:', this.clientId);
+    console.log('🎵 [DEBUG] Client Secret available:', !!this.clientSecret);
+    console.log('🎵 [DEBUG] Redirect URI:', this.redirectUri);
+    console.log('🎵 [DEBUG] Current origin:', window.location.origin);
     
     if (!this.clientId) {
+      console.error('🎵 [DEBUG] No Client ID configured!');
       throw new Error('Spotify Client ID not configured. Please check your environment variables.');
     }
 
     // Check if already authenticated
+    console.log('🎵 [DEBUG] Checking if already authenticated...');
     if (this.isAuthenticated()) {
+      console.log('🎵 [DEBUG] Already authenticated with valid token');
       return true;
     }
 
     // Try to restore from localStorage
+    console.log('🎵 [DEBUG] Trying to restore tokens from localStorage...');
     this.loadTokensFromStorage();
+    console.log('🎵 [DEBUG] After loading from storage - Access token:', !!this.accessToken, 'Refresh token:', !!this.refreshToken);
     if (this.isAuthenticated()) {
+      console.log('🎵 [DEBUG] Successfully restored valid tokens from localStorage');
       return true;
     }
 
     // Try to refresh token if available
     if (this.refreshToken) {
+      console.log('🎵 [DEBUG] Attempting to refresh access token...');
       try {
-        await this.refreshAccessToken();
-        return this.isAuthenticated();
+        const refreshed = await this.refreshAccessToken();
+        console.log('🎵 [DEBUG] Token refresh result:', refreshed);
+        if (refreshed && this.isAuthenticated()) {
+          console.log('🎵 [DEBUG] Successfully refreshed token');
+          return true;
+        }
       } catch (error) {
-        console.warn('Failed to refresh Spotify token:', error);
+        console.warn('🎵 [DEBUG] Failed to refresh Spotify token:', error);
       }
     }
 
     // Start OAuth flow
+    console.log('🎵 [DEBUG] Starting OAuth flow...');
     return this.startOAuthFlow();
   }
 
@@ -132,9 +153,17 @@ class SpotifyIntegration {
   private startOAuthFlow(): Promise<boolean> {
     return new Promise(async (resolve, reject) => {
       try {
+        console.log('🎵 [DEBUG] Generating auth URL...');
         const authUrl = await this.getAuthUrl();
+        console.log('🎵 [DEBUG] Auth URL generated:', authUrl);
+        
+        // Clear any previous auth state
+        console.log('🎵 [DEBUG] Clearing previous auth state from localStorage...');
+        localStorage.removeItem('spotify_auth_code');
+        localStorage.removeItem('spotify_auth_error');
         
         // Open popup window for OAuth
+        console.log('🎵 [DEBUG] Opening popup window for OAuth...');
         const popup = window.open(
           authUrl,
           'spotify-auth',
@@ -142,24 +171,42 @@ class SpotifyIntegration {
         );
 
         if (!popup) {
+          console.error('🎵 [DEBUG] Failed to open popup window');
           reject(new Error('Failed to open authentication popup. Please allow popups for this site.'));
           return;
         }
 
+        console.log('🎵 [DEBUG] Popup window opened successfully');
+
         let authCompleted = false;
+        let checkClosed: NodeJS.Timeout;
 
         // Listen for message from popup (if callback sends postMessage)
         const messageListener = async (event: MessageEvent) => {
-          if (event.origin !== window.location.origin) return;
+          console.log('🎵 [DEBUG] Received message from popup:', event.data, 'Origin:', event.origin);
+          
+          // Accept messages from 127.0.0.1 origins (consistent with our setup)
+          const currentOrigin = window.location.origin;
+          const expectedOrigin = currentOrigin.replace('localhost', '127.0.0.1');
+          
+          if (event.origin !== expectedOrigin) {
+            console.log('🎵 [DEBUG] Message origin mismatch. Expected:', expectedOrigin, 'Got:', event.origin);
+            return;
+          }
+          
+          console.log('🎵 [DEBUG] Message origin accepted');
           
           if (event.data.type === 'SPOTIFY_AUTH_SUCCESS') {
+            console.log('🎵 [DEBUG] Received auth success message with code:', event.data.code);
             authCompleted = true;
             clearInterval(checkClosed);
             window.removeEventListener('message', messageListener);
             
             // Exchange authorization code for tokens
             try {
+              console.log('🎵 [DEBUG] Starting token exchange...');
               const success = await this.handleCallback(event.data.code);
+              console.log('🎵 [DEBUG] Token exchange result:', success);
               
               // Close popup after successful token exchange
               if (!popup.closed) {
@@ -168,13 +215,14 @@ class SpotifyIntegration {
               
               resolve(success);
             } catch (error) {
-              console.error('🎵 Token exchange error:', error);
+              console.error('🎵 [DEBUG] Token exchange error:', error);
               if (!popup.closed) {
                 popup.close();
               }
               reject(error);
             }
           } else if (event.data.type === 'SPOTIFY_AUTH_ERROR') {
+            console.error('🎵 [DEBUG] Received auth error message:', event.data.error);
             authCompleted = true;
             clearInterval(checkClosed);
             window.removeEventListener('message', messageListener);
@@ -185,31 +233,78 @@ class SpotifyIntegration {
 
         window.addEventListener('message', messageListener);
 
-        // Poll for popup closure or success
-        const checkClosed = setInterval(() => {
+        // Poll for popup closure and check localStorage as backup
+        checkClosed = setInterval(async () => {
+          // Check localStorage for auth code (backup method)
+          const authCode = localStorage.getItem('spotify_auth_code');
+          const authError = localStorage.getItem('spotify_auth_error');
+          
+          console.log('🎵 [DEBUG] Polling - Auth code in localStorage:', !!authCode, 'Auth error:', authError, 'Popup closed:', popup.closed);
+          
+          if (authCode && !authCompleted) {
+            console.log('🎵 [DEBUG] Found auth code in localStorage (backup method):', authCode);
+            authCompleted = true;
+            clearInterval(checkClosed);
+            window.removeEventListener('message', messageListener);
+            localStorage.removeItem('spotify_auth_code');
+            
+            try {
+              console.log('🎵 [DEBUG] Starting token exchange via localStorage backup...');
+              const success = await this.handleCallback(authCode);
+              console.log('🎵 [DEBUG] Token exchange via localStorage result:', success);
+              if (!popup.closed) {
+                popup.close();
+              }
+              resolve(success);
+            } catch (error) {
+              console.error('🎵 [DEBUG] Token exchange error via localStorage:', error);
+              if (!popup.closed) {
+                popup.close();
+              }
+              reject(error);
+            }
+            return;
+          }
+          
+          if (authError && !authCompleted) {
+            console.error('🎵 [DEBUG] Found auth error in localStorage:', authError);
+            authCompleted = true;
+            clearInterval(checkClosed);
+            window.removeEventListener('message', messageListener);
+            localStorage.removeItem('spotify_auth_error');
+            popup.close();
+            reject(new Error(authError));
+            return;
+          }
+          
           if (popup.closed) {
+            console.log('🎵 [DEBUG] Popup window was closed');
             clearInterval(checkClosed);
             window.removeEventListener('message', messageListener);
             
             // Only reject if auth wasn't completed successfully
             if (!authCompleted) {
-              // Check if authentication was successful (tokens might be in storage)
+              console.log('🎵 [DEBUG] Popup closed without completion - checking if tokens are available...');
+              // Final check if authentication was successful (tokens might be in storage)
               if (this.isAuthenticated()) {
+                console.log('🎵 [DEBUG] Found valid tokens after popup closed - success!');
                 resolve(true);
               } else {
+                console.log('🎵 [DEBUG] No valid tokens found - authentication failed');
                 reject(new Error('Authentication was cancelled or failed'));
               }
             }
           }
-        }, 1000);
+        }, 500); // Check more frequently
 
         // Timeout after 5 minutes
         setTimeout(() => {
           if (!popup.closed && !authCompleted) {
+            console.log('🎵 [DEBUG] Authentication timeout reached');
             clearInterval(checkClosed);
             window.removeEventListener('message', messageListener);
             popup.close();
-            reject(new Error('Authentication timeout'));
+            reject(new Error('Authentication timeout - please try again'));
           }
         }, 5 * 60 * 1000);
 
@@ -234,7 +329,9 @@ class SpotifyIntegration {
       'user-top-read',
       'user-read-recently-played',
       'user-library-read',
-      'playlist-read-private'
+      'playlist-read-private',
+      'user-read-playback-state',
+      'user-read-currently-playing'
     ].join(' ');
 
     const params = new URLSearchParams({
@@ -251,68 +348,122 @@ class SpotifyIntegration {
   }
 
   async handleCallback(code: string): Promise<boolean> {
+    console.log('🎵 [DEBUG] handleCallback called with code:', code);
+    console.log('🎵 [DEBUG] Client ID available:', !!this.clientId);
+    console.log('🎵 [DEBUG] Code verifier available:', !!this.codeVerifier);
+    console.log('🎵 [DEBUG] Redirect URI:', this.redirectUri);
+    
     if (!this.clientId || !this.codeVerifier) {
+      console.error('🎵 [DEBUG] Missing required parameters for token exchange');
       throw new Error('Spotify client ID or code verifier not configured');
     }
 
     try {
+      const tokenRequestBody = {
+        grant_type: 'authorization_code',
+        code: code,
+        redirect_uri: this.redirectUri,
+        client_id: this.clientId,
+        code_verifier: this.codeVerifier
+      };
+      
+      console.log('🎵 [DEBUG] Token request body:', tokenRequestBody);
+      
       const response = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: new URLSearchParams({
-          grant_type: 'authorization_code',
-          code: code,
-          redirect_uri: this.redirectUri,
-          client_id: this.clientId,
-          code_verifier: this.codeVerifier
-        })
+        body: new URLSearchParams(tokenRequestBody)
       });
+
+      console.log('🎵 [DEBUG] Token response status:', response.status, response.statusText);
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('🎵 Token exchange error response:', errorText);
+        console.error('🎵 [DEBUG] Token exchange error response:', errorText);
         throw new Error(`Token exchange failed: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
+      console.log('🎵 [DEBUG] Token response data:', {
+        access_token: !!data.access_token,
+        refresh_token: !!data.refresh_token,
+        expires_in: data.expires_in,
+        token_type: data.token_type
+      });
       
       this.accessToken = data.access_token;
       this.refreshToken = data.refresh_token;
       this.tokenExpiry = Date.now() + (data.expires_in * 1000);
       
+      console.log('🎵 [DEBUG] Saving tokens to storage...');
       this.saveTokensToStorage();
+      console.log('🎵 [DEBUG] Tokens saved successfully');
       return true;
     } catch (error) {
-      console.error('🎵 Spotify callback error:', error);
+      console.error('🎵 [DEBUG] Spotify callback error:', error);
       return false;
     }
   }
 
   async refreshAccessToken(): Promise<boolean> {
-    if (!this.refreshToken || !this.clientId || !this.clientSecret) {
+    console.log('🎵 [DEBUG] Attempting to refresh access token...');
+    console.log('🎵 [DEBUG] Refresh token available:', !!this.refreshToken);
+    console.log('🎵 [DEBUG] Client ID available:', !!this.clientId);
+    console.log('🎵 [DEBUG] Client Secret available:', !!this.clientSecret);
+    
+    if (!this.refreshToken || !this.clientId) {
+      console.log('🎵 [DEBUG] Missing refresh token or client ID');
       return false;
     }
 
     try {
-      const response = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': 'Basic ' + btoa(`${this.clientId}:${this.clientSecret}`)
-        },
-        body: new URLSearchParams({
-          grant_type: 'refresh_token',
-          refresh_token: this.refreshToken
-        })
-      });
+      // For PKCE flow, we might not have client secret, so try both methods
+      let response;
+      
+      if (this.clientSecret) {
+        console.log('🎵 [DEBUG] Using client secret for refresh');
+        response = await fetch('https://accounts.spotify.com/api/token', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Basic ' + btoa(`${this.clientId}:${this.clientSecret}`)
+          },
+          body: new URLSearchParams({
+            grant_type: 'refresh_token',
+            refresh_token: this.refreshToken
+          })
+        });
+      } else {
+        console.log('🎵 [DEBUG] Using PKCE method for refresh (no client secret)');
+        response = await fetch('https://accounts.spotify.com/api/token', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: new URLSearchParams({
+            grant_type: 'refresh_token',
+            refresh_token: this.refreshToken,
+            client_id: this.clientId
+          })
+        });
+      }
+
+      console.log('🎵 [DEBUG] Refresh response status:', response.status);
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('🎵 [DEBUG] Refresh token error:', errorText);
         return false;
       }
 
       const data = await response.json();
+      console.log('🎵 [DEBUG] Refresh response data:', {
+        access_token: !!data.access_token,
+        refresh_token: !!data.refresh_token,
+        expires_in: data.expires_in
+      });
       
       this.accessToken = data.access_token;
       if (data.refresh_token) {
@@ -321,9 +472,10 @@ class SpotifyIntegration {
       this.tokenExpiry = Date.now() + (data.expires_in * 1000);
       
       this.saveTokensToStorage();
+      console.log('🎵 [DEBUG] Token refresh successful');
       return true;
     } catch (error) {
-      console.error('Token refresh error:', error);
+      console.error('🎵 [DEBUG] Token refresh error:', error);
       return false;
     }
   }
@@ -347,10 +499,14 @@ class SpotifyIntegration {
   }
 
   async getUserPreferences(): Promise<SpotifyUserPreferences> {
+    console.log('🎵 Fetching user preferences...');
     const [topArtists, topTracks] = await Promise.all([
       this.getTopArtists(),
       this.getTopTracks()
     ]);
+    
+    console.log('🎵 Top artists:', topArtists);
+    console.log('🎵 Top tracks:', topTracks);
 
     // Extract genres from top artists
     const genreCount: Record<string, number> = {};
@@ -365,11 +521,27 @@ class SpotifyIntegration {
       .slice(0, 10)
       .map(([genre]) => genre);
 
-    // Get audio features for top tracks to create music profile
-    const trackIds = topTracks.slice(0, 10).map(track => track.id);
-    const audioFeatures = await this.getAudioFeatures(trackIds);
-    
-    const musicProfile = this.calculateMusicProfile(audioFeatures);
+    // Try to get audio features for top tracks to create music profile
+    let musicProfile;
+    try {
+      console.log('🎵 [DEBUG] Attempting to fetch audio features...');
+      const trackIds = topTracks.slice(0, 10).map(track => track.id);
+      console.log('🎵 [DEBUG] Track IDs for audio features:', trackIds);
+      const audioFeatures = await this.getAudioFeatures(trackIds);
+      console.log('🎵 [DEBUG] Audio features received:', audioFeatures);
+      musicProfile = this.calculateMusicProfile(audioFeatures);
+      console.log('🎵 [DEBUG] Music profile calculated:', musicProfile);
+    } catch (error) {
+      console.warn('🎵 [DEBUG] Failed to get audio features, using default profile:', error);
+      // Use default music profile if audio features fail
+      musicProfile = {
+        danceability: 0.5,
+        energy: 0.5,
+        valence: 0.5,
+        acousticness: 0.5,
+        instrumentalness: 0.5
+      };
+    }
 
     return {
       topArtists: topArtists.slice(0, 10),
@@ -382,10 +554,22 @@ class SpotifyIntegration {
 
 
   private async getAudioFeatures(trackIds: string[]) {
-    if (trackIds.length === 0) return [];
+    if (trackIds.length === 0) {
+      console.log('🎵 [DEBUG] No track IDs provided for audio features');
+      return [];
+    }
     
-    const response = await this.makeApiRequest(`/audio-features?ids=${trackIds.join(',')}`);
-    return response.audio_features.filter((feature: any) => feature !== null);
+    console.log('🎵 [DEBUG] Requesting audio features for tracks:', trackIds);
+    const endpoint = `/audio-features?ids=${trackIds.join(',')}`;
+    console.log('🎵 [DEBUG] Audio features endpoint:', endpoint);
+    
+    const response = await this.makeApiRequest(endpoint);
+    console.log('🎵 [DEBUG] Audio features raw response:', response);
+    
+    const filteredFeatures = response.audio_features.filter((feature: any) => feature !== null);
+    console.log('🎵 [DEBUG] Filtered audio features:', filteredFeatures);
+    
+    return filteredFeatures;
   }
 
   private calculateMusicProfile(audioFeatures: any[]) {
@@ -503,12 +687,19 @@ class SpotifyIntegration {
   }
 
   disconnect(): void {
+    console.log('🎵 [DEBUG] Disconnecting and clearing all tokens...');
     this.accessToken = null;
     this.refreshToken = null;
     this.tokenExpiry = null;
     localStorage.removeItem('spotify_access_token');
     localStorage.removeItem('spotify_refresh_token');
     localStorage.removeItem('spotify_token_expiry');
+  }
+
+  // Force clear tokens (for debugging)
+  forceClearTokens(): void {
+    console.log('🎵 [DEBUG] Force clearing all Spotify tokens...');
+    this.disconnect();
   }
 
   isConfigured(): boolean {
