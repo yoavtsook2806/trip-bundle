@@ -238,4 +238,18 @@ Return the response in this JSON format:
   isConfigured(): boolean {
     return this.apiKey !== null && this.apiKey.length > 0;
   }
+
+  /**
+   * Get the current system prompt
+   */
+  getSystemPrompt(): string {
+    return getSystemPrompt(this.cities);
+  }
+
+  /**
+   * Get the current user prompt
+   */
+  getUserPrompt(): string {
+    return getUserPrompt(this.userData, this.cities);
+  }
 }
