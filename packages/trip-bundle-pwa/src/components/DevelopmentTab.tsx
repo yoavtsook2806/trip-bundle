@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getSystemPrompt, getUserPrompt } from '../prompts';
+import { getSystemPrompt, getUserPrompt } from 'trip-bundle-prompts-service';
 import UserPreferencesStore from '../store/userPreferences';
 import IntegrationsStore from '../store/integrations';
 import './DevelopmentTab.css';

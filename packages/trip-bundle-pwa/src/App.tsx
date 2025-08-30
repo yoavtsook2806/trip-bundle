@@ -4,8 +4,7 @@ import './App.css';
 
 // Import our stores, services, and actions
 import { UserPreferencesStore, BundleSuggestionsStore, IntegrationsStore } from './store';
-import { GPTService } from './services';
-import { SpotifyService } from './services';
+import { SpotifyService, createTripBundleService, convertStoreDataToUserData } from './services';
 import { TripActions, IntegrationActions, initIntegrationsData, initUserPreferencesData } from './actions';
 import { IntegrationsStorage, UserPreferencesStorage } from './storage';
 import { BundleOffer, TabNavigation, UserPreferencesForm, SearchForm, EventDetails, DevelopmentTab, IntegrationsTab } from './components';
@@ -19,7 +18,7 @@ import TripBundleIcon from './images/TripBundleIcon.jpeg';
 const userPreferencesStore = new UserPreferencesStore();
 const bundleSuggestionsStore = new BundleSuggestionsStore();
 const integrationsStore = new IntegrationsStore();
-const gptService = new GPTService();
+// gptService removed - now using TripBundlePromptService via factory in TripActions
 const spotifyService = new SpotifyService();
 
 // Create actions instances with dependencies
@@ -177,7 +176,11 @@ const App: React.FC = observer(() => {
   const handleEventSearch = async (city: string, startDate: string, endDate: string) => {
     setIsSearching(true);
     try {
-      const result = await gptService.getEvents(city, startDate, endDate);
+      // Create service instance for event search
+      const userData = convertStoreDataToUserData(userPreferencesStore, integrationsStore);
+      const eventService = createTripBundleService(userData);
+      
+      const result = await eventService.getEvents(city, startDate, endDate);
       setSearchResults(result.events);
     } catch (error) {
       console.error('Error searching events:', error);

@@ -16,7 +16,8 @@ export type {
   EventsResponse,
   TripBundle,
   Event,
-  Entertainment
+  Entertainment,
+  ITripBundleService
 } from './types';
 
 // Constants (if needed by consumers)

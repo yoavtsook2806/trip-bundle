@@ -7,19 +7,12 @@ import {
   type UserData,
   type GPTResponse,
   type EventsResponse,
-  type GenerationOptions
+  type GenerationOptions,
+  type ITripBundleService
 } from 'trip-bundle-prompts-service';
 import { MockTripBundleService } from './mockTripBundleService';
 
-/**
- * Interface for trip bundle service (both real and mock implement this)
- */
-export interface ITripBundleService {
-  updateUserData(userData: UserData): void;
-  generateTripBundles(options?: GenerationOptions): Promise<GPTResponse>;
-  getEvents(city: string, startDate: string, endDate: string): Promise<EventsResponse>;
-  isConfigured(): boolean;
-}
+// ITripBundleService interface is now imported from trip-bundle-prompts-service
 
 /**
  * Factory function that creates the appropriate service based on environment

@@ -160,3 +160,11 @@ export interface GenerationOptions {
   page?: number;
   limit?: number;
 }
+
+// Service Interface
+export interface ITripBundleService {
+  updateUserData(userData: UserData): void;
+  generateTripBundles(options?: GenerationOptions): Promise<GPTResponse>;
+  getEvents(city: string, startDate: string, endDate: string): Promise<EventsResponse>;
+  isConfigured(): boolean;
+}
