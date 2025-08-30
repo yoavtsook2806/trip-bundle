@@ -66,8 +66,19 @@ class SpotifyIntegration {
     let redirectUri;
     
     if (origin.includes('github.io')) {
-      // Production: GitHub Pages
-      redirectUri = origin + '/trip-bundle/spotify-callback.html';
+      // Production: GitHub Pages - extract base path from current pathname
+      let basePath = '';
+      if (pathname.startsWith('/trip-bundle/')) {
+        basePath = '/trip-bundle';
+      } else if (pathname.includes('/trip-bundle/')) {
+        // Extract the base path if we're deeper in the app
+        const pathParts = pathname.split('/');
+        const tripBundleIndex = pathParts.indexOf('trip-bundle');
+        if (tripBundleIndex !== -1) {
+          basePath = '/' + pathParts.slice(1, tripBundleIndex + 1).join('/');
+        }
+      }
+      redirectUri = origin + basePath + '/spotify-callback.html';
     } else {
       // Local development: use 127.0.0.1 to match Spotify app configuration
       const spotifyCompatibleOrigin = origin.replace('localhost', '127.0.0.1');
