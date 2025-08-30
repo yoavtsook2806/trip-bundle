@@ -7,7 +7,7 @@ import { UserPreferencesStore, BundleSuggestionsStore } from './store';
 import { GPTService } from './services';
 import { SpotifyIntegration } from './integrations';
 import { TripActions } from './actions';
-import { BundleOffer, TabNavigation, UserPreferencesForm, SearchForm, EventDetails } from './components';
+import { BundleOffer, TabNavigation, UserPreferencesForm, SearchForm, EventDetails, DevelopmentTab } from './components';
 import { Event } from './types';
 import { usePWA } from './hooks/usePWA';
 
@@ -120,11 +120,14 @@ const App: React.FC = observer(() => {
     setSelectedEvent(event);
   };
 
-  // Tab configuration
+  // Tab configuration - check if we're in mock mode to show development tab
+  const isMockMode = (import.meta as any).env?.VITE_MOCK === 'true';
+  
   const tabs = [
     { id: 'trips', label: 'Trip Bundles', icon: '🧳' },
     { id: 'search', label: 'Search Events', icon: '🔍' },
-    { id: 'preferences', label: 'Preferences', icon: '⚙️' }
+    { id: 'preferences', label: 'Preferences', icon: '⚙️' },
+    ...(isMockMode ? [{ id: 'development', label: 'Development', icon: '🛠️' }] : [])
   ];
 
   const handlePreferencesUpdate = () => {
@@ -154,6 +157,10 @@ const App: React.FC = observer(() => {
         {activeTab === 'preferences' ? (
           <UserPreferencesForm
             onPreferencesUpdate={handlePreferencesUpdate}
+            onClose={() => setActiveTab('trips')}
+          />
+        ) : activeTab === 'development' && isMockMode ? (
+          <DevelopmentTab
             onClose={() => setActiveTab('trips')}
           />
         ) : activeTab === 'search' ? (
