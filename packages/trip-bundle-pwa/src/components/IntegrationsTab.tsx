@@ -23,7 +23,23 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
 
   useEffect(() => {
     loadSpotifyData();
+    // Check if we're returning from Spotify OAuth redirect
+    checkForSpotifyRedirectReturn();
   }, []);
+
+  const checkForSpotifyRedirectReturn = async () => {
+    const authCode = localStorage.getItem('spotify_auth_code');
+    const authInProgress = localStorage.getItem('spotify_auth_in_progress');
+    
+    if (authCode && authInProgress) {
+      console.log('🎵 [INTEGRATION DEBUG] Detected return from Spotify redirect, processing...');
+      localStorage.removeItem('spotify_auth_code');
+      localStorage.removeItem('spotify_auth_in_progress');
+      
+      // Process the auth code as if user just clicked connect
+      await handleSpotifyConnect();
+    }
+  };
 
   const loadSpotifyData = async () => {
     try {
@@ -51,9 +67,14 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
     setError(null);
 
     try {
-      // Force clear any existing tokens to ensure fresh authentication
-      console.log('🎵 [INTEGRATION DEBUG] Clearing any existing tokens...');
-      spotifyIntegration.forceClearTokens();
+      // Only clear tokens if we're not processing a redirect return
+      const authCode = localStorage.getItem('spotify_auth_code');
+      if (!authCode) {
+        console.log('🎵 [INTEGRATION DEBUG] No auth code found, clearing any existing tokens...');
+        spotifyIntegration.forceClearTokens();
+      } else {
+        console.log('🎵 [INTEGRATION DEBUG] Auth code found, skipping token clear to process redirect...');
+      }
       
       console.log('🎵 [INTEGRATION DEBUG] Calling spotifyIntegration.authenticate()...');
       // Start Spotify OAuth flow
