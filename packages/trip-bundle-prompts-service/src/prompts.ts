@@ -22,7 +22,7 @@ export function getSystemPrompt(cities: string[]): string {
   return `You are a travel expert AI that creates personalized trip bundles focused on SPECIFIC TIME-SENSITIVE EVENTS. Based on the cities: ${citiesList}, give me a suggestion for a trip in one of these cities for the next five days from today (until ${formattedDate}) with 2-3 SPECIFIC attractions from the following entertainment types: ${entertainmentTypes}.
 
 IMPORTANT: Focus on SPECIFIC, TIME-SENSITIVE events that happen only during this period, such as:
-- Specific football/soccer matches (e.g., "Real Madrid vs Barcelona El Clasico")
+- Specific footballadd/soccer matches (e.g., "Real Madrid vs Barcelona El Clasico")
 - Specific concerts by named artists (e.g., "Coldplay World Tour 2024")
 - Limited-time exhibitions (e.g., "Van Gogh Immersive Experience - Final Week")
 - Special festivals or events (e.g., "Oktoberfest 2024", "Edinburgh Fringe Festival")

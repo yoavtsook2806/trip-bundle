@@ -109,6 +109,21 @@ jobs:
     - name: Build PWA (Mock)
       run: yarn workspace trip-bundle-pwa build:mock
       
+    - name: Create builds directory and copy mock build
+      run: |
+        cd packages/trip-bundle-pwa
+        mkdir -p builds/mock
+        cp -r dist/* builds/mock/
+      
+    - name: Build PWA (Prod)
+      run: yarn workspace trip-bundle-pwa build:prod
+      
+    - name: Copy prod build to builds directory
+      run: |
+        cd packages/trip-bundle-pwa
+        mkdir -p builds/prod
+        cp -r dist/* builds/prod/
+      
     - name: Verify PWA files
       run: |
         cd packages/trip-bundle-pwa
@@ -116,11 +131,10 @@ jobs:
         ls -la dist/pwa.html || echo "pwa.html not found!"
         echo "Checking dist contents:"
         ls -la dist/
+        echo "Checking builds directory:"
+        ls -la builds/
         echo "First few lines of pwa.html:"
         head -10 dist/pwa.html || echo "Could not read pwa.html"
-      
-    - name: Build PWA (Prod)
-      run: yarn workspace trip-bundle-pwa build:prod
       
     - name: Setup Pages
       uses: actions/configure-pages@v4
