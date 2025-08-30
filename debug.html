@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Debug - Trip Bundle</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Trip Bundle Debug">
+    <link rel="manifest" href="debug-manifest.json">
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            background: #f0f0f0; 
+        }
+        .info { 
+            background: white; 
+            padding: 15px; 
+            margin: 10px 0; 
+            border-radius: 8px; 
+        }
+        .error { background-color: #ffebee; }
+        .success { background-color: #e8f5e8; }
+    </style>
+</head>
+<body>
+    <h1>🔍 PWA Debug Page</h1>
+    
+    <div class="info success">
+        <h3>✅ This page loaded successfully!</h3>
+        <p><strong>URL:</strong> <span id="current-url"></span></p>
+        <p><strong>User Agent:</strong> <span id="user-agent"></span></p>
+        <p><strong>Standalone Mode:</strong> <span id="standalone"></span></p>
+    </div>
+
+    <div class="info">
+        <h3>📱 PWA Installation Test</h3>
+        <p>If you're seeing this page after installing from home screen, the PWA routing is working!</p>
+        <button onclick="testServiceWorker()">Test Service Worker</button>
+        <div id="sw-status"></div>
+    </div>
+
+    <div class="info">
+        <h3>🔗 Navigation Test</h3>
+        <button onclick="window.location.href='/trip-bundle/'">Go to Main App</button>
+        <button onclick="window.location.href='/trip-bundle/index.html'">Go to Index.html</button>
+    </div>
+
+    <script>
+        // Display current info
+        document.getElementById('current-url').textContent = window.location.href;
+        document.getElementById('user-agent').textContent = navigator.userAgent;
+        document.getElementById('standalone').textContent = window.navigator.standalone ? 'YES' : 'NO';
+
+        // Test service worker
+        function testServiceWorker() {
+            const statusDiv = document.getElementById('sw-status');
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration()
+                    .then(registration => {
+                        if (registration) {
+                            statusDiv.innerHTML = '<p style="color: green;">✅ Service Worker registered</p>';
+                        } else {
+                            statusDiv.innerHTML = '<p style="color: orange;">⚠️ Service Worker not registered</p>';
+                        }
+                    })
+                    .catch(error => {
+                        statusDiv.innerHTML = '<p style="color: red;">❌ Service Worker error: ' + error.message + '</p>';
+                    });
+            } else {
+                statusDiv.innerHTML = '<p style="color: red;">❌ Service Worker not supported</p>';
+            }
+        }
+
+        // Log everything to console for Web Inspector
+        console.log('PWA Debug Page Loaded');
+        console.log('URL:', window.location.href);
+        console.log('Standalone:', window.navigator.standalone);
+        console.log('User Agent:', navigator.userAgent);
+    </script>
+</body>
+</html>

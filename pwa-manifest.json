@@ -1,0 +1,19 @@
+{
+  "name": "Trip Bundle AI - PWA Launcher",
+  "short_name": "Trip Bundle",
+  "description": "Your personalized travel companion - PWA launcher",
+  "start_url": "./pwa.html",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#667eea",
+  "orientation": "portrait-primary",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "TripBundleIcon.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
