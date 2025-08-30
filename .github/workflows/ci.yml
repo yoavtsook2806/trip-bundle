@@ -40,7 +40,7 @@ jobs:
         yarn --version
       
     - name: Install dependencies
-      run: yarn install --frozen-lockfile
+      run: yarn install --immutable
       
     - name: Debug workspace structure
       run: |
@@ -94,7 +94,7 @@ jobs:
         yarn --version
       
     - name: Install dependencies
-      run: yarn install --frozen-lockfile
+      run: yarn install --immutable
       
     - name: Build prompts service first
       run: yarn workspace trip-bundle-prompts-service build
