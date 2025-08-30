@@ -7287,7 +7287,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"trip-bundle-prompts-service@workspace:^, trip-bundle-prompts-service@workspace:packages/trip-bundle-prompts-service":
+"trip-bundle-prompts-service@workspace:*, trip-bundle-prompts-service@workspace:packages/trip-bundle-prompts-service":
   version: 0.0.0-use.local
   resolution: "trip-bundle-prompts-service@workspace:packages/trip-bundle-prompts-service"
   dependencies:
@@ -7319,7 +7319,7 @@ __metadata:
     mobx-react-lite: "npm:^4.1.0"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
-    trip-bundle-prompts-service: "workspace:^"
+    trip-bundle-prompts-service: "workspace:*"
     typescript: "npm:^5.2.2"
     vite: "npm:^5.2.0"
     vite-plugin-pwa: "npm:^0.19.0"
