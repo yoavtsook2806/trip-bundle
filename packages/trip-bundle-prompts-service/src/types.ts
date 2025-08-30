@@ -2,6 +2,20 @@
 // TRIP BUNDLE PROMPTS SERVICE TYPES
 // =============================================================================
 
+// City data structure
+export interface City {
+  code: string;
+  name: string;
+  country: string;
+  countryCode: string;
+  continent: string;
+  currency: string;
+  timeZone: string;
+  language: string[];
+  flagUrl: string;
+  symbolUrl: string;
+}
+
 // Core Entertainment Type
 export interface Entertainment {
   id: string;
@@ -141,6 +155,7 @@ export interface UserData {
   integrations: {
     [integrationName: string]: IntegrationSummary;
   };
+  cities: string[]; // Available city names for trip planning
 }
 
 // =============================================================================

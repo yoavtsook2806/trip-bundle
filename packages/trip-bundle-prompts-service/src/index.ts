@@ -17,12 +17,12 @@ export type {
   TripBundle,
   Event,
   Entertainment,
-  ITripBundleService
+  ITripBundleService,
+  City
 } from './types';
 
 // Constants (if needed by consumers)
-export { CITIES, ALL_ENTERTAINMENTS } from './constants';
-export type { City } from './constants';
+export { ALL_ENTERTAINMENTS } from './constants';
 
 // Prompts (if needed by consumers for customization)
 export { getSystemPrompt, getUserPrompt } from './prompts';

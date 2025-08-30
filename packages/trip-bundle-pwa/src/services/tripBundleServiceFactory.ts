@@ -11,6 +11,7 @@ import {
   type ITripBundleService
 } from 'trip-bundle-prompts-service';
 import { MockTripBundleService } from './mockTripBundleService';
+import { CITIES } from '../constants/cities';
 
 // ITripBundleService interface is now imported from trip-bundle-prompts-service
 
@@ -57,7 +58,8 @@ export function convertStoreDataToUserData(
       groupSize: prefs.groupSize,
       travelDates: prefs.travelDates
     },
-    integrations: generateIntegrationsData(integrationsStore)
+    integrations: generateIntegrationsData(integrationsStore),
+    cities: CITIES.map(city => city.name) // Map City objects to city names
   };
 }
 
