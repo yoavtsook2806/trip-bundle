@@ -28,9 +28,9 @@ const userData = {
 async function demonstrateService() {
   console.log('🎯 Trip Bundle Prompts Service Demo\n');
 
-  // Create service instance in mock mode
+  // Create service instance (requires API key for real usage)
   const service = new TripBundlePromptService(userData, {
-    mockMode: true, // Using mock mode for demo
+    // apiKey: 'your-openai-api-key', // Uncomment and add your API key for real usage
     model: 'gpt-4o-mini',
     temperature: 0.7
   });
@@ -45,8 +45,9 @@ async function demonstrateService() {
   console.log('');
 
   try {
-    // Generate trip bundles
+    // Note: This example will fail without a valid API key
     console.log('🤖 Generating trip bundles...');
+    console.log('⚠️  Note: This requires a valid OpenAI API key to work');
     const response = await service.generateTripBundles({ page: 1, limit: 3 });
     
     console.log(`✅ Generated ${response.bundles.length} trip bundles:`);

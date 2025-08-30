@@ -1,4 +1,4 @@
-import { City } from '../types';
+import type { City } from 'trip-bundle-prompts-service';
 
 export const CITIES: City[] = [
   // Western Europe Capital Cities

@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx';
-import { TripBundle } from '../types';
+import type { TripBundle } from 'trip-bundle-prompts-service';
 
 export interface BundleSuggestionsState {
   bundles: TripBundle[];

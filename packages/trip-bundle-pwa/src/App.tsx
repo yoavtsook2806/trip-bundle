@@ -9,7 +9,7 @@ import { SpotifyService } from './services';
 import { TripActions, IntegrationActions, initIntegrationsData, initUserPreferencesData } from './actions';
 import { IntegrationsStorage, UserPreferencesStorage } from './storage';
 import { BundleOffer, TabNavigation, UserPreferencesForm, SearchForm, EventDetails, DevelopmentTab, IntegrationsTab } from './components';
-import { Event } from './types';
+import type { Event } from 'trip-bundle-prompts-service';
 import { usePWA } from './hooks/usePWA';
 
 // Import the TripBundle icon
@@ -26,8 +26,7 @@ const spotifyService = new SpotifyService();
 const tripActions = new TripActions(
   bundleSuggestionsStore,
   userPreferencesStore,
-  integrationsStore,
-  gptService
+  integrationsStore
 );
 
 const integrationActions = new IntegrationActions(

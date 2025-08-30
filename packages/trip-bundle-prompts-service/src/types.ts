@@ -149,7 +149,6 @@ export interface UserData {
 
 export interface ServiceConfig {
   apiKey?: string;
-  mockMode?: boolean;
   baseUrl?: string;
   model?: string;
   temperature?: number;

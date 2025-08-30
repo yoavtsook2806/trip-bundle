@@ -1,26 +1,27 @@
 import BundleSuggestionsStore from '../store/bundleSuggestions';
 import UserPreferencesStore from '../store/userPreferences';
 import IntegrationsStore from '../store/integrations';
-import GPTService from '../services/gptService';
-import { TripBundle } from '../types';
-import { getSystemPrompt, getUserPrompt } from '../prompts';
+import { createTripBundleService, convertStoreDataToUserData, type ITripBundleService } from '../services/tripBundleServiceFactory';
+import type { TripBundle } from 'trip-bundle-prompts-service';
 
 export class TripActions {
   private bundleSuggestionsStore: BundleSuggestionsStore;
   private userPreferencesStore: UserPreferencesStore;
   private integrationsStore: IntegrationsStore;
-  private gptService: GPTService;
+  private tripBundleService: ITripBundleService;
 
   constructor(
     bundleSuggestionsStore: BundleSuggestionsStore,
     userPreferencesStore: UserPreferencesStore,
-    integrationsStore: IntegrationsStore,
-    gptService: GPTService
+    integrationsStore: IntegrationsStore
   ) {
     this.bundleSuggestionsStore = bundleSuggestionsStore;
     this.userPreferencesStore = userPreferencesStore;
     this.integrationsStore = integrationsStore;
-    this.gptService = gptService;
+    
+    // Create the appropriate service based on environment
+    const userData = convertStoreDataToUserData(userPreferencesStore, integrationsStore);
+    this.tripBundleService = createTripBundleService(userData);
   }
 
   // Trip Bundle Generation Actions
@@ -34,21 +35,21 @@ export class TripActions {
         this.bundleSuggestionsStore.clearBundles(); // Clear existing bundles for fresh load
       }
 
-      if (!this.gptService.isConfigured()) {
-        console.warn('GPT service not configured, using mock data');
+      if (!this.tripBundleService.isConfigured()) {
+        console.warn('Trip bundle service not configured');
       }
 
-      // Generate user prompt from stores
-      const userPromptText = getUserPrompt(this.userPreferencesStore, this.integrationsStore);
-      console.log('Generated user prompt from preferences:', userPromptText);
-
-      const systemPrompt = getSystemPrompt();
+      // Update service with latest user data
+      const userData = convertStoreDataToUserData(this.userPreferencesStore, this.integrationsStore);
+      this.tripBundleService.updateUserData(userData);
       
       // Determine page to load
       const page = loadMore ? this.bundleSuggestionsStore.nextPage : 1;
       const limit = 5; // Always load 5 bundles per page
       
-      const response = await this.gptService.generateTripBundles(systemPrompt, userPromptText, { page, limit });
+      console.log(`Generating trip bundles - Page: ${page}, Limit: ${limit}, LoadMore: ${loadMore}`);
+
+      const response = await this.tripBundleService.generateTripBundles({ page, limit });
       
       // Save the bundles to the store
       const paginationInfo = response.pagination ? {

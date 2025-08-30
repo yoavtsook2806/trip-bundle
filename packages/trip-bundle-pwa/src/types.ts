@@ -1,141 +1,56 @@
 // =============================================================================
-// CORE TYPES - Trip Bundle PWA
+// PWA-SPECIFIC TYPES - Trip Bundle PWA
 // =============================================================================
 
-// City Type
-export interface City {
-  code: string;
-  name: string;
-  country: string;
-  countryCode: string;
-  continent: string;
-  currency: string;
-  timeZone: string;
-  language: string[];
-  flagUrl: string;
-  symbolUrl: string;
+// Re-export commonly used types from the service
+export type { 
+  City, 
+  Entertainment, 
+  Event, 
+  TripBundle, 
+  GPTResponse, 
+  EventsResponse,
+  UserData,
+  UserPreferences
+} from 'trip-bundle-prompts-service';
+
+// =============================================================================
+// USER PREFERENCES TYPES (PWA-specific extensions)
+// =============================================================================
+
+// Extended user preferences for PWA store
+export interface TripPreferences {
+  budget: {
+    min: number;
+    max: number;
+    currency: string;
+  };
+  duration: {
+    min: number;
+    max: number;
+  };
+  preferredCountries: string[];
+  excludedCountries: string[];
+  musicGenres: string[];
+  sportsInterests: string[];
+  entertainmentPreferences: Array<{
+    value: string;
+    type: string;
+    weight: number;
+  }>;
+  groupSize: number;
+  travelDates?: {
+    flexible?: boolean;
+    startDate?: string;
+    endDate?: string;
+  };
 }
 
-// Entertainment Type
-export interface Entertainment {
+export interface UserPreference {
   id: string;
-  name: string;
-  category: 'music' | 'sports' | 'culture' | 'food' | 'nature' | 'nightlife' | 'adventure';
-  subcategory?: string;
-  description: string;
-  averageDuration?: number; // in hours
-  duration?: number; // in minutes (for compatibility)
-  averageCost?: {
-    min: number;
-    max: number;
-    currency: string;
-  };
-  seasonality?: 'year-round' | 'seasonal' | 'summer' | 'winter' | 'limited' | 'exclusive' | 'anniversary' | 'annual';
-  popularCountries?: string[]; // country codes
-  tags?: string[];
-}
-
-// Event Type (for individual events)
-export interface Event {
-  entertainment: Entertainment;
-  date: string;
-  time: string;
-  venue: string;
-  cost: number;
-  currency: string;
-  bookingUrl?: string;
-}
-
-
-// Trip Bundle Type
-export interface TripBundle {
-  id: string;
-  title: string;
-  description: string;
-  country: string;
-  city: string;
-  duration: number; // days
-  startDate: string;
-  endDate: string;
-  totalCost: {
-    amount: number;
-    currency: string;
-    breakdown: {
-      accommodation: number;
-      entertainment: number;
-      food: number;
-      transport: number;
-    };
-  };
-  events: Event[];
-  accommodation: {
-    name: string;
-    type: 'hotel' | 'hostel' | 'apartment' | 'resort';
-    rating: number;
-    pricePerNight: number;
-    location: string;
-    amenities: string[];
-  };
-  transportation: {
-    type: 'flight' | 'train' | 'bus' | 'car';
-    details: string;
-    cost: number;
-    currency: string;
-  };
-  recommendations: {
-    restaurants: string[];
-    localTips: string[];
-    weatherInfo: string;
-    packingList: string[];
-  };
-  confidence: number; // 0-100 how well it matches user preferences
-}
-
-// =============================================================================
-// API RESPONSE TYPES
-// =============================================================================
-
-// GPT Service Response Type
-export interface GPTResponse {
-  bundles: TripBundle[];
-  reasoning: string;
-  alternatives: string[];
-  processingTime: number;
-  pagination?: {
-    page: number;
-    limit: number;
-    total: number;
-    hasMore: boolean;
-  };
-}
-
-// Events Search Response Type
-export interface EventsResponse {
-  events: Event[];
-  reasoning: string;
-  processingTime: number;
-}
-
-// =============================================================================
-// USER PREFERENCES TYPES
-// =============================================================================
-
-export interface UserPreferences {
-  budget?: {
-    min: number;
-    max: number;
-    currency: string;
-  };
-  duration?: {
-    min: number;
-    max: number;
-  };
-  preferredCategories?: Entertainment['category'][];
-  preferredCountries?: string[];
-  travelStyle?: 'budget' | 'mid-range' | 'luxury';
-  groupSize?: number;
-  accessibility?: boolean;
-  languages?: string[];
+  type: 'country' | 'music' | 'sport' | 'entertainment';
+  value: string;
+  weight: number;
 }
 
 // =============================================================================
@@ -150,47 +65,54 @@ export interface Tab {
   badge?: string | number;
 }
 
-// Bundle Offer Props
+// Bundle Offer Component
 export interface BundleOfferProps {
   bundle: TripBundle;
-  onSelect?: (bundle: TripBundle) => void;
-  onBookmark?: (bundle: TripBundle) => void;
-  onEventClick?: (entertainment: Entertainment, date: string, time: string, venue: string, cost: number) => void;
+  onClose: () => void;
+  onBookmark?: (bundleId: string) => void;
+  onSelect?: (bundleId: string) => void;
+  onEventClick?: (entertainment: any, date: string, time: string, venue: string, cost: number) => void;
   isSelected?: boolean;
   isBookmarked?: boolean;
 }
 
-// Event Details Props
-export interface EventDetailsProps {
-  event: Event;
-  onClose?: () => void;
-  onBook?: (event: Event) => void;
-}
-
-// Search Form Props
+// Search Form Component
 export interface SearchFormProps {
   onSearch: (city: string, startDate: string, endDate: string) => void;
   isLoading?: boolean;
 }
 
+// Event Details Component
+export interface EventDetailsProps {
+  event: Event;
+  onClose: () => void;
+  onBook?: (event: Event) => void;
+}
+
 // =============================================================================
-// STORE TYPES
+// INTEGRATION TYPES (PWA-specific)
 // =============================================================================
 
-export interface BundleSuggestionsState {
-  bundles: TripBundle[];
-  isLoading: boolean;
-  error: string | null;
-  selectedBundle: TripBundle | null;
-  bookmarkedBundleIds: string[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    hasMore: boolean;
+export interface SpotifyIntegrationState {
+  connected: boolean;
+  profile: any | null;
+  preferences: any | null;
+  lastSyncAt?: string;
+}
+
+export interface IntegrationsState {
+  integrations: {
+    spotify?: SpotifyIntegrationState;
   };
 }
 
-export interface UserPreferencesState extends UserPreferences {
-  isLoaded: boolean;
+// =============================================================================
+// PWA-SPECIFIC TYPES
+// =============================================================================
+
+export interface PWAInfo {
+  isInstalled: boolean;
+  isStandalone: boolean;
+  canInstall: boolean;
+  installPrompt: any | null;
 }

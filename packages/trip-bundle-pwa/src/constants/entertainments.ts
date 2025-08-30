@@ -1,4 +1,4 @@
-import { Entertainment } from '../types';
+import type { Entertainment } from 'trip-bundle-prompts-service';
 
 export const MUSIC_ENTERTAINMENTS: Entertainment[] = [
   {

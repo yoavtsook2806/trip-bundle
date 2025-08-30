@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Node.js service for generating trip bundle prompts and interfacing with GPT",
   "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",

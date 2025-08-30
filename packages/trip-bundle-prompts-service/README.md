@@ -6,7 +6,6 @@ A Node.js service for generating personalized trip bundles using OpenAI's GPT AP
 
 - 🎯 **Personalized Prompts**: Converts user preferences and integration data into optimized GPT prompts
 - 🤖 **GPT Integration**: Direct communication with OpenAI's API for trip bundle generation
-- 🎭 **Mock Mode**: Built-in mock data for development and testing
 - 📦 **TypeScript**: Full TypeScript support with comprehensive type definitions
 - 🔧 **Configurable**: Flexible configuration options for different environments
 
@@ -41,8 +40,7 @@ const userData: UserData = {
 
 // Create service instance
 const service = new TripBundlePromptService(userData, {
-  apiKey: 'your-openai-api-key',
-  mockMode: false // Set to true for development
+  apiKey: 'your-openai-api-key'
 });
 
 // Generate trip bundles
@@ -152,7 +150,6 @@ interface IntegrationSummary {
 ```typescript
 interface ServiceConfig {
   apiKey?: string;
-  mockMode?: boolean;
   baseUrl?: string;
   model?: string;
   temperature?: number;
@@ -165,19 +162,6 @@ interface ServiceConfig {
 ### Environment Variables
 
 - `OPENAI_API_KEY`: Your OpenAI API key
-- `MOCK_MODE`: Set to 'true' to enable mock mode
-
-### Mock Mode
-
-For development and testing, you can enable mock mode:
-
-```typescript
-const service = new TripBundlePromptService(userData, {
-  mockMode: true
-});
-```
-
-Mock mode provides realistic sample data without making API calls.
 
 ## Integration Examples
 
