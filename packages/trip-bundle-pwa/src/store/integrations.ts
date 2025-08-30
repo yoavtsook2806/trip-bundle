@@ -79,6 +79,7 @@ class IntegrationsStore {
     return this.integrations.spotify.preferences;
   }
 
-  // Generate integration context for prompts
-   the 
+
+}
+
 export default IntegrationsStore;

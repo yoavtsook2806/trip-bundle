@@ -9,8 +9,10 @@
 - **Responsibility**: Manages application state, provides computed values and reactive updates
 - **Rules**: 
   - Should only contain state management logic
+  - **CRITICAL**: NO prompt generation logic - only raw data
   - No direct API calls or storage operations
   - Use MobX observables, actions, and computed values
+  - Computed values should be for data processing, not prompt formatting
 
 #### @storage/ - Local Storage
 - **Purpose**: Handles data persistence to localStorage
@@ -45,7 +47,9 @@
 - **Purpose**: Generates prompts for AI services based on current application state
 - **Responsibility**: Creates contextual prompts by reading from stores
 - **Rules**:
+  - **CRITICAL**: ALL prompt generation logic must be in @prompts/, NOT in stores
   - Gets data from stores (not storage) to generate prompts
+  - Stores should only provide raw data, no prompt formatting
   - Storage is only for persistence between sessions
   - Prompts reflect current in-memory state
   - Should be called after stores are initialized with data
