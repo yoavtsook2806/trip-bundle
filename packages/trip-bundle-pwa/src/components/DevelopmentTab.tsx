@@ -37,17 +37,18 @@ export const DevelopmentTab: React.FC<DevelopmentTabProps> = ({ onClose }) => {
     }
   };
 
-  const handleClose = () => {
-    setActivePrompt(null);
-    setPromptContent('');
-    onClose();
-  };
+
 
   return (
     <div className="development-tab">
       <div className="development-header">
-        <h2>🛠️ Development Tools</h2>
-        <p>View and debug AI prompts (Mock Mode Only)</p>
+        <div className="header-content">
+          <h2>🛠️ Development Tools</h2>
+          <p>View and debug AI prompts (Mock Mode Only)</p>
+        </div>
+        <button className="close-tab-btn" onClick={onClose}>
+          ✕
+        </button>
       </div>
 
       <div className="prompt-buttons">

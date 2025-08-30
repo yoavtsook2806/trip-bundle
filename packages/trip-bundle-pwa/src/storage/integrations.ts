@@ -164,11 +164,13 @@ export class IntegrationsHelpers {
       const spotify = integrations.spotify;
       const prefs = spotify.preferences;
       
-      contextParts.push(`Music Preferences (from Spotify):
+      if (prefs) {
+        contextParts.push(`Music Preferences (from Spotify):
 - Top Genres: ${prefs.topGenres.join(', ')}
 - Top Artists: ${prefs.topArtists.slice(0, 5).map(a => a.name).join(', ')}
 - Music Profile: ${prefs.musicProfile.energy > 0.7 ? 'High Energy' : prefs.musicProfile.energy > 0.4 ? 'Moderate Energy' : 'Low Energy'}, ${prefs.musicProfile.danceability > 0.7 ? 'Danceable' : 'Non-Danceable'}, ${prefs.musicProfile.valence > 0.7 ? 'Positive/Happy' : prefs.musicProfile.valence > 0.4 ? 'Neutral' : 'Melancholic'}
 - Preferred Music Events: Concerts and festivals featuring ${prefs.topGenres.slice(0, 3).join(', ')} music`);
+      }
     }
 
     return contextParts.length > 0 
