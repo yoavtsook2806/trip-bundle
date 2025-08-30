@@ -1,17 +1,25 @@
 import BundleSuggestionsStore from '../store/bundleSuggestions';
+import UserPreferencesStore from '../store/userPreferences';
+import IntegrationsStore from '../store/integrations';
 import GPTService from '../services/gptService';
 import { TripBundle } from '../types';
 import { getSystemPrompt, getUserPrompt } from '../prompts';
 
 export class TripActions {
   private bundleSuggestionsStore: BundleSuggestionsStore;
+  private userPreferencesStore: UserPreferencesStore;
+  private integrationsStore: IntegrationsStore;
   private gptService: GPTService;
 
   constructor(
     bundleSuggestionsStore: BundleSuggestionsStore,
+    userPreferencesStore: UserPreferencesStore,
+    integrationsStore: IntegrationsStore,
     gptService: GPTService
   ) {
     this.bundleSuggestionsStore = bundleSuggestionsStore;
+    this.userPreferencesStore = userPreferencesStore;
+    this.integrationsStore = integrationsStore;
     this.gptService = gptService;
   }
 
@@ -30,8 +38,8 @@ export class TripActions {
         console.warn('GPT service not configured, using mock data');
       }
 
-      // Generate user prompt from stored preferences
-      const userPromptText = await getUserPrompt();
+      // Generate user prompt from stores
+      const userPromptText = getUserPrompt(this.userPreferencesStore, this.integrationsStore);
       console.log('Generated user prompt from preferences:', userPromptText);
 
       const systemPrompt = getSystemPrompt();

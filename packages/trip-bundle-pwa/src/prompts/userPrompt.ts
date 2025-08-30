@@ -1,10 +1,12 @@
-import { UserPreferencesHelpers, IntegrationsHelpers } from '../storage';
+import UserPreferencesStore from '../store/userPreferences';
+import IntegrationsStore from '../store/integrations';
 
-export async function getUserPrompt(): Promise<string> {
-  const [userPreferencesPrompt, integrationsContext] = await Promise.all([
-    UserPreferencesHelpers.generateUserPrompt(),
-    IntegrationsHelpers.generateIntegrationsPromptContext()
-  ]);
+export function getUserPrompt(
+  userPreferencesStore: UserPreferencesStore,
+  integrationsStore: IntegrationsStore
+): string {
+  const userPreferencesPrompt = userPreferencesStore.userPrompt;
+  const integrationsContext = integrationsStore.integrationsPromptContext;
 
   return userPreferencesPrompt + integrationsContext;
 }

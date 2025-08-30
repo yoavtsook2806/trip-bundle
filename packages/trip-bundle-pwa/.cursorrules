@@ -41,10 +41,20 @@
   - Updates stores with processed data
   - Handles error states and loading states
 
+#### @prompts/ - Prompt Generation
+- **Purpose**: Generates prompts for AI services based on current application state
+- **Responsibility**: Creates contextual prompts by reading from stores
+- **Rules**:
+  - Gets data from stores (not storage) to generate prompts
+  - Storage is only for persistence between sessions
+  - Prompts reflect current in-memory state
+  - Should be called after stores are initialized with data
+  - Returns formatted strings ready for AI consumption
+
 ### Data Flow Architecture
 
 ```
-UI Components → Actions → Services/Storage → Actions → Stores → UI Components
+UI Components → Actions → Services/Storage → Actions → Stores → Prompts → Services → Actions → Stores → UI Components
 ```
 
 1. **UI Components** trigger actions
@@ -52,7 +62,9 @@ UI Components → Actions → Services/Storage → Actions → Stores → UI Com
 3. **Services** handle API calls and return data to actions
 4. **Storage** handles persistence and returns data to actions
 5. **Actions** process data and update stores
-6. **Stores** notify UI components of state changes
+6. **Prompts** read from stores to generate AI prompts
+7. **Services** use prompts to make AI API calls
+8. **Stores** notify UI components of state changes
 
 ### Implementation Rules
 
@@ -91,6 +103,7 @@ class MyAction {
 - **Storage**: `*.ts` (e.g., `userPreferences.ts`, `integrations.ts`)
 - **Stores**: `*.ts` (e.g., `userPreferences.ts`, `bundleSuggestions.ts`)
 - **Actions**: `*Actions.ts` (e.g., `integrationActions.ts`, `userPreferencesActions.ts`)
+- **Prompts**: `*Prompt.ts` (e.g., `userPrompt.ts`, `systemPrompt.ts`)
 
 ### Testing Strategy
 

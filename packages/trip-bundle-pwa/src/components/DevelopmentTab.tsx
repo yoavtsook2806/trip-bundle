@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { getSystemPrompt, getUserPrompt } from '../prompts';
+import UserPreferencesStore from '../store/userPreferences';
+import IntegrationsStore from '../store/integrations';
 import './DevelopmentTab.css';
 
 interface DevelopmentTabProps {
   onClose: () => void;
+  userPreferencesStore: UserPreferencesStore;
+  integrationsStore: IntegrationsStore;
 }
 
-export const DevelopmentTab: React.FC<DevelopmentTabProps> = ({ onClose }) => {
+export const DevelopmentTab: React.FC<DevelopmentTabProps> = ({ onClose, userPreferencesStore, integrationsStore }) => {
   const [activePrompt, setActivePrompt] = useState<'system' | 'user' | null>(null);
   const [promptContent, setPromptContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +32,7 @@ export const DevelopmentTab: React.FC<DevelopmentTabProps> = ({ onClose }) => {
     setIsLoading(true);
     setActivePrompt('user');
     try {
-      const userPrompt = await getUserPrompt();
+      const userPrompt = getUserPrompt(userPreferencesStore, integrationsStore);
       setPromptContent(userPrompt);
     } catch (error) {
       setPromptContent(`Error loading user prompt: ${error}`);

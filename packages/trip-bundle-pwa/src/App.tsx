@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import './App.css';
 
 // Import our stores, services, and actions
-import { UserPreferencesStore, BundleSuggestionsStore } from './store';
+import { UserPreferencesStore, BundleSuggestionsStore, IntegrationsStore } from './store';
 import { GPTService } from './services';
 import { SpotifyService } from './services';
 import { TripActions, IntegrationActions, initIntegrationsData, initUserPreferencesData } from './actions';
@@ -18,17 +18,21 @@ import TripBundleIcon from './images/TripBundleIcon.jpeg';
 // Create store instances (in a real app, these would be in a context or DI container)
 const userPreferencesStore = new UserPreferencesStore();
 const bundleSuggestionsStore = new BundleSuggestionsStore();
+const integrationsStore = new IntegrationsStore();
 const gptService = new GPTService();
 const spotifyService = new SpotifyService();
 
 // Create actions instances with dependencies
 const tripActions = new TripActions(
   bundleSuggestionsStore,
+  userPreferencesStore,
+  integrationsStore,
   gptService
 );
 
 const integrationActions = new IntegrationActions(
   userPreferencesStore,
+  integrationsStore,
   spotifyService,
   IntegrationsStorage
 );
@@ -53,7 +57,7 @@ const App: React.FC = observer(() => {
       // Initialize user preferences and integrations data from storage
       await Promise.all([
         initUserPreferencesData(userPreferencesStore, UserPreferencesStorage),
-        initIntegrationsData(userPreferencesStore, IntegrationsStorage)
+        initIntegrationsData(userPreferencesStore, integrationsStore, IntegrationsStorage)
       ]);
       
       console.log('🚀 [APP] App initialization completed');
@@ -254,6 +258,8 @@ const App: React.FC = observer(() => {
         ) : activeTab === 'development' && isMockMode ? (
           <DevelopmentTab
             onClose={() => setActiveTab('trips')}
+            userPreferencesStore={userPreferencesStore}
+            integrationsStore={integrationsStore}
           />
         ) : activeTab === 'search' ? (
           <div className="search-tab-content">

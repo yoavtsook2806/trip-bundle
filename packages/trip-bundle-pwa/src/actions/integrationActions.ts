@@ -1,18 +1,22 @@
 import UserPreferencesStore from '../store/userPreferences';
+import IntegrationsStore from '../store/integrations';
 import SpotifyService from '../services/spotifyService';
 import { IntegrationsStorage } from '../storage/integrations';
 
 export class IntegrationActions {
   private userPreferencesStore: UserPreferencesStore;
+  private integrationsStore: IntegrationsStore;
   private spotifyService: SpotifyService;
   private integrationsStorage: typeof IntegrationsStorage;
 
   constructor(
     userPreferencesStore: UserPreferencesStore,
+    integrationsStore: IntegrationsStore,
     spotifyService: SpotifyService,
     integrationsStorage: typeof IntegrationsStorage = IntegrationsStorage
   ) {
     this.userPreferencesStore = userPreferencesStore;
+    this.integrationsStore = integrationsStore;
     this.spotifyService = spotifyService;
     this.integrationsStorage = integrationsStorage;
   }
@@ -73,6 +77,9 @@ export class IntegrationActions {
         topGenres: preferences.topGenres,
         topArtists: preferences.topArtists.map(artist => artist.name)
       });
+
+      // Update integrations store with Spotify data
+      this.integrationsStore.setSpotifyIntegration(true, profile, preferences);
       console.log('🎵 [INTEGRATION_ACTIONS] Spotify connection set successfully');
 
       // Update music preferences
@@ -97,8 +104,9 @@ export class IntegrationActions {
     // Clear from storage
     await this.integrationsStorage.disconnectSpotify();
     
-    // Update store
+    // Update stores
     this.userPreferencesStore.setSpotifyConnection(false);
+    this.integrationsStore.disconnectSpotify();
   }
 
   // Private helper methods
@@ -149,6 +157,7 @@ export class IntegrationActions {
  */
 export async function initIntegrationsData(
   userPreferencesStore: UserPreferencesStore,
+  integrationsStore: IntegrationsStore,
   integrationsStorage: typeof IntegrationsStorage = IntegrationsStorage
 ): Promise<void> {
   try {
@@ -173,6 +182,14 @@ export async function initIntegrationsData(
           topGenres: spotifyData.preferences?.topGenres || [],
           topArtists: spotifyData.preferences?.topArtists?.map(artist => artist.name) || []
         });
+
+        // Update integrations store with Spotify data
+        integrationsStore.setSpotifyIntegration(
+          true,
+          profile,
+          spotifyData.preferences,
+          spotifyData.connectedAt
+        );
       }
 
       // Update music preferences if available

@@ -219,6 +219,58 @@ class UserPreferencesStore {
       duration: `${this.preferences.duration.min}-${this.preferences.duration.max} days`
     };
   }
+
+  // Generate user prompt from current preferences
+  get userPrompt(): string {
+    const promptParts: string[] = [];
+    
+    // Budget information
+    promptParts.push(`Budget: ${this.preferences.budget.min}-${this.preferences.budget.max} ${this.preferences.budget.currency}`);
+    
+    // Duration
+    promptParts.push(`Trip duration: ${this.preferences.duration.min}-${this.preferences.duration.max} days`);
+    
+    // Group size
+    if (this.preferences.groupSize > 1) {
+      promptParts.push(`Group size: ${this.preferences.groupSize} people`);
+    }
+    
+    // Location preferences
+    if (this.preferences.preferredCountries.length > 0) {
+      promptParts.push(`Preferred countries: ${this.preferences.preferredCountries.join(', ')}`);
+    }
+    
+    // Music genres
+    if (this.preferences.musicGenres.length > 0) {
+      promptParts.push(`Music genres: ${this.preferences.musicGenres.join(', ')}`);
+    }
+    
+    // Sports interests
+    if (this.preferences.sportsInterests.length > 0) {
+      promptParts.push(`Sports interests: ${this.preferences.sportsInterests.join(', ')}`);
+    }
+    
+    // Entertainment preferences
+    if (this.preferences.entertainmentPreferences.length > 0) {
+      const entertainmentSummary = this.preferences.entertainmentPreferences
+        .map(pref => `${pref.value} (${pref.type}, weight: ${pref.weight})`)
+        .join(', ');
+      promptParts.push(`Entertainment preferences: ${entertainmentSummary}`);
+    }
+    
+    // Travel dates
+    if (this.preferences.travelDates?.flexible !== undefined) {
+      if (this.preferences.travelDates.flexible) {
+        promptParts.push('Travel dates are flexible');
+      } else {
+        promptParts.push('Travel dates are fixed (not flexible)');
+      }
+    }
+    
+    return promptParts.length > 0 
+      ? `User preferences: ${promptParts.join('. ')}.`
+      : '';
+  }
 }
 
 export default UserPreferencesStore;
