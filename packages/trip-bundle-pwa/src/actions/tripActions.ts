@@ -34,7 +34,7 @@ export class TripActions {
       this.userPreferencesStore.setLoading(true);
       
       // Get auth URL and redirect user
-      const authUrl = this.spotifyIntegration.getAuthUrl();
+      const authUrl = await this.spotifyIntegration.getAuthUrl();
       window.location.href = authUrl;
       
       return true;
