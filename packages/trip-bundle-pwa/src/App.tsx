@@ -7,7 +7,7 @@ import { UserPreferencesStore, BundleSuggestionsStore } from './store';
 import { GPTService } from './services';
 import { SpotifyIntegration } from './integrations';
 import { TripActions } from './actions';
-import { BundleOffer, TabNavigation, UserPreferencesForm, SearchForm, EventDetails, DevelopmentTab } from './components';
+import { BundleOffer, TabNavigation, UserPreferencesForm, SearchForm, EventDetails, DevelopmentTab, IntegrationsTab } from './components';
 import { Event } from './types';
 import { usePWA } from './hooks/usePWA';
 
@@ -127,11 +127,19 @@ const App: React.FC = observer(() => {
     { id: 'trips', label: 'Trip Bundles', icon: '🧳' },
     { id: 'search', label: 'Search Events', icon: '🔍' },
     { id: 'preferences', label: 'Preferences', icon: '⚙️' },
+    { id: 'integrations', label: 'Integrations', icon: '🔗' },
     ...(isMockMode ? [{ id: 'development', label: 'Development', icon: '🛠️' }] : [])
   ];
 
   const handlePreferencesUpdate = () => {
     // When preferences are updated, regenerate trips if we're on the trips tab
+    if (activeTab === 'trips') {
+      tripActions.generateTripBundles();
+    }
+  };
+
+  const handleIntegrationsUpdate = () => {
+    // When integrations are updated, regenerate trips if we're on the trips tab
     if (activeTab === 'trips') {
       tripActions.generateTripBundles();
     }
@@ -157,6 +165,11 @@ const App: React.FC = observer(() => {
         {activeTab === 'preferences' ? (
           <UserPreferencesForm
             onPreferencesUpdate={handlePreferencesUpdate}
+            onClose={() => setActiveTab('trips')}
+          />
+        ) : activeTab === 'integrations' ? (
+          <IntegrationsTab
+            onIntegrationsUpdate={handleIntegrationsUpdate}
             onClose={() => setActiveTab('trips')}
           />
         ) : activeTab === 'development' && isMockMode ? (

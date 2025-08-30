@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Authentication</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
+            color: white;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error {
+            background: rgba(231, 76, 60, 0.9);
+        }
+        .success {
+            background: rgba(39, 174, 96, 0.9);
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="spinner" id="spinner"></div>
+        <h2 id="title">Connecting to Spotify...</h2>
+        <p id="message">Please wait while we complete the authentication.</p>
+    </div>
+
+    <script>
+        // Parse URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const error = urlParams.get('error');
+        const state = urlParams.get('state');
+
+        const container = document.getElementById('container');
+        const spinner = document.getElementById('spinner');
+        const title = document.getElementById('title');
+        const message = document.getElementById('message');
+
+        if (error) {
+            // Handle error
+            container.className = 'container error';
+            spinner.style.display = 'none';
+            title.textContent = 'Authentication Failed';
+            message.textContent = `Error: ${error}`;
+            
+            // Notify parent window
+            if (window.opener) {
+                window.opener.postMessage({
+                    type: 'SPOTIFY_AUTH_ERROR',
+                    error: error
+                }, window.location.origin);
+            }
+            
+            setTimeout(() => window.close(), 3000);
+        } else if (code) {
+            // Handle success - send code to parent window
+            handleAuthSuccess(code, state);
+        } else {
+            // No code or error - something went wrong
+            container.className = 'container error';
+            spinner.style.display = 'none';
+            title.textContent = 'Authentication Failed';
+            message.textContent = 'No authorization code received.';
+            
+            if (window.opener) {
+                window.opener.postMessage({
+                    type: 'SPOTIFY_AUTH_ERROR',
+                    error: 'No authorization code received'
+                }, window.location.origin);
+            }
+            
+            setTimeout(() => window.close(), 3000);
+        }
+
+        async function handleAuthSuccess(code, state) {
+            try {
+                // Create a SpotifyIntegration instance to handle the callback
+                // Note: In a real implementation, you might want to send this to your backend
+                const response = await fetch('/api/spotify/callback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ code, state })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Store tokens in localStorage (for demo purposes)
+                    if (data.access_token) {
+                        localStorage.setItem('spotify_access_token', data.access_token);
+                        localStorage.setItem('spotify_token_expiry', (Date.now() + (data.expires_in * 1000)).toString());
+                        
+                        if (data.refresh_token) {
+                            localStorage.setItem('spotify_refresh_token', data.refresh_token);
+                        }
+                    }
+
+                    // Show success
+                    container.className = 'container success';
+                    spinner.style.display = 'none';
+                    title.textContent = 'Success!';
+                    message.textContent = 'Spotify account connected successfully.';
+
+                    // Notify parent window
+                    if (window.opener) {
+                        window.opener.postMessage({
+                            type: 'SPOTIFY_AUTH_SUCCESS',
+                            tokens: data
+                        }, window.location.origin);
+                    }
+
+                    setTimeout(() => window.close(), 2000);
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                console.error('Callback handling error:', error);
+                
+                container.className = 'container error';
+                spinner.style.display = 'none';
+                title.textContent = 'Authentication Failed';
+                message.textContent = 'Failed to process authentication response.';
+
+                if (window.opener) {
+                    window.opener.postMessage({
+                        type: 'SPOTIFY_AUTH_ERROR',
+                        error: error.message
+                    }, window.location.origin);
+                }
+
+                setTimeout(() => window.close(), 3000);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -41,14 +41,14 @@ export interface SpotifyUserPreferences {
 class SpotifyIntegration {
   private clientId: string | null = null;
   private clientSecret: string | null = null;
-  private redirectUri: string = window.location.origin + '/spotify/callback';
+  private redirectUri: string = window.location.origin + '/spotify-callback.html';
   private accessToken: string | null = null;
   private refreshToken: string | null = null;
   private tokenExpiry: number | null = null;
 
   constructor() {
-    // In a real app, these would come from environment variables
-    this.clientId = (import.meta as any).env?.VITE_SPOTIFY_CLIENT_ID || null;
+    // Get credentials from environment variables or use your provided Client ID
+    this.clientId = (import.meta as any).env?.VITE_SPOTIFY_CLIENT_ID || 'bc5f89044c854343a3408f12a4f4a0be';
     this.clientSecret = (import.meta as any).env?.VITE_SPOTIFY_CLIENT_SECRET || null;
     
     // Try to restore tokens from localStorage
@@ -66,6 +66,127 @@ class SpotifyIntegration {
   }
 
   // Authentication
+  async authenticate(): Promise<boolean> {
+    // Check if we're in mock mode
+    const isMockMode = (import.meta as any).env?.VITE_MOCK === 'true' || 
+                       (import.meta as any).env?.VITE_SPOTIFY_MOCK === 'true';
+    
+    if (isMockMode) {
+      console.log('🎭 Using Spotify mock mode - Client ID configured: bc5f89044c854343a3408f12a4f4a0be');
+      return this.authenticateMock();
+    }
+
+    console.log('🎵 Using real Spotify integration - Client ID:', this.clientId);
+    
+    if (!this.clientId) {
+      throw new Error('Spotify Client ID not configured. Please check your environment variables.');
+    }
+
+    // Check if already authenticated
+    if (this.isAuthenticated()) {
+      return true;
+    }
+
+    // Try to restore from localStorage
+    this.loadTokensFromStorage();
+    if (this.isAuthenticated()) {
+      return true;
+    }
+
+    // Try to refresh token if available
+    if (this.refreshToken) {
+      try {
+        await this.refreshAccessToken();
+        return this.isAuthenticated();
+      } catch (error) {
+        console.warn('Failed to refresh Spotify token:', error);
+      }
+    }
+
+    // Start OAuth flow
+    return this.startOAuthFlow();
+  }
+
+  private async authenticateMock(): Promise<boolean> {
+    // Simulate authentication delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Set mock tokens
+    this.accessToken = 'mock_access_token';
+    this.refreshToken = 'mock_refresh_token';
+    this.tokenExpiry = Date.now() + (3600 * 1000); // 1 hour from now
+    
+    // Store in localStorage for persistence
+    this.saveTokensToStorage();
+    
+    return true;
+  }
+
+  private startOAuthFlow(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      try {
+        const authUrl = this.getAuthUrl();
+        
+        // Open popup window for OAuth
+        const popup = window.open(
+          authUrl,
+          'spotify-auth',
+          'width=600,height=700,scrollbars=yes,resizable=yes'
+        );
+
+        if (!popup) {
+          reject(new Error('Failed to open authentication popup. Please allow popups for this site.'));
+          return;
+        }
+
+        // Poll for popup closure or success
+        const checkClosed = setInterval(() => {
+          if (popup.closed) {
+            clearInterval(checkClosed);
+            // Check if authentication was successful
+            if (this.isAuthenticated()) {
+              resolve(true);
+            } else {
+              reject(new Error('Authentication was cancelled or failed'));
+            }
+          }
+        }, 1000);
+
+        // Listen for message from popup (if callback sends postMessage)
+        const messageListener = (event: MessageEvent) => {
+          if (event.origin !== window.location.origin) return;
+          
+          if (event.data.type === 'SPOTIFY_AUTH_SUCCESS') {
+            clearInterval(checkClosed);
+            window.removeEventListener('message', messageListener);
+            popup.close();
+            resolve(true);
+          } else if (event.data.type === 'SPOTIFY_AUTH_ERROR') {
+            clearInterval(checkClosed);
+            window.removeEventListener('message', messageListener);
+            popup.close();
+            reject(new Error(event.data.error || 'Authentication failed'));
+          }
+        };
+
+        window.addEventListener('message', messageListener);
+
+        // Timeout after 5 minutes
+        setTimeout(() => {
+          if (!popup.closed) {
+            clearInterval(checkClosed);
+            window.removeEventListener('message', messageListener);
+            popup.close();
+            reject(new Error('Authentication timeout'));
+          }
+        }, 5 * 60 * 1000);
+
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
   getAuthUrl(): string {
     if (!this.clientId) {
       throw new Error('Spotify client ID not configured');
@@ -168,8 +289,30 @@ class SpotifyIntegration {
 
   // API Methods
   async getUserProfile(): Promise<SpotifyUserProfile> {
+    const isMockMode = (import.meta as any).env?.VITE_MOCK === 'true' || 
+                       (import.meta as any).env?.VITE_SPOTIFY_MOCK === 'true';
+    
+    if (isMockMode) {
+      return this.getMockUserProfile();
+    }
+    
     const response = await this.makeApiRequest('/me');
     return response;
+  }
+
+  private getMockUserProfile(): SpotifyUserProfile {
+    return {
+      id: 'mock_user_123',
+      display_name: 'Demo User',
+      email: 'demo@example.com',
+      country: 'US',
+      followers: { total: 42 },
+      images: [{
+        url: 'https://via.placeholder.com/150x150/1db954/ffffff?text=Demo',
+        height: 150,
+        width: 150
+      }]
+    };
   }
 
   async getTopArtists(timeRange: 'short_term' | 'medium_term' | 'long_term' = 'medium_term', limit = 20): Promise<SpotifyArtist[]> {
@@ -183,6 +326,13 @@ class SpotifyIntegration {
   }
 
   async getUserPreferences(): Promise<SpotifyUserPreferences> {
+    const isMockMode = (import.meta as any).env?.VITE_MOCK === 'true' || 
+                       (import.meta as any).env?.VITE_SPOTIFY_MOCK === 'true';
+    
+    if (isMockMode) {
+      return this.getMockUserPreferences();
+    }
+    
     const [topArtists, topTracks] = await Promise.all([
       this.getTopArtists(),
       this.getTopTracks()
@@ -212,6 +362,67 @@ class SpotifyIntegration {
       topTracks: topTracks.slice(0, 10),
       topGenres,
       musicProfile
+    };
+  }
+
+  private getMockUserPreferences(): SpotifyUserPreferences {
+    const mockArtists: SpotifyArtist[] = [
+      {
+        id: 'artist_1',
+        name: 'The Beatles',
+        genres: ['rock', 'pop', 'classic rock'],
+        popularity: 85,
+        followers: { total: 5000000 },
+        images: [{ url: 'https://via.placeholder.com/300x300/1db954/ffffff?text=Beatles', height: 300, width: 300 }]
+      },
+      {
+        id: 'artist_2',
+        name: 'Daft Punk',
+        genres: ['electronic', 'house', 'french house'],
+        popularity: 80,
+        followers: { total: 3000000 },
+        images: [{ url: 'https://via.placeholder.com/300x300/1db954/ffffff?text=Daft+Punk', height: 300, width: 300 }]
+      },
+      {
+        id: 'artist_3',
+        name: 'Miles Davis',
+        genres: ['jazz', 'bebop', 'cool jazz'],
+        popularity: 75,
+        followers: { total: 1500000 },
+        images: [{ url: 'https://via.placeholder.com/300x300/1db954/ffffff?text=Miles', height: 300, width: 300 }]
+      }
+    ];
+
+    const mockTracks: SpotifyTrack[] = [
+      {
+        id: 'track_1',
+        name: 'Come Together',
+        artists: [{ name: 'The Beatles', id: 'artist_1' }],
+        album: { name: 'Abbey Road', id: 'album_1' },
+        popularity: 85,
+        preview_url: undefined
+      },
+      {
+        id: 'track_2',
+        name: 'One More Time',
+        artists: [{ name: 'Daft Punk', id: 'artist_2' }],
+        album: { name: 'Discovery', id: 'album_2' },
+        popularity: 80,
+        preview_url: undefined
+      }
+    ];
+
+    return {
+      topArtists: mockArtists,
+      topTracks: mockTracks,
+      topGenres: ['rock', 'electronic', 'jazz', 'pop', 'house'],
+      musicProfile: {
+        danceability: 0.7,
+        energy: 0.8,
+        valence: 0.6,
+        acousticness: 0.3,
+        instrumentalness: 0.2
+      }
     };
   }
 

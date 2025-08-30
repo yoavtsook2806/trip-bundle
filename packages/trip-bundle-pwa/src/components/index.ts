@@ -4,3 +4,4 @@ export { UserPreferencesForm } from './UserPreferencesForm';
 export { default as EventDetails } from './EventDetails';
 export { SearchForm } from './SearchForm';
 export { DevelopmentTab } from './DevelopmentTab';
+export { IntegrationsTab } from './IntegrationsTab';
