@@ -1142,6 +1142,17 @@ export class MockTripBundleService {
     const total = mockBundles.length;
     const hasMore = endIndex < total;
 
+    console.log('📊 Mock Service Pagination:', {
+      page,
+      limit,
+      startIndex,
+      endIndex,
+      total,
+      hasMore,
+      bundlesReturned: paginatedBundles.length,
+      bundleIds: paginatedBundles.map(b => b.id)
+    });
+
     return {
       bundles: paginatedBundles,
       reasoning: `Page ${page} of trip bundles offering diverse experiences based on user preferences: ${JSON.stringify(this.userData.userPreferences, null, 2)}`,

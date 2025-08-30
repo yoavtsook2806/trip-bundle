@@ -117,15 +117,39 @@ const App: React.FC = observer(() => {
 
   // Infinite scroll functionality
   const handleScroll = useCallback(() => {
-    if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight) {
-      return;
+    // Check if user has scrolled near the bottom (within 100px)
+    const scrollTop = document.documentElement.scrollTop;
+    const windowHeight = window.innerHeight;
+    const docHeight = document.documentElement.offsetHeight;
+    
+    console.log('Scroll Debug:', {
+      scrollTop,
+      windowHeight,
+      docHeight,
+      distanceFromBottom: docHeight - (scrollTop + windowHeight),
+      canLoadMore: bundleSuggestionsStore.canLoadMore,
+      isLoadingMore: bundleSuggestionsStore.pagination.isLoadingMore,
+      hasMore: bundleSuggestionsStore.pagination.hasMore,
+      currentPage: bundleSuggestionsStore.pagination.currentPage,
+      totalBundles: bundleSuggestionsStore.bundles.length
+    });
+    
+    if (docHeight - (scrollTop + windowHeight) > 100) {
+      return; // Not close enough to bottom
     }
     
-    // User has scrolled to the bottom, load more bundles
+    // User has scrolled near the bottom, load more bundles
     if (bundleSuggestionsStore.canLoadMore) {
+      console.log('🔄 Loading more bundles...');
       tripActions.loadMoreBundles();
+    } else {
+      console.log('❌ Cannot load more:', {
+        hasMore: bundleSuggestionsStore.pagination.hasMore,
+        isLoadingMore: bundleSuggestionsStore.pagination.isLoadingMore,
+        isLoading: bundleSuggestionsStore.isLoading
+      });
     }
-  }, [bundleSuggestionsStore.canLoadMore, tripActions]);
+  }, [bundleSuggestionsStore, tripActions]);
 
   // Generate trip bundle on component mount (after initialization)
   useEffect(() => {
