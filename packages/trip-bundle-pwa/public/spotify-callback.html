@@ -71,10 +71,11 @@
             
             // Notify parent window
             if (window.opener) {
+                const parentOrigin = window.location.origin.replace('127.0.0.1', 'localhost');
                 window.opener.postMessage({
                     type: 'SPOTIFY_AUTH_ERROR',
                     error: error
-                }, window.location.origin);
+                }, parentOrigin);
             }
             
             setTimeout(() => window.close(), 3000);
@@ -89,10 +90,11 @@
             message.textContent = 'No authorization code received.';
             
             if (window.opener) {
+                const parentOrigin = window.location.origin.replace('127.0.0.1', 'localhost');
                 window.opener.postMessage({
                     type: 'SPOTIFY_AUTH_ERROR',
                     error: 'No authorization code received'
-                }, window.location.origin);
+                }, parentOrigin);
             }
             
             setTimeout(() => window.close(), 3000);
@@ -100,47 +102,25 @@
 
         async function handleAuthSuccess(code, state) {
             try {
-                // Create a SpotifyIntegration instance to handle the callback
-                // Note: In a real implementation, you might want to send this to your backend
-                const response = await fetch('/api/spotify/callback', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ code, state })
-                });
+                // Show success immediately - we'll handle token exchange in the main app
+                container.className = 'container success';
+                spinner.style.display = 'none';
+                title.textContent = 'Success!';
+                message.textContent = 'Spotify account connected successfully.';
 
-                if (response.ok) {
-                    const data = await response.json();
-                    
-                    // Store tokens in localStorage (for demo purposes)
-                    if (data.access_token) {
-                        localStorage.setItem('spotify_access_token', data.access_token);
-                        localStorage.setItem('spotify_token_expiry', (Date.now() + (data.expires_in * 1000)).toString());
-                        
-                        if (data.refresh_token) {
-                            localStorage.setItem('spotify_refresh_token', data.refresh_token);
-                        }
-                    }
-
-                    // Show success
-                    container.className = 'container success';
-                    spinner.style.display = 'none';
-                    title.textContent = 'Success!';
-                    message.textContent = 'Spotify account connected successfully.';
-
-                    // Notify parent window
-                    if (window.opener) {
-                        window.opener.postMessage({
-                            type: 'SPOTIFY_AUTH_SUCCESS',
-                            tokens: data
-                        }, window.location.origin);
-                    }
-
-                    setTimeout(() => window.close(), 2000);
-                } else {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                // Notify parent window with the authorization code
+                if (window.opener) {
+                    // Use the same origin conversion as the main app for consistency
+                    const parentOrigin = window.location.origin.replace('127.0.0.1', 'localhost');
+                    window.opener.postMessage({
+                        type: 'SPOTIFY_AUTH_SUCCESS',
+                        code: code,
+                        state: state
+                    }, parentOrigin);
                 }
+
+                // Give the main window time to process the message before closing
+                setTimeout(() => window.close(), 3000);
             } catch (error) {
                 console.error('Callback handling error:', error);
                 
@@ -150,10 +130,11 @@
                 message.textContent = 'Failed to process authentication response.';
 
                 if (window.opener) {
+                    const parentOrigin = window.location.origin.replace('127.0.0.1', 'localhost');
                     window.opener.postMessage({
                         type: 'SPOTIFY_AUTH_ERROR',
                         error: error.message
-                    }, window.location.origin);
+                    }, parentOrigin);
                 }
 
                 setTimeout(() => window.close(), 3000);

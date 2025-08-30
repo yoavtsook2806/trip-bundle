@@ -41,10 +41,11 @@ export interface SpotifyUserPreferences {
 class SpotifyIntegration {
   private clientId: string | null = null;
   private clientSecret: string | null = null;
-  private redirectUri: string = window.location.origin + '/spotify-callback.html';
+  private redirectUri: string = this.getRedirectUri();
   private accessToken: string | null = null;
   private refreshToken: string | null = null;
   private tokenExpiry: number | null = null;
+  private codeVerifier: string | null = null;
 
   constructor() {
     // Get credentials from environment variables or use your provided Client ID
@@ -55,10 +56,38 @@ class SpotifyIntegration {
     this.loadTokensFromStorage();
   }
 
+  // Get proper redirect URI - Spotify doesn't allow localhost, must use 127.0.0.1
+  private getRedirectUri(): string {
+    const origin = window.location.origin;
+    // Replace localhost with 127.0.0.1 as Spotify requires explicit IP literals
+    const spotifyCompatibleOrigin = origin.replace('localhost', '127.0.0.1');
+    return spotifyCompatibleOrigin + '/spotify-callback.html';
+  }
+
   // Configuration
   setCredentials(clientId: string, clientSecret: string) {
     this.clientId = clientId;
     this.clientSecret = clientSecret;
+  }
+
+  // PKCE helper methods
+  private generateCodeVerifier(): string {
+    const array = new Uint8Array(32);
+    crypto.getRandomValues(array);
+    return btoa(String.fromCharCode.apply(null, Array.from(array)))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
+  }
+
+  private async generateCodeChallenge(verifier: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(verifier);
+    const digest = await crypto.subtle.digest('SHA-256', data);
+    return btoa(String.fromCharCode.apply(null, Array.from(new Uint8Array(digest))))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
   }
 
   setRedirectUri(uri: string) {
@@ -101,9 +130,9 @@ class SpotifyIntegration {
 
 
   private startOAuthFlow(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
-        const authUrl = this.getAuthUrl();
+        const authUrl = await this.getAuthUrl();
         
         // Open popup window for OAuth
         const popup = window.open(
@@ -117,29 +146,36 @@ class SpotifyIntegration {
           return;
         }
 
-        // Poll for popup closure or success
-        const checkClosed = setInterval(() => {
-          if (popup.closed) {
-            clearInterval(checkClosed);
-            // Check if authentication was successful
-            if (this.isAuthenticated()) {
-              resolve(true);
-            } else {
-              reject(new Error('Authentication was cancelled or failed'));
-            }
-          }
-        }, 1000);
+        let authCompleted = false;
 
         // Listen for message from popup (if callback sends postMessage)
-        const messageListener = (event: MessageEvent) => {
+        const messageListener = async (event: MessageEvent) => {
           if (event.origin !== window.location.origin) return;
           
           if (event.data.type === 'SPOTIFY_AUTH_SUCCESS') {
+            authCompleted = true;
             clearInterval(checkClosed);
             window.removeEventListener('message', messageListener);
-            popup.close();
-            resolve(true);
+            
+            // Exchange authorization code for tokens
+            try {
+              const success = await this.handleCallback(event.data.code);
+              
+              // Close popup after successful token exchange
+              if (!popup.closed) {
+                popup.close();
+              }
+              
+              resolve(success);
+            } catch (error) {
+              console.error('🎵 Token exchange error:', error);
+              if (!popup.closed) {
+                popup.close();
+              }
+              reject(error);
+            }
           } else if (event.data.type === 'SPOTIFY_AUTH_ERROR') {
+            authCompleted = true;
             clearInterval(checkClosed);
             window.removeEventListener('message', messageListener);
             popup.close();
@@ -149,9 +185,27 @@ class SpotifyIntegration {
 
         window.addEventListener('message', messageListener);
 
+        // Poll for popup closure or success
+        const checkClosed = setInterval(() => {
+          if (popup.closed) {
+            clearInterval(checkClosed);
+            window.removeEventListener('message', messageListener);
+            
+            // Only reject if auth wasn't completed successfully
+            if (!authCompleted) {
+              // Check if authentication was successful (tokens might be in storage)
+              if (this.isAuthenticated()) {
+                resolve(true);
+              } else {
+                reject(new Error('Authentication was cancelled or failed'));
+              }
+            }
+          }
+        }, 1000);
+
         // Timeout after 5 minutes
         setTimeout(() => {
-          if (!popup.closed) {
+          if (!popup.closed && !authCompleted) {
             clearInterval(checkClosed);
             window.removeEventListener('message', messageListener);
             popup.close();
@@ -165,10 +219,14 @@ class SpotifyIntegration {
     });
   }
 
-  getAuthUrl(): string {
+  async getAuthUrl(): Promise<string> {
     if (!this.clientId) {
       throw new Error('Spotify client ID not configured');
     }
+
+    // Generate PKCE parameters
+    this.codeVerifier = this.generateCodeVerifier();
+    const codeChallenge = await this.generateCodeChallenge(this.codeVerifier);
 
     const scopes = [
       'user-read-private',
@@ -184,33 +242,38 @@ class SpotifyIntegration {
       client_id: this.clientId,
       scope: scopes,
       redirect_uri: this.redirectUri,
-      state: this.generateRandomString(16)
+      state: this.generateRandomString(16),
+      code_challenge_method: 'S256',
+      code_challenge: codeChallenge
     });
 
     return `https://accounts.spotify.com/authorize?${params.toString()}`;
   }
 
   async handleCallback(code: string): Promise<boolean> {
-    if (!this.clientId || !this.clientSecret) {
-      throw new Error('Spotify credentials not configured');
+    if (!this.clientId || !this.codeVerifier) {
+      throw new Error('Spotify client ID or code verifier not configured');
     }
 
     try {
       const response = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': 'Basic ' + btoa(`${this.clientId}:${this.clientSecret}`)
+          'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: new URLSearchParams({
           grant_type: 'authorization_code',
           code: code,
-          redirect_uri: this.redirectUri
+          redirect_uri: this.redirectUri,
+          client_id: this.clientId,
+          code_verifier: this.codeVerifier
         })
       });
 
       if (!response.ok) {
-        throw new Error(`Token exchange failed: ${response.status}`);
+        const errorText = await response.text();
+        console.error('🎵 Token exchange error response:', errorText);
+        throw new Error(`Token exchange failed: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
@@ -222,7 +285,7 @@ class SpotifyIntegration {
       this.saveTokensToStorage();
       return true;
     } catch (error) {
-      console.error('Spotify callback error:', error);
+      console.error('🎵 Spotify callback error:', error);
       return false;
     }
   }

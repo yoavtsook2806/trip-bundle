@@ -220,9 +220,25 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
                 
                 {spotifyData.preferences && (
                   <div className="preferences-summary">
-                    <span className="top-genres">
-                      Top genres: {spotifyData.preferences.topGenres.slice(0, 3).join(', ')}
-                    </span>
+                    <div className="spotify-stats">
+                      <div className="stat-item">
+                        <span className="stat-label">Top Genres:</span>
+                        <span className="stat-value">{spotifyData.preferences.topGenres.slice(0, 3).join(', ')}</span>
+                      </div>
+                      <div className="stat-item">
+                        <span className="stat-label">Favorite Artists:</span>
+                        <span className="stat-value">{spotifyData.preferences.topArtists.slice(0, 2).map(a => a.name).join(', ')}</span>
+                      </div>
+                      <div className="stat-item">
+                        <span className="stat-label">Music Vibe:</span>
+                        <span className="stat-value">
+                          {spotifyData.preferences.musicProfile.energy > 0.7 ? '⚡ High Energy' : 
+                           spotifyData.preferences.musicProfile.energy > 0.4 ? '🎵 Moderate' : '🎼 Chill'}
+                          {spotifyData.preferences.musicProfile.valence > 0.6 ? ' • 😊 Positive' : 
+                           spotifyData.preferences.musicProfile.valence > 0.4 ? ' • 😐 Neutral' : ' • 😔 Melancholic'}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

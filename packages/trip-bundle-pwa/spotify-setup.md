@@ -10,14 +10,20 @@
 
 Add these redirect URIs to your Spotify app at [developer.spotify.com/dashboard](https://developer.spotify.com/dashboard):
 
+**IMPORTANT: Spotify requires 127.0.0.1 instead of localhost for local development**
+
 ```
-http://localhost:5173/spotify-callback.html
-http://localhost:5174/spotify-callback.html  
-http://localhost:5175/spotify-callback.html
+http://127.0.0.1:5173/spotify-callback.html
+http://127.0.0.1:5174/spotify-callback.html  
+http://127.0.0.1:5175/spotify-callback.html
+http://127.0.0.1:5176/spotify-callback.html
 http://192.168.1.212:5173/spotify-callback.html
 http://192.168.1.212:5174/spotify-callback.html
 http://192.168.1.212:5175/spotify-callback.html
+http://192.168.1.212:5176/spotify-callback.html
 ```
+
+**Note:** `localhost` URIs will NOT work with Spotify OAuth. Always use `127.0.0.1` for local development.
 
 ### 2. Environment Configuration
 
