@@ -101,6 +101,54 @@
   background: rgba(255, 255, 255, 0.8);
   border-radius: 12px;
   border: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+/* Spotify Icon */
+.integration-icon.spotify-icon {
+  background: linear-gradient(135deg, #1db954, #1ed760);
+  color: white;
+  border: 1px solid #1db954;
+}
+
+.integration-card:hover .integration-icon.spotify-icon {
+  background: linear-gradient(135deg, #1ed760, #1db954);
+  transform: scale(1.05);
+}
+
+/* Apple Music Icon */
+.integration-icon.apple-icon {
+  background: linear-gradient(135deg, #fa233b, #ff6b6b);
+  color: white;
+  border: 1px solid #fa233b;
+}
+
+.integration-card:hover .integration-icon.apple-icon {
+  background: linear-gradient(135deg, #ff6b6b, #fa233b);
+  transform: scale(1.05);
+}
+
+/* Google Maps Icon */
+.integration-icon.google-icon {
+  background: linear-gradient(135deg, #4285f4, #34a853);
+  color: white;
+  border: 1px solid #4285f4;
+}
+
+.integration-card:hover .integration-icon.google-icon {
+  background: linear-gradient(135deg, #34a853, #4285f4);
+  transform: scale(1.05);
+}
+
+/* Disabled state for coming soon integrations */
+.integration-card.disabled .integration-icon {
+  background: #f8f9fa;
+  color: #6c757d;
+  border: 1px solid #dee2e6;
+}
+
+.integration-card.disabled:hover .integration-icon {
+  transform: none;
 }
 
 .integration-details h3 {

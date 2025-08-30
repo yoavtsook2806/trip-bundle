@@ -6,6 +6,25 @@ import { UserPreferencesStore } from '../store';
 import { IntegrationActions } from '../actions';
 import './IntegrationsTab.css';
 
+// Integration Icons Components
+const SpotifyIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z"/>
+  </svg>
+);
+
+const AppleMusicIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M23.997 6.124c0-.738-.065-1.47-.24-2.19-.317-1.31-1.062-2.31-2.18-3.043C21.003.517 20.373.285 19.7.164c-.517-.093-1.038-.135-1.564-.15-.04-.001-.08-.006-.12-.006H5.986c-.04 0-.08.005-.12.006-.525.015-1.046.057-1.563.15-.674.121-1.304.353-1.878.727-1.118.733-1.863 1.732-2.18 3.043-.175.72-.24 1.452-.24 2.19v11.371c0 .877.086 1.756.24 2.606.317 1.553 1.162 2.659 2.612 3.471.57.318 1.185.519 1.839.614.648.094 1.302.122 1.957.122h12.028c.655 0 1.31-.028 1.957-.122.654-.095 1.269-.296 1.839-.614 1.45-.812 2.295-1.918 2.612-3.471.154-.85.24-1.729.24-2.606V6.124zM8.747 18.048c-1.92 0-3.48-1.56-3.48-3.48s1.56-3.48 3.48-3.48c.48 0 .94.1 1.36.28v-4.64c0-.28.22-.5.5-.5h.01c.27 0 .49.21.5.48v8.84c0 1.92-1.56 3.48-3.48 3.48zm7.5-8.52c0 .28-.22.5-.5.5s-.5-.22-.5-.5v-4.5c0-.28.22-.5.5-.5s.5.22.5.5v4.5z"/>
+  </svg>
+);
+
+const GoogleMapsIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+  </svg>
+);
+
 interface IntegrationsTabProps {
   onClose: () => void;
   onIntegrationsUpdate?: () => void;
@@ -266,7 +285,9 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = observer(({
         <div className="integration-card">
           <div className="integration-header">
             <div className="integration-info">
-              <div className="integration-icon">🎵</div>
+              <div className="integration-icon spotify-icon">
+                <SpotifyIcon />
+              </div>
               <div className="integration-details">
                 <h3>Spotify</h3>
                 <p>Connect your Spotify account to get music-based travel recommendations</p>
@@ -347,7 +368,9 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = observer(({
         <div className="integration-card disabled">
           <div className="integration-header">
             <div className="integration-info">
-              <div className="integration-icon">🍎</div>
+              <div className="integration-icon apple-icon">
+                <AppleMusicIcon />
+              </div>
               <div className="integration-details">
                 <h3>Apple Music</h3>
                 <p>Coming soon - Connect your Apple Music account</p>
@@ -370,7 +393,9 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = observer(({
         <div className="integration-card disabled">
           <div className="integration-header">
             <div className="integration-info">
-              <div className="integration-icon">📍</div>
+              <div className="integration-icon google-icon">
+                <GoogleMapsIcon />
+              </div>
               <div className="integration-details">
                 <h3>Google Maps</h3>
                 <p>Coming soon - Connect your Google account for location preferences</p>
