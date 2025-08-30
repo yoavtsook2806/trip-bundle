@@ -405,6 +405,10 @@ class SpotifyIntegration {
     // Generate PKCE parameters
     this.codeVerifier = this.generateCodeVerifier();
     const codeChallenge = await this.generateCodeChallenge(this.codeVerifier);
+    
+    // Store code verifier in localStorage for direct redirects
+    console.log('🎵 [DEBUG] Storing code verifier in localStorage for redirect flow');
+    localStorage.setItem('spotify_code_verifier', this.codeVerifier);
 
     const scopes = [
       'user-read-private',
@@ -435,6 +439,13 @@ class SpotifyIntegration {
     console.log('🎵 [DEBUG] Client ID available:', !!this.clientId);
     console.log('🎵 [DEBUG] Code verifier available:', !!this.codeVerifier);
     console.log('🎵 [DEBUG] Redirect URI:', this.redirectUri);
+    
+    // Try to get code verifier from localStorage if not in memory (for redirect flows)
+    if (!this.codeVerifier) {
+      console.log('🎵 [DEBUG] Code verifier not in memory, checking localStorage...');
+      this.codeVerifier = localStorage.getItem('spotify_code_verifier');
+      console.log('🎵 [DEBUG] Code verifier from localStorage:', !!this.codeVerifier);
+    }
     
     if (!this.clientId || !this.codeVerifier) {
       console.error('🎵 [DEBUG] Missing required parameters for token exchange');
@@ -483,6 +494,11 @@ class SpotifyIntegration {
       console.log('🎵 [DEBUG] Saving tokens to storage...');
       this.saveTokensToStorage();
       console.log('🎵 [DEBUG] Tokens saved successfully');
+      
+      // Clean up code verifier from localStorage after successful token exchange
+      console.log('🎵 [DEBUG] Cleaning up code verifier from localStorage...');
+      localStorage.removeItem('spotify_code_verifier');
+      
       return true;
     } catch (error) {
       console.error('🎵 [DEBUG] Spotify callback error:', error);

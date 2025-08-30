@@ -161,12 +161,16 @@ class UserPreferencesStore {
 
   // Spotify integration actions
   setSpotifyConnection(connected: boolean, profile?: UserPreferencesStore['spotifyProfile']) {
+    console.log('🎵 [STORE] setSpotifyConnection called:', { connected, profile: !!profile });
+    console.log('🎵 [STORE] Previous state:', { spotifyConnected: this.spotifyConnected });
     this.spotifyConnected = connected;
     this.spotifyProfile = profile;
+    console.log('🎵 [STORE] New state:', { spotifyConnected: this.spotifyConnected });
     if (profile?.topGenres) {
       this.setMusicGenres(profile.topGenres);
     }
     this.updateTimestamp();
+    console.log('🎵 [STORE] setSpotifyConnection completed');
   }
 
   // Loading state actions

@@ -6,7 +6,7 @@ import './App.css';
 import { UserPreferencesStore, BundleSuggestionsStore } from './store';
 import { GPTService } from './services';
 import { SpotifyIntegration } from './integrations';
-import { TripActions } from './actions';
+import { TripActions, IntegrationActions, initIntegrationsData, initUserPreferencesData } from './actions';
 import { BundleOffer, TabNavigation, UserPreferencesForm, SearchForm, EventDetails, DevelopmentTab, IntegrationsTab } from './components';
 import { Event } from './types';
 import { usePWA } from './hooks/usePWA';
@@ -20,21 +20,96 @@ const bundleSuggestionsStore = new BundleSuggestionsStore();
 const gptService = new GPTService();
 const spotifyIntegration = new SpotifyIntegration();
 
-// Create actions instance with all dependencies
+// Create actions instances with dependencies
 const tripActions = new TripActions(
-  userPreferencesStore,
   bundleSuggestionsStore,
-  gptService,
+  gptService
+);
+
+const integrationActions = new IntegrationActions(
+  userPreferencesStore,
   spotifyIntegration
 );
 
 const App: React.FC = observer(() => {
   const [hasStarted, setHasStarted] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState(false);
   const [activeTab, setActiveTab] = useState('trips');
   const [searchResults, setSearchResults] = useState<Event[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const pwaInfo = usePWA();
+
+  // Initialize data from storage on app startup
+  useEffect(() => {
+    const initializeApp = async () => {
+      if (hasInitialized) return;
+      
+      console.log('🚀 [APP] Initializing app with stored data...');
+      setHasInitialized(true);
+      
+      // Initialize user preferences and integrations data from storage
+      await Promise.all([
+        initUserPreferencesData(userPreferencesStore),
+        initIntegrationsData(userPreferencesStore)
+      ]);
+      
+      console.log('🚀 [APP] App initialization completed');
+    };
+    
+    initializeApp();
+  }, [hasInitialized]);
+
+  // Global check for Spotify auth return
+  useEffect(() => {
+    console.log('🎵 [APP] App component mounted, checking for Spotify auth return...');
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAuthReturn = urlParams.get('spotify_auth_return');
+    
+    if (isAuthReturn) {
+      console.log('🎵 [APP] Detected Spotify auth return, switching to integrations tab and processing...');
+      
+      // Clean up the URL parameter
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+      
+      // Switch to integrations tab so the user can see the result
+      setActiveTab('integrations');
+      
+      // Process the auth return
+      handleSpotifyAuthReturn();
+    }
+  }, []);
+
+  const handleSpotifyAuthReturn = async () => {
+    console.log('🎵 [APP] Processing Spotify auth return...');
+    
+    const authCode = localStorage.getItem('spotify_auth_code');
+    const authInProgress = localStorage.getItem('spotify_auth_in_progress');
+    
+    console.log('🎵 [APP] Auth state:', {
+      authCode: !!authCode,
+      authInProgress: !!authInProgress,
+      authCodeValue: authCode
+    });
+    
+    if (authCode && authInProgress) {
+      console.log('🎵 [APP] Found auth code, clearing flags and processing...');
+      localStorage.removeItem('spotify_auth_code');
+      localStorage.removeItem('spotify_auth_in_progress');
+      
+      try {
+        // Use integrationActions.handleSpotifyCallback to process the auth code
+        console.log('🎵 [APP] Calling integrationActions.handleSpotifyCallback with code:', authCode);
+        const success = await integrationActions.handleSpotifyCallback(authCode);
+        console.log('🎵 [APP] Spotify callback processing result:', success);
+      } catch (error) {
+        console.error('🎵 [APP] Error processing Spotify auth return:', error);
+      }
+    } else {
+      console.log('🎵 [APP] No valid auth code found for processing');
+    }
+  };
 
   // Infinite scroll functionality
   const handleScroll = useCallback(() => {
@@ -48,10 +123,10 @@ const App: React.FC = observer(() => {
     }
   }, [bundleSuggestionsStore.canLoadMore, tripActions]);
 
-  // Generate trip bundle on component mount
+  // Generate trip bundle on component mount (after initialization)
   useEffect(() => {
     const initializeTripGeneration = async () => {
-      if (hasStarted) return;
+      if (hasStarted || !hasInitialized) return;
       
       setHasStarted(true);
       // Call the action to generate trip bundles
@@ -59,7 +134,7 @@ const App: React.FC = observer(() => {
     };
 
     initializeTripGeneration();
-  }, [hasStarted]);
+  }, [hasStarted, hasInitialized]);
 
   // Add scroll event listener for infinite scroll
   useEffect(() => {
@@ -171,6 +246,8 @@ const App: React.FC = observer(() => {
           <IntegrationsTab
             onIntegrationsUpdate={handleIntegrationsUpdate}
             onClose={() => setActiveTab('trips')}
+            userPreferencesStore={userPreferencesStore}
+            integrationActions={integrationActions}
           />
         ) : activeTab === 'development' && isMockMode ? (
           <DevelopmentTab
@@ -224,11 +301,11 @@ const App: React.FC = observer(() => {
         ) : (
           <>
             {/* Loading State */}
-            {isLoading && (
+            {(isLoading || !hasInitialized) && (
               <div className="loading-container">
                 <div className="loader"></div>
-                <h2>Creating trip bundle for you</h2>
-                <p>Our AI is finding the perfect entertainment and destinations</p>
+                <h2>{!hasInitialized ? 'Initializing app...' : 'Creating trip bundle for you'}</h2>
+                <p>{!hasInitialized ? 'Loading your preferences and integrations' : 'Our AI is finding the perfect entertainment and destinations'}</p>
               </div>
             )}
 

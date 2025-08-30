@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { IntegrationsStorage, SpotifyIntegrationData } from '../storage';
+import { observer } from 'mobx-react-lite';
+import { IntegrationsStorage } from '../storage';
 import { SpotifyIntegration } from '../integrations';
+import { UserPreferencesStore } from '../store';
 import './IntegrationsTab.css';
 
 interface IntegrationsTabProps {
   onClose: () => void;
   onIntegrationsUpdate?: () => void;
+  userPreferencesStore: UserPreferencesStore;
+  integrationActions?: any; // Will be properly typed later
 }
 
-export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ 
+export const IntegrationsTab: React.FC<IntegrationsTabProps> = observer(({ 
   onClose, 
-  onIntegrationsUpdate 
+  onIntegrationsUpdate,
+  userPreferencesStore
 }) => {
-  const [spotifyData, setSpotifyData] = useState<SpotifyIntegrationData>({
-    isConnected: false
-  });
+  // Note: Spotify connection state now comes from userPreferencesStore
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,29 +25,60 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
   const spotifyIntegration = new SpotifyIntegration();
 
   useEffect(() => {
+    console.log('🎵 [USEEFFECT] IntegrationsTab useEffect triggered');
+    console.log('🎵 [USEEFFECT] Current URL:', window.location.href);
+    console.log('🎵 [USEEFFECT] Current state:', { isLoading, error, spotifyDataConnected: userPreferencesStore.spotifyConnected });
+    
     loadSpotifyData();
     // Check if we're returning from Spotify OAuth redirect
     checkForSpotifyRedirectReturn();
   }, []);
 
+  // Note: Global auth return handling is now done in App.tsx
+
   const checkForSpotifyRedirectReturn = async () => {
+    console.log('🎵 [REDIRECT CHECK] Starting redirect return check...');
+    
     const authCode = localStorage.getItem('spotify_auth_code');
     const authInProgress = localStorage.getItem('spotify_auth_in_progress');
+    const authError = localStorage.getItem('spotify_auth_error');
+    
+    console.log('🎵 [REDIRECT CHECK] LocalStorage state:', {
+      authCode: !!authCode,
+      authCodeValue: authCode?.substring(0, 20) + '...',
+      authInProgress: !!authInProgress,
+      authError: authError,
+      currentSpotifyConnected: userPreferencesStore.spotifyConnected
+    });
+    
+    if (authError) {
+      console.log('🎵 [REDIRECT CHECK] Found auth error, clearing and showing error');
+      localStorage.removeItem('spotify_auth_error');
+      setError(`Spotify authentication failed: ${authError}`);
+      return;
+    }
     
     if (authCode && authInProgress) {
-      console.log('🎵 [INTEGRATION DEBUG] Detected return from Spotify redirect, processing...');
+      console.log('🎵 [REDIRECT CHECK] Detected return from Spotify redirect, processing...');
+      console.log('🎵 [REDIRECT CHECK] Current loading state:', isLoading);
+      console.log('🎵 [REDIRECT CHECK] Current spotify connected:', userPreferencesStore.spotifyConnected);
+      
+      // Clear the flags to prevent loops
       localStorage.removeItem('spotify_auth_code');
       localStorage.removeItem('spotify_auth_in_progress');
       
-      // Process the auth code as if user just clicked connect
+      // Process the auth code
+      console.log('🎵 [REDIRECT CHECK] Calling handleSpotifyConnect...');
       await handleSpotifyConnect();
+    } else {
+      console.log('🎵 [REDIRECT CHECK] No redirect processing needed');
     }
   };
 
   const loadSpotifyData = async () => {
     try {
-      const data = await IntegrationsStorage.getSpotifyData();
-      setSpotifyData(data);
+      // Note: Spotify data now comes from MobX store, no need to load from storage
+      console.log('🎵 [LOAD] Spotify connection state from store:', userPreferencesStore.spotifyConnected);
     } catch (error) {
       console.error('Error loading Spotify data:', error);
       setError('Failed to load Spotify integration data');
@@ -52,7 +86,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
   };
 
   const handleSpotifyToggle = async () => {
-    if (spotifyData.isConnected) {
+    if (userPreferencesStore.spotifyConnected) {
       // Disconnect Spotify
       await handleSpotifyDisconnect();
     } else {
@@ -62,65 +96,76 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
   };
 
   const handleSpotifyConnect = async () => {
-    console.log('🎵 [INTEGRATION DEBUG] Starting Spotify connection...');
+    console.log('🎵 [CONNECT] ===== STARTING SPOTIFY CONNECTION =====');
+    console.log('🎵 [CONNECT] Current state:', { isLoading, error, spotifyConnected: userPreferencesStore.spotifyConnected });
+    
     setIsLoading(true);
     setError(null);
 
     try {
-      // Only clear tokens if we're not processing a redirect return
+      // Check localStorage state
       const authCode = localStorage.getItem('spotify_auth_code');
+      const authInProgress = localStorage.getItem('spotify_auth_in_progress');
+      
+      console.log('🎵 [CONNECT] LocalStorage check:', {
+        authCode: !!authCode,
+        authInProgress: !!authInProgress
+      });
+      
+      // Only clear tokens if we're not processing a redirect return
       if (!authCode) {
-        console.log('🎵 [INTEGRATION DEBUG] No auth code found, clearing any existing tokens...');
+        console.log('🎵 [CONNECT] No auth code found, clearing any existing tokens...');
         spotifyIntegration.forceClearTokens();
       } else {
-        console.log('🎵 [INTEGRATION DEBUG] Auth code found, skipping token clear to process redirect...');
+        console.log('🎵 [CONNECT] Auth code found, skipping token clear to process redirect...');
       }
       
-      console.log('🎵 [INTEGRATION DEBUG] Calling spotifyIntegration.authenticate()...');
+      console.log('🎵 [CONNECT] Calling spotifyIntegration.authenticate()...');
       // Start Spotify OAuth flow
       const success = await spotifyIntegration.authenticate();
       
-      console.log('🎵 [INTEGRATION DEBUG] Authentication result:', success);
+      console.log('🎵 [CONNECT] Authentication result:', success);
       
       if (success) {
-        console.log('🎵 [INTEGRATION DEBUG] Authentication successful, fetching user data...');
+        console.log('🎵 [CONNECT] ===== AUTHENTICATION SUCCESSFUL =====');
+        console.log('🎵 [CONNECT] Fetching user data...');
+        
         // Get user profile and preferences
         const [profile, preferences] = await Promise.all([
           spotifyIntegration.getUserProfile(),
           spotifyIntegration.getUserPreferences()
         ]);
 
-        console.log('🎵 [INTEGRATION DEBUG] Profile received:', profile);
-        console.log('🎵 [INTEGRATION DEBUG] Preferences received:', preferences);
+        console.log('🎵 [CONNECT] Profile received:', profile);
+        console.log('🎵 [CONNECT] Preferences received:', preferences);
 
         // Save to integrations storage
-        console.log('🎵 [INTEGRATION DEBUG] Saving to integrations storage...');
+        console.log('🎵 [CONNECT] Saving to integrations storage...');
         await IntegrationsStorage.connectSpotify(profile, preferences);
         
-        console.log('🎵 [INTEGRATION DEBUG] Data saved to storage');
+        console.log('🎵 [CONNECT] Data saved to storage successfully');
         
-        // Update local state
-        setSpotifyData({
-          isConnected: true,
-          profile,
-          preferences,
-          connectedAt: new Date().toISOString(),
-          lastSyncAt: new Date().toISOString()
-        });
+        console.log('🎵 [CONNECT] Spotify connection completed, data now in MobX store');
 
         // Notify parent component
+        console.log('🎵 [CONNECT] Notifying parent component...');
         onIntegrationsUpdate?.();
         
-        console.log('✅ [INTEGRATION DEBUG] Spotify connected successfully');
+        console.log('✅ [CONNECT] ===== SPOTIFY CONNECTED SUCCESSFULLY =====');
       } else {
-        console.error('🎵 [INTEGRATION DEBUG] Authentication failed');
+        console.error('🎵 [CONNECT] ===== AUTHENTICATION FAILED =====');
         setError('Failed to authenticate with Spotify');
       }
     } catch (error) {
-      console.error('🎵 [INTEGRATION DEBUG] Spotify connection error:', error);
+      console.error('🎵 [CONNECT] ===== SPOTIFY CONNECTION ERROR =====');
+      console.error('🎵 [CONNECT] Error details:', error);
       setError(error instanceof Error ? error.message : 'Failed to connect to Spotify');
     } finally {
-      console.log('🎵 [INTEGRATION DEBUG] Setting loading to false');
+      console.log('🎵 [CONNECT] Setting loading to false, final state will be:', {
+        isLoading: false,
+        error,
+        spotifyDataConnected: userPreferencesStore.spotifyConnected
+      });
       setIsLoading(false);
     }
   };
@@ -136,10 +181,8 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
       // Clear storage
       await IntegrationsStorage.disconnectSpotify();
       
-      // Update local state
-      setSpotifyData({
-        isConnected: false
-      });
+      // Note: Spotify disconnection state now managed by MobX store
+      console.log('🎵 [DISCONNECT] Spotify disconnected, state updated in MobX store');
 
       // Notify parent component
       onIntegrationsUpdate?.();
@@ -154,7 +197,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
   };
 
   const handleRefreshSpotifyData = async () => {
-    if (!spotifyData.isConnected) return;
+    if (!userPreferencesStore.spotifyConnected) return;
 
     setIsLoading(true);
     setError(null);
@@ -169,12 +212,8 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
         lastSyncAt: new Date().toISOString()
       });
       
-      // Update local state
-      setSpotifyData(prev => ({
-        ...prev,
-        preferences,
-        lastSyncAt: new Date().toISOString()
-      }));
+      // Note: Spotify preferences now managed by MobX store
+      console.log('🎵 [REFRESH] Spotify preferences refreshed in MobX store');
 
       console.log('✅ Spotify data refreshed successfully');
     } catch (error) {
@@ -235,7 +274,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
               <label className="toggle-switch">
                 <input
                   type="checkbox"
-                  checked={spotifyData.isConnected}
+                  checked={userPreferencesStore.spotifyConnected}
                   onChange={handleSpotifyToggle}
                   disabled={isLoading}
                 />
@@ -244,50 +283,35 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
             </div>
           </div>
 
-          {spotifyData.isConnected && spotifyData.profile && (
+          {userPreferencesStore.spotifyConnected && userPreferencesStore.spotifyProfile && (
             <div className="integration-status">
               <div className="status-info">
                 <div className="user-info">
                   <span className="user-name">
-                    Connected as: <strong>{spotifyData.profile.display_name}</strong>
+                    Connected as: <strong>{userPreferencesStore.spotifyProfile.displayName}</strong>
                   </span>
                   <span className="last-sync">
-                    Last synced: {formatLastSync(spotifyData.lastSyncAt)}
+                    Last synced: {formatLastSync(userPreferencesStore.lastUpdated?.toISOString())}
                   </span>
                 </div>
                 
-                {spotifyData.preferences && (
+                {userPreferencesStore.spotifyProfile && (
                   <div className="preferences-summary">
                     <div className="spotify-stats">
-                      {spotifyData.preferences.topGenres && spotifyData.preferences.topGenres.length > 0 && (
+                      {userPreferencesStore.spotifyProfile.topGenres && userPreferencesStore.spotifyProfile.topGenres.length > 0 && (
                         <div className="stat-item">
                           <span className="stat-label">Top Genres:</span>
-                          <span className="stat-value">{spotifyData.preferences.topGenres.slice(0, 3).join(', ')}</span>
+                          <span className="stat-value">{userPreferencesStore.spotifyProfile.topGenres.slice(0, 3).join(', ')}</span>
                         </div>
                       )}
-                      {spotifyData.preferences.topArtists && spotifyData.preferences.topArtists.length > 0 && (
+                      {userPreferencesStore.spotifyProfile.topArtists && userPreferencesStore.spotifyProfile.topArtists.length > 0 && (
                         <div className="stat-item">
                           <span className="stat-label">Favorite Artists:</span>
-                          <span className="stat-value">{spotifyData.preferences.topArtists.slice(0, 2).map(a => a.name).join(', ')}</span>
+                          <span className="stat-value">{userPreferencesStore.spotifyProfile.topArtists.slice(0, 2).join(', ')}</span>
                         </div>
                       )}
-                      {spotifyData.preferences.musicProfile && (
-                        <div className="stat-item">
-                          <span className="stat-label">Music Vibe:</span>
-                          <span className="stat-value">
-                            {spotifyData.preferences.musicProfile.energy > 0.7 ? '⚡ High Energy' : 
-                             spotifyData.preferences.musicProfile.energy > 0.4 ? '🎵 Moderate' : '🎼 Chill'}
-                            {spotifyData.preferences.musicProfile.valence > 0.6 ? ' • 😊 Positive' : 
-                             spotifyData.preferences.musicProfile.valence > 0.4 ? ' • 😐 Neutral' : ' • 😔 Melancholic'}
-                          </span>
-                        </div>
-                      )}
-                      {spotifyData.preferences.topTracks && spotifyData.preferences.topTracks.length > 0 && (
-                        <div className="stat-item">
-                          <span className="stat-label">Top Tracks:</span>
-                          <span className="stat-value">{spotifyData.preferences.topTracks.slice(0, 2).map(t => t.name).join(', ')}</span>
-                        </div>
-                      )}
+                      {/* Music profile display removed - not available in store */}
+                      {/* Top tracks display removed - not available in store */}
                     </div>
                   </div>
                 )}
@@ -308,7 +332,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
             <div className="integration-loading">
               <div className="loader"></div>
               <span>
-                {spotifyData.isConnected 
+                {userPreferencesStore.spotifyConnected 
                   ? 'Refreshing Spotify data...' 
                   : 'Connecting to Spotify...'}
               </span>
@@ -374,6 +398,6 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
       </div>
     </div>
   );
-};
+});
 
 export default IntegrationsTab;
