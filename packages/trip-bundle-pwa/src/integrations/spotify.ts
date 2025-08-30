@@ -56,14 +56,23 @@ class SpotifyIntegration {
     this.loadTokensFromStorage();
   }
 
-  // Get proper redirect URI - always use 127.0.0.1 to match Spotify dashboard config
+  // Get proper redirect URI - handle both local dev and production
   private getRedirectUri(): string {
     const origin = window.location.origin;
+    const pathname = window.location.pathname;
     console.log('🎵 [DEBUG] Original origin:', origin);
+    console.log('🎵 [DEBUG] Current pathname:', pathname);
     
-    // Always use 127.0.0.1 to match Spotify app configuration
-    const spotifyCompatibleOrigin = origin.replace('localhost', '127.0.0.1');
-    const redirectUri = spotifyCompatibleOrigin + '/spotify-callback.html';
+    let redirectUri;
+    
+    if (origin.includes('github.io')) {
+      // Production: GitHub Pages
+      redirectUri = origin + '/trip-bundle/spotify-callback.html';
+    } else {
+      // Local development: use 127.0.0.1 to match Spotify app configuration
+      const spotifyCompatibleOrigin = origin.replace('localhost', '127.0.0.1');
+      redirectUri = spotifyCompatibleOrigin + '/spotify-callback.html';
+    }
     
     console.log('🎵 [DEBUG] Generated redirect URI:', redirectUri);
     return redirectUri;
