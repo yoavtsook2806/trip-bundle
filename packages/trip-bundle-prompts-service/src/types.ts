@@ -155,7 +155,6 @@ export interface UserData {
   integrations: {
     [integrationName: string]: IntegrationSummary;
   };
-  cities: string[]; // Available city names for trip planning
 }
 
 // =============================================================================

@@ -2,6 +2,7 @@ import BundleSuggestionsStore from '../store/bundleSuggestions';
 import UserPreferencesStore from '../store/userPreferences';
 import IntegrationsStore from '../store/integrations';
 import { createTripBundleService, convertStoreDataToUserData, type ITripBundleService } from '../services/tripBundleServiceFactory';
+import { CITIES } from '../constants/cities';
 import type { TripBundle } from 'trip-bundle-prompts-service';
 
 export class TripActions {
@@ -21,7 +22,8 @@ export class TripActions {
     
     // Create the appropriate service based on environment
     const userData = convertStoreDataToUserData(userPreferencesStore, integrationsStore);
-    this.tripBundleService = createTripBundleService(userData);
+    const cities = CITIES.map(city => city.name);
+    this.tripBundleService = createTripBundleService(userData, cities);
   }
 
   // Trip Bundle Generation Actions

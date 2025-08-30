@@ -18,12 +18,9 @@ import { CITIES } from '../constants/cities';
 /**
  * Factory function that creates the appropriate service based on environment
  */
-export function createTripBundleService(userData: UserData): ITripBundleService {
+export function createTripBundleService(userData: UserData, cities: string[]): ITripBundleService {
   // Check if we're in mock mode
   const isMockMode = (import.meta as any).env?.VITE_MOCK === 'true';
-  
-  // Extract cities from userData (they were added by convertStoreDataToUserData)
-  const cities = userData.cities;
   
   if (isMockMode) {
     console.log('🎭 Creating mock trip bundle service (VITE_MOCK=true)');
@@ -61,8 +58,7 @@ export function convertStoreDataToUserData(
       groupSize: prefs.groupSize,
       travelDates: prefs.travelDates
     },
-    integrations: generateIntegrationsData(integrationsStore),
-    cities: CITIES.map(city => city.name) // Map City objects to city names
+    integrations: generateIntegrationsData(integrationsStore)
   };
 }
 

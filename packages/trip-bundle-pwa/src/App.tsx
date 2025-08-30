@@ -5,6 +5,7 @@ import './App.css';
 // Import our stores, services, and actions
 import { UserPreferencesStore, BundleSuggestionsStore, IntegrationsStore } from './store';
 import { SpotifyService, createTripBundleService, convertStoreDataToUserData } from './services';
+import { CITIES } from './constants/cities';
 import { TripActions, IntegrationActions, initIntegrationsData, initUserPreferencesData } from './actions';
 import { IntegrationsStorage, UserPreferencesStorage } from './storage';
 import { BundleOffer, TabNavigation, UserPreferencesForm, SearchForm, EventDetails, DevelopmentTab, IntegrationsTab } from './components';
@@ -183,7 +184,8 @@ const App: React.FC = observer(() => {
     try {
       // Create service instance for event search
       const userData = convertStoreDataToUserData(userPreferencesStore, integrationsStore);
-      const eventService = createTripBundleService(userData);
+      const cities = CITIES.map(city => city.name);
+      const eventService = createTripBundleService(userData, cities);
       
       const result = await eventService.getEvents(city, startDate, endDate);
       setSearchResults(result.events);
