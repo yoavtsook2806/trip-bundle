@@ -19,12 +19,15 @@ export default defineConfig(({ command, mode }) => {
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['TripBundleIcon.jpeg'],
+      devOptions: {
+        enabled: true
+      },
       manifest: {
         name: 'Trip Bundle AI',
         short_name: 'TripBundle',
         description: 'Your AI-powered travel companion',
         theme_color: '#667eea',
-        background_color: '#667eea',
+        background_color: '#f0f0f0', // Light background to complement the icon
         display: 'standalone',
         orientation: 'portrait-primary',
         scope: command === 'build' && process.env.GITHUB_PAGES ? '/trip-bundle/' : '/',
@@ -32,23 +35,67 @@ export default defineConfig(({ command, mode }) => {
         categories: ['travel', 'productivity', 'lifestyle'],
         lang: 'en-US',
         icons: [
+          // Standard app icons
+          {
+            src: 'TripBundleIcon.jpeg',
+            sizes: '72x72',
+            type: 'image/jpeg',
+            purpose: 'any'
+          },
+          {
+            src: 'TripBundleIcon.jpeg',
+            sizes: '96x96',
+            type: 'image/jpeg',
+            purpose: 'any'
+          },
+          {
+            src: 'TripBundleIcon.jpeg',
+            sizes: '128x128',
+            type: 'image/jpeg',
+            purpose: 'any'
+          },
+          {
+            src: 'TripBundleIcon.jpeg',
+            sizes: '144x144',
+            type: 'image/jpeg',
+            purpose: 'any'
+          },
+          {
+            src: 'TripBundleIcon.jpeg',
+            sizes: '152x152',
+            type: 'image/jpeg',
+            purpose: 'any'
+          },
           {
             src: 'TripBundleIcon.jpeg',
             sizes: '192x192',
             type: 'image/jpeg',
-            purpose: 'any maskable'
+            purpose: 'any'
+          },
+          {
+            src: 'TripBundleIcon.jpeg',
+            sizes: '384x384',
+            type: 'image/jpeg',
+            purpose: 'any'
           },
           {
             src: 'TripBundleIcon.jpeg',
             sizes: '512x512',
             type: 'image/jpeg',
-            purpose: 'any maskable'
+            purpose: 'any'
+          },
+          // Maskable icons for adaptive icons
+          {
+            src: 'TripBundleIcon.jpeg',
+            sizes: '192x192',
+            type: 'image/jpeg',
+            purpose: 'maskable'
           },
           {
             src: 'TripBundleIcon.jpeg',
-            sizes: '180x180',
+            sizes: '512x512',
             type: 'image/jpeg',
-            purpose: 'any maskable'
+            purpose: 'maskable'
           }
         ],
         // Screenshots removed - add them when available
