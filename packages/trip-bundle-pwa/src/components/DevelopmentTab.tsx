@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { getSystemPrompt, getUserPrompt } from 'trip-bundle-prompts-service';
+import { convertStoreDataToUserData } from '../services/tripBundleServiceFactory';
+import type { UserData } from 'trip-bundle-prompts-service';
 import UserPreferencesStore from '../store/userPreferences';
 import IntegrationsStore from '../store/integrations';
 import './DevelopmentTab.css';
@@ -11,31 +12,40 @@ interface DevelopmentTabProps {
 }
 
 export const DevelopmentTab: React.FC<DevelopmentTabProps> = ({ onClose, userPreferencesStore, integrationsStore }) => {
-  const [activePrompt, setActivePrompt] = useState<'system' | 'user' | null>(null);
-  const [promptContent, setPromptContent] = useState<string>('');
+  const [activeView, setActiveView] = useState<'userData' | 'stores' | null>(null);
+  const [viewContent, setViewContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleShowSystemPrompt = () => {
+  const handleShowUserData = () => {
     setIsLoading(true);
-    setActivePrompt('system');
+    setActiveView('userData');
     try {
-      const systemPrompt = getSystemPrompt();
-      setPromptContent(systemPrompt);
+      const userData: UserData = convertStoreDataToUserData(userPreferencesStore, integrationsStore);
+      setViewContent(JSON.stringify(userData, null, 2));
     } catch (error) {
-      setPromptContent(`Error loading system prompt: ${error}`);
+      setViewContent(`Error loading user data: ${error}`);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleShowUserPrompt = async () => {
+  const handleShowStores = () => {
     setIsLoading(true);
-    setActivePrompt('user');
+    setActiveView('stores');
     try {
-      const userPrompt = getUserPrompt(userPreferencesStore, integrationsStore);
-      setPromptContent(userPrompt);
+      const storesData = {
+        userPreferences: {
+          preferences: userPreferencesStore.preferences,
+          spotifyConnected: userPreferencesStore.spotifyConnected,
+          spotifyProfile: userPreferencesStore.spotifyProfile
+        },
+        integrations: {
+          integrations: integrationsStore.integrations
+        }
+      };
+      setViewContent(JSON.stringify(storesData, null, 2));
     } catch (error) {
-      setPromptContent(`Error loading user prompt: ${error}`);
+      setViewContent(`Error loading stores data: ${error}`);
     } finally {
       setIsLoading(false);
     }
@@ -48,7 +58,7 @@ export const DevelopmentTab: React.FC<DevelopmentTabProps> = ({ onClose, userPre
       <div className="development-header">
         <div className="header-content">
           <h2>🛠️ Development Tools</h2>
-          <p>View and debug AI prompts (Mock Mode Only)</p>
+          <p>View and debug user data sent to the service</p>
         </div>
         <button className="close-tab-btn" onClick={onClose}>
           ✕
@@ -58,39 +68,39 @@ export const DevelopmentTab: React.FC<DevelopmentTabProps> = ({ onClose, userPre
       <div className="prompt-buttons">
         <button 
           className="prompt-button system-prompt-btn"
-          onClick={handleShowSystemPrompt}
+          onClick={handleShowUserData}
           disabled={isLoading}
         >
-          📋 See System Prompt
+          📊 See User Data (Service Input)
         </button>
         
         <button 
           className="prompt-button user-prompt-btn"
-          onClick={handleShowUserPrompt}
+          onClick={handleShowStores}
           disabled={isLoading}
         >
-          👤 See User Prompt
+          🗄️ See Raw Store Data
         </button>
       </div>
 
       {isLoading && (
         <div className="prompt-loading">
           <div className="loader"></div>
-          <p>Loading prompt...</p>
+          <p>Loading data...</p>
         </div>
       )}
 
-      {activePrompt && promptContent && !isLoading && (
+      {activeView && viewContent && !isLoading && (
         <div className="prompt-viewer">
           <div className="prompt-header">
             <h3>
-              {activePrompt === 'system' ? '📋 System Prompt' : '👤 User Prompt'}
+              {activeView === 'userData' ? '📊 User Data (Service Input)' : '🗄️ Raw Store Data'}
             </h3>
             <button 
               className="close-prompt-btn"
               onClick={() => {
-                setActivePrompt(null);
-                setPromptContent('');
+                setActiveView(null);
+                setViewContent('');
               }}
             >
               ✕
@@ -99,17 +109,17 @@ export const DevelopmentTab: React.FC<DevelopmentTabProps> = ({ onClose, userPre
           
           <textarea
             className="prompt-content"
-            value={promptContent}
+            value={viewContent}
             readOnly
             rows={20}
-            placeholder="Prompt content will appear here..."
+            placeholder="Data will appear here..."
           />
           
           <div className="prompt-actions">
             <button 
               className="copy-btn"
               onClick={() => {
-                navigator.clipboard.writeText(promptContent);
+                navigator.clipboard.writeText(viewContent);
                 // Could add a toast notification here
               }}
             >
