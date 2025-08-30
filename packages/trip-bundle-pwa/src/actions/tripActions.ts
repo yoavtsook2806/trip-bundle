@@ -1,9 +1,9 @@
 import BundleSuggestionsStore from '../store/bundleSuggestions';
 import UserPreferencesStore from '../store/userPreferences';
 import IntegrationsStore from '../store/integrations';
-import { createTripBundleService, convertStoreDataToUserData, type ITripBundleService } from '../services/tripBundleServiceFactory';
+import { createTripBundleService, convertStoreDataToUserData } from '../services/tripBundleServiceFactory';
 import { CITIES } from '../constants/cities';
-import type { TripBundle } from 'trip-bundle-prompts-service';
+import type { TripBundle, ITripBundleService } from 'trip-bundle-prompts-service';
 
 export class TripActions {
   private bundleSuggestionsStore: BundleSuggestionsStore;

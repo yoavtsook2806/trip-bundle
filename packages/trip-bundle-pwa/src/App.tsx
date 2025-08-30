@@ -9,7 +9,7 @@ import { CITIES } from './constants/cities';
 import { TripActions, IntegrationActions, initIntegrationsData, initUserPreferencesData } from './actions';
 import { IntegrationsStorage, UserPreferencesStorage } from './storage';
 import { BundleOffer, TabNavigation, UserPreferencesForm, SearchForm, EventDetails, DevelopmentTab, IntegrationsTab } from './components';
-import type { Event } from 'trip-bundle-prompts-service';
+import type { Event as TripEvent } from 'trip-bundle-prompts-service';
 import { usePWA } from './hooks/usePWA';
 
 // Import the TripBundle icon
@@ -40,9 +40,9 @@ const App: React.FC = observer(() => {
   const [hasStarted, setHasStarted] = useState(false);
   const [hasInitialized, setHasInitialized] = useState(false);
   const [activeTab, setActiveTab] = useState('trips');
-  const [searchResults, setSearchResults] = useState<Event[]>([]);
+  const [searchResults, setSearchResults] = useState<TripEvent[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<TripEvent | null>(null);
   const pwaInfo = usePWA();
 
   // Initialize data from storage on app startup
@@ -199,7 +199,7 @@ const App: React.FC = observer(() => {
 
   // Handle event selection from BundleOffer
   const handleEventClick = (entertainment: any, date: string, time: string, venue: string, cost: number) => {
-    const event: Event = {
+    const event: TripEvent = {
       entertainment,
       date,
       time,
@@ -351,6 +351,7 @@ const App: React.FC = observer(() => {
                     <BundleOffer
                       key={bundle.id}
                       bundle={bundle}
+                      onClose={() => {}} // Add required onClose prop
                       onSelect={handleSelectBundle}
                       onBookmark={handleBookmarkBundle}
                       onEventClick={handleEventClick}
@@ -385,8 +386,8 @@ const App: React.FC = observer(() => {
         <EventDetails
           event={selectedEvent}
           onClose={() => setSelectedEvent(null)}
-          onBook={(event) => {
-            console.log('Booking event:', event.entertainment.name);
+          onBook={(eventData) => {
+            console.log('Booking event:', eventData.entertainment.name);
             // Here you could add logic to add the event to a trip or booking system
             setSelectedEvent(null);
           }}

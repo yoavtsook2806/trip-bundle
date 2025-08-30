@@ -51,7 +51,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
 
   return (
     <div className="event-details-overlay" onClick={onClose}>
-      <div className="event-details-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="event-details-modal" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
         {/* Header */}
         <div className="event-header">
           <div className="event-category" style={{ backgroundColor: getCategoryColor(event.entertainment.category) }}>
@@ -109,7 +109,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
             <div className="event-tags">
               <span className="tags-label">Tags:</span>
               <div className="tags-list">
-                {event.entertainment.tags.map((tag, index) => (
+                {event.entertainment.tags.map((tag: string, index: number) => (
                   <span key={index} className="tag">{tag}</span>
                 ))}
               </div>

@@ -5,13 +5,10 @@
 import { 
   TripBundlePromptService,
   type UserData,
-  type GPTResponse,
-  type EventsResponse,
-  type GenerationOptions,
   type ITripBundleService
 } from 'trip-bundle-prompts-service';
 import { MockTripBundleService } from './mockTripBundleService';
-import { CITIES } from '../constants/cities';
+// import { CITIES } from '../constants/cities'; // Unused import
 
 // ITripBundleService interface is now imported from trip-bundle-prompts-service
 

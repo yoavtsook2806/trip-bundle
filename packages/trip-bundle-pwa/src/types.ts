@@ -2,11 +2,17 @@
 // PWA-SPECIFIC TYPES - Trip Bundle PWA
 // =============================================================================
 
+// Import types for local usage
+import type { 
+  Event as TripEventImport, 
+  TripBundle as TripBundleImport 
+} from 'trip-bundle-prompts-service';
+
 // Re-export commonly used types from the service
 export type { 
   City, 
   Entertainment, 
-  Event, 
+  Event as TripEvent, 
   TripBundle, 
   GPTResponse, 
   EventsResponse,
@@ -67,7 +73,7 @@ export interface Tab {
 
 // Bundle Offer Component
 export interface BundleOfferProps {
-  bundle: TripBundle;
+  bundle: TripBundleImport;
   onClose: () => void;
   onBookmark?: (bundleId: string) => void;
   onSelect?: (bundleId: string) => void;
@@ -84,9 +90,9 @@ export interface SearchFormProps {
 
 // Event Details Component
 export interface EventDetailsProps {
-  event: Event;
+  event: TripEventImport;
   onClose: () => void;
-  onBook?: (event: Event) => void;
+  onBook?: (event: TripEventImport) => void;
 }
 
 // =============================================================================

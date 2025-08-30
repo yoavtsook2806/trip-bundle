@@ -86,7 +86,7 @@ const BundleOffer: React.FC<BundleOfferProps> = observer(({
             className={`bookmark-btn ${isBookmarked ? 'bookmarked' : ''}`}
             onClick={(e) => {
               e.stopPropagation();
-              onBookmark?.(bundle);
+              onBookmark?.(bundle.id);
             }}
             title={isBookmarked ? 'Remove bookmark' : 'Bookmark this bundle'}
           >
@@ -157,11 +157,11 @@ const BundleOffer: React.FC<BundleOfferProps> = observer(({
           <div className="entertainment-section">
             <h4 className="section-title">🎉 Activities</h4>
             <div className="entertainment-list">
-              {bundle.events.map((event, index) => (
+              {bundle.events.map((event: any, index: number) => (
                 <div 
                   key={index} 
                   className="entertainment-item clickable"
-                  onClick={(e) => {
+                  onClick={(e: React.MouseEvent) => {
                     e.stopPropagation();
                     onEventClick?.(
                       event.entertainment,
@@ -198,7 +198,7 @@ const BundleOffer: React.FC<BundleOfferProps> = observer(({
               className="select-bundle-btn"
               onClick={(e) => {
                 e.stopPropagation();
-                onSelect?.(bundle);
+                onSelect?.(bundle.id);
               }}
             >
               Select This Bundle
