@@ -60,27 +60,20 @@ class SpotifyIntegration {
   private getRedirectUri(): string {
     const origin = window.location.origin;
     const pathname = window.location.pathname;
+    const href = window.location.href;
+    console.log('🎵 [DEBUG] Full URL:', href);
     console.log('🎵 [DEBUG] Original origin:', origin);
     console.log('🎵 [DEBUG] Current pathname:', pathname);
     
     let redirectUri;
     
     if (origin.includes('github.io')) {
-      // Production: GitHub Pages - extract base path from current pathname
-      let basePath = '';
-      if (pathname.startsWith('/trip-bundle/')) {
-        basePath = '/trip-bundle';
-      } else if (pathname.includes('/trip-bundle/')) {
-        // Extract the base path if we're deeper in the app
-        const pathParts = pathname.split('/');
-        const tripBundleIndex = pathParts.indexOf('trip-bundle');
-        if (tripBundleIndex !== -1) {
-          basePath = '/' + pathParts.slice(1, tripBundleIndex + 1).join('/');
-        }
-      }
-      redirectUri = origin + basePath + '/spotify-callback.html';
+      // Production: GitHub Pages - always use /trip-bundle/ for this deployment
+      console.log('🎵 [DEBUG] Detected GitHub Pages deployment');
+      redirectUri = origin + '/trip-bundle/spotify-callback.html';
     } else {
       // Local development: use 127.0.0.1 to match Spotify app configuration
+      console.log('🎵 [DEBUG] Detected local development');
       const spotifyCompatibleOrigin = origin.replace('localhost', '127.0.0.1');
       redirectUri = spotifyCompatibleOrigin + '/spotify-callback.html';
     }
