@@ -35,18 +35,11 @@ VITE_SPOTIFY_MOCK=false
 
 ### 3. Testing Modes
 
-#### Mock Mode (Current - No Spotify App Needed)
-```bash
-VITE_MOCK=true
-# Uses mock Spotify data
-```
+**Spotify Always Uses Real Integration** - No mock mode for Spotify
+- VITE_MOCK=true: GPT uses mock data (saves API costs), Spotify uses real OAuth
+- VITE_MOCK=false: Both GPT and Spotify use real APIs
 
-#### Real Spotify Mode
-```bash
-VITE_MOCK=false
-VITE_SPOTIFY_MOCK=false
-# Uses real Spotify OAuth
-```
+**Why?** Spotify API is free for development, so we always use real integration for better testing.
 
 ## Current Status
 
@@ -57,13 +50,11 @@ VITE_SPOTIFY_MOCK=false
 
 ## Next Steps
 
-1. **Test Mock Mode** (works now):
-   - Go to http://192.168.1.212:5175/
-   - Click Integrations tab (🔗)
-   - Toggle Spotify ON
-   - See mock data
+1. **Setup Spotify App** (required for any testing):
+   - Add redirect URIs to Spotify app
+   - Get Client Secret from Spotify
 
-2. **Setup Real Integration**:
+2. **Test Integration**:
    - Add redirect URIs to Spotify app
    - Get Client Secret from Spotify
    - Create .env file

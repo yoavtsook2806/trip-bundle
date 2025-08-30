@@ -67,15 +67,6 @@ class SpotifyIntegration {
 
   // Authentication
   async authenticate(): Promise<boolean> {
-    // Check if we're in mock mode
-    const isMockMode = (import.meta as any).env?.VITE_MOCK === 'true' || 
-                       (import.meta as any).env?.VITE_SPOTIFY_MOCK === 'true';
-    
-    if (isMockMode) {
-      console.log('🎭 Using Spotify mock mode - Client ID configured: bc5f89044c854343a3408f12a4f4a0be');
-      return this.authenticateMock();
-    }
-
     console.log('🎵 Using real Spotify integration - Client ID:', this.clientId);
     
     if (!this.clientId) {
@@ -107,20 +98,7 @@ class SpotifyIntegration {
     return this.startOAuthFlow();
   }
 
-  private async authenticateMock(): Promise<boolean> {
-    // Simulate authentication delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Set mock tokens
-    this.accessToken = 'mock_access_token';
-    this.refreshToken = 'mock_refresh_token';
-    this.tokenExpiry = Date.now() + (3600 * 1000); // 1 hour from now
-    
-    // Store in localStorage for persistence
-    this.saveTokensToStorage();
-    
-    return true;
-  }
+
 
   private startOAuthFlow(): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -289,31 +267,11 @@ class SpotifyIntegration {
 
   // API Methods
   async getUserProfile(): Promise<SpotifyUserProfile> {
-    const isMockMode = (import.meta as any).env?.VITE_MOCK === 'true' || 
-                       (import.meta as any).env?.VITE_SPOTIFY_MOCK === 'true';
-    
-    if (isMockMode) {
-      return this.getMockUserProfile();
-    }
-    
     const response = await this.makeApiRequest('/me');
     return response;
   }
 
-  private getMockUserProfile(): SpotifyUserProfile {
-    return {
-      id: 'mock_user_123',
-      display_name: 'Demo User',
-      email: 'demo@example.com',
-      country: 'US',
-      followers: { total: 42 },
-      images: [{
-        url: 'https://via.placeholder.com/150x150/1db954/ffffff?text=Demo',
-        height: 150,
-        width: 150
-      }]
-    };
-  }
+
 
   async getTopArtists(timeRange: 'short_term' | 'medium_term' | 'long_term' = 'medium_term', limit = 20): Promise<SpotifyArtist[]> {
     const response = await this.makeApiRequest(`/me/top/artists?time_range=${timeRange}&limit=${limit}`);
@@ -326,13 +284,6 @@ class SpotifyIntegration {
   }
 
   async getUserPreferences(): Promise<SpotifyUserPreferences> {
-    const isMockMode = (import.meta as any).env?.VITE_MOCK === 'true' || 
-                       (import.meta as any).env?.VITE_SPOTIFY_MOCK === 'true';
-    
-    if (isMockMode) {
-      return this.getMockUserPreferences();
-    }
-    
     const [topArtists, topTracks] = await Promise.all([
       this.getTopArtists(),
       this.getTopTracks()
@@ -365,66 +316,7 @@ class SpotifyIntegration {
     };
   }
 
-  private getMockUserPreferences(): SpotifyUserPreferences {
-    const mockArtists: SpotifyArtist[] = [
-      {
-        id: 'artist_1',
-        name: 'The Beatles',
-        genres: ['rock', 'pop', 'classic rock'],
-        popularity: 85,
-        followers: { total: 5000000 },
-        images: [{ url: 'https://via.placeholder.com/300x300/1db954/ffffff?text=Beatles', height: 300, width: 300 }]
-      },
-      {
-        id: 'artist_2',
-        name: 'Daft Punk',
-        genres: ['electronic', 'house', 'french house'],
-        popularity: 80,
-        followers: { total: 3000000 },
-        images: [{ url: 'https://via.placeholder.com/300x300/1db954/ffffff?text=Daft+Punk', height: 300, width: 300 }]
-      },
-      {
-        id: 'artist_3',
-        name: 'Miles Davis',
-        genres: ['jazz', 'bebop', 'cool jazz'],
-        popularity: 75,
-        followers: { total: 1500000 },
-        images: [{ url: 'https://via.placeholder.com/300x300/1db954/ffffff?text=Miles', height: 300, width: 300 }]
-      }
-    ];
 
-    const mockTracks: SpotifyTrack[] = [
-      {
-        id: 'track_1',
-        name: 'Come Together',
-        artists: [{ name: 'The Beatles', id: 'artist_1' }],
-        album: { name: 'Abbey Road', id: 'album_1' },
-        popularity: 85,
-        preview_url: undefined
-      },
-      {
-        id: 'track_2',
-        name: 'One More Time',
-        artists: [{ name: 'Daft Punk', id: 'artist_2' }],
-        album: { name: 'Discovery', id: 'album_2' },
-        popularity: 80,
-        preview_url: undefined
-      }
-    ];
-
-    return {
-      topArtists: mockArtists,
-      topTracks: mockTracks,
-      topGenres: ['rock', 'electronic', 'jazz', 'pop', 'house'],
-      musicProfile: {
-        danceability: 0.7,
-        energy: 0.8,
-        valence: 0.6,
-        acousticness: 0.3,
-        instrumentalness: 0.2
-      }
-    };
-  }
 
   private async getAudioFeatures(trackIds: string[]) {
     if (trackIds.length === 0) return [];
