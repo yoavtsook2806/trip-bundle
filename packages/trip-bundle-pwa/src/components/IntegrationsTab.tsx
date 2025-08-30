@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { IntegrationsStorage } from '../storage';
-import { SpotifyIntegration } from '../integrations';
+import { SpotifyService } from '../services';
 import { UserPreferencesStore } from '../store';
 import './IntegrationsTab.css';
 
@@ -22,7 +22,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = observer(({
   const [error, setError] = useState<string | null>(null);
 
   // Initialize Spotify integration
-  const spotifyIntegration = new SpotifyIntegration();
+  const spotifyService = new SpotifyService();
 
   useEffect(() => {
     console.log('🎵 [USEEFFECT] IntegrationsTab useEffect triggered');
@@ -115,14 +115,14 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = observer(({
       // Only clear tokens if we're not processing a redirect return
       if (!authCode) {
         console.log('🎵 [CONNECT] No auth code found, clearing any existing tokens...');
-        spotifyIntegration.forceClearTokens();
+        spotifyService.forceClearTokens();
       } else {
         console.log('🎵 [CONNECT] Auth code found, skipping token clear to process redirect...');
       }
       
-      console.log('🎵 [CONNECT] Calling spotifyIntegration.authenticate()...');
+      console.log('🎵 [CONNECT] Calling spotifyService.authenticate()...');
       // Start Spotify OAuth flow
-      const success = await spotifyIntegration.authenticate();
+      const success = await spotifyService.authenticate();
       
       console.log('🎵 [CONNECT] Authentication result:', success);
       
@@ -132,8 +132,8 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = observer(({
         
         // Get user profile and preferences
         const [profile, preferences] = await Promise.all([
-          spotifyIntegration.getUserProfile(),
-          spotifyIntegration.getUserPreferences()
+          spotifyService.getUserProfile(),
+          spotifyService.getUserPreferences()
         ]);
 
         console.log('🎵 [CONNECT] Profile received:', profile);
@@ -176,7 +176,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = observer(({
 
     try {
       // Disconnect from Spotify
-      spotifyIntegration.disconnect();
+      spotifyService.disconnect();
       
       // Clear storage
       await IntegrationsStorage.disconnectSpotify();
@@ -204,7 +204,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = observer(({
 
     try {
       // Refresh user preferences
-      const preferences = await spotifyIntegration.getUserPreferences();
+      const preferences = await spotifyService.getUserPreferences();
       
       // Update storage
       await IntegrationsStorage.setSpotifyData({

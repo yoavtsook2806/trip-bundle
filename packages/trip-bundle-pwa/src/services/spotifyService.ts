@@ -38,7 +38,7 @@ export interface SpotifyUserPreferences {
   };
 }
 
-class SpotifyIntegration {
+class SpotifyService {
   private clientId: string | null = null;
   private clientSecret: string | null = null;
   private redirectUri: string = this.getRedirectUri();
@@ -806,4 +806,4 @@ class SpotifyIntegration {
   }
 }
 
-export default SpotifyIntegration;
+export default SpotifyService;

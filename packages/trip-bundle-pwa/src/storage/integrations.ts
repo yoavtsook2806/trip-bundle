@@ -1,4 +1,4 @@
-import { SpotifyUserProfile, SpotifyUserPreferences } from '../integrations/spotify';
+import { SpotifyUserProfile, SpotifyUserPreferences } from '../services/spotifyService';
 
 export interface SpotifyIntegrationData {
   isConnected: boolean;

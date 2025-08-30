@@ -5,8 +5,9 @@ import './App.css';
 // Import our stores, services, and actions
 import { UserPreferencesStore, BundleSuggestionsStore } from './store';
 import { GPTService } from './services';
-import { SpotifyIntegration } from './integrations';
+import { SpotifyService } from './services';
 import { TripActions, IntegrationActions, initIntegrationsData, initUserPreferencesData } from './actions';
+import { IntegrationsStorage, UserPreferencesStorage } from './storage';
 import { BundleOffer, TabNavigation, UserPreferencesForm, SearchForm, EventDetails, DevelopmentTab, IntegrationsTab } from './components';
 import { Event } from './types';
 import { usePWA } from './hooks/usePWA';
@@ -18,7 +19,7 @@ import TripBundleIcon from './images/TripBundleIcon.jpeg';
 const userPreferencesStore = new UserPreferencesStore();
 const bundleSuggestionsStore = new BundleSuggestionsStore();
 const gptService = new GPTService();
-const spotifyIntegration = new SpotifyIntegration();
+const spotifyService = new SpotifyService();
 
 // Create actions instances with dependencies
 const tripActions = new TripActions(
@@ -28,7 +29,8 @@ const tripActions = new TripActions(
 
 const integrationActions = new IntegrationActions(
   userPreferencesStore,
-  spotifyIntegration
+  spotifyService,
+  IntegrationsStorage
 );
 
 const App: React.FC = observer(() => {
@@ -50,8 +52,8 @@ const App: React.FC = observer(() => {
       
       // Initialize user preferences and integrations data from storage
       await Promise.all([
-        initUserPreferencesData(userPreferencesStore),
-        initIntegrationsData(userPreferencesStore)
+        initUserPreferencesData(userPreferencesStore, UserPreferencesStorage),
+        initIntegrationsData(userPreferencesStore, IntegrationsStorage)
       ]);
       
       console.log('🚀 [APP] App initialization completed');

@@ -1,0 +1,102 @@
+# Trip Bundle PWA - Cursor Rules
+
+## Architecture Guidelines
+
+### Directory Structure and Responsibilities
+
+#### @store/ - State Management
+- **Purpose**: Contains MobX stores for reactive state management
+- **Responsibility**: Manages application state, provides computed values and reactive updates
+- **Rules**: 
+  - Should only contain state management logic
+  - No direct API calls or storage operations
+  - Use MobX observables, actions, and computed values
+
+#### @storage/ - Local Storage
+- **Purpose**: Handles data persistence to localStorage
+- **Responsibility**: Save and retrieve data from browser's local storage
+- **Rules**:
+  - Only handles localStorage operations
+  - Provides async methods for data persistence
+  - Should not contain business logic
+  - Returns serializable data structures
+
+#### @services/ - API Services
+- **Purpose**: Handles external API calls and integrations
+- **Responsibility**: Communicate with external services (OpenAI, Spotify, etc.)
+- **Rules**:
+  - Only makes API calls and handles responses
+  - Should not directly update stores or storage
+  - Returns processed data to be consumed by actions
+  - Handles authentication and API configuration
+
+#### @actions/ - Business Logic Layer
+- **Purpose**: Orchestrates data flow between services, storage, and stores
+- **Responsibility**: Contains business logic and coordinates between layers
+- **Rules**:
+  - **CRITICAL**: Should NOT import or instantiate services/storage directly
+  - Receives services and storage as constructor dependencies
+  - Calls methods on injected dependencies to get/save data
+  - Processes and transforms data as needed
+  - Updates stores with processed data
+  - Handles error states and loading states
+
+### Data Flow Architecture
+
+```
+UI Components → Actions → Services/Storage → Actions → Stores → UI Components
+```
+
+1. **UI Components** trigger actions
+2. **Actions** coordinate between services/storage and stores
+3. **Services** handle API calls and return data to actions
+4. **Storage** handles persistence and returns data to actions
+5. **Actions** process data and update stores
+6. **Stores** notify UI components of state changes
+
+### Implementation Rules
+
+1. **Separation of Concerns**: Each layer has a single responsibility
+2. **Dependency Injection**: Actions receive services and storage as dependencies
+3. **No Direct Calls**: Actions should not import and call services/storage directly
+4. **Error Handling**: Each layer handles its own errors appropriately
+5. **Async Operations**: Use async/await for all asynchronous operations
+6. **Type Safety**: Use TypeScript interfaces for all data structures
+
+### Example Structure
+
+```typescript
+// ❌ BAD - Action calling service directly
+class MyAction {
+  async doSomething() {
+    const data = await MyService.getData(); // Direct service call
+    this.store.setData(data);
+  }
+}
+
+// ✅ GOOD - Action receiving service as dependency
+class MyAction {
+  constructor(private myService: MyService, private store: MyStore) {}
+  
+  async doSomething() {
+    const data = await this.myService.getData(); // Through dependency
+    this.store.setData(data);
+  }
+}
+```
+
+### File Naming Conventions
+
+- **Services**: `*Service.ts` (e.g., `spotifyService.ts`, `gptService.ts`)
+- **Storage**: `*.ts` (e.g., `userPreferences.ts`, `integrations.ts`)
+- **Stores**: `*.ts` (e.g., `userPreferences.ts`, `bundleSuggestions.ts`)
+- **Actions**: `*Actions.ts` (e.g., `integrationActions.ts`, `userPreferencesActions.ts`)
+
+### Testing Strategy
+
+- **Services**: Mock external APIs, test API integration
+- **Storage**: Mock localStorage, test data persistence
+- **Stores**: Test state changes and computed values
+- **Actions**: Mock services and storage, test business logic
+
+This architecture ensures maintainability, testability, and clear separation of concerns throughout the application.

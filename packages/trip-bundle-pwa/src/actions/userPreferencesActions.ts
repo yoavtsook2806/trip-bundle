@@ -3,14 +3,22 @@ import { UserPreferencesStorage, UserPreferencesHelpers, type UserPreferences } 
 
 export class UserPreferencesActions {
   private userPreferencesStore: UserPreferencesStore;
+  private userPreferencesStorage: typeof UserPreferencesStorage;
+  private userPreferencesHelpers: typeof UserPreferencesHelpers;
 
-  constructor(userPreferencesStore: UserPreferencesStore) {
+  constructor(
+    userPreferencesStore: UserPreferencesStore,
+    userPreferencesStorage: typeof UserPreferencesStorage = UserPreferencesStorage,
+    userPreferencesHelpers: typeof UserPreferencesHelpers = UserPreferencesHelpers
+  ) {
     this.userPreferencesStore = userPreferencesStore;
+    this.userPreferencesStorage = userPreferencesStorage;
+    this.userPreferencesHelpers = userPreferencesHelpers;
   }
 
   // Storage-based User Preference Actions
   async updateUserPreferences(preferences: Partial<UserPreferences>): Promise<boolean> {
-    const success = await UserPreferencesStorage.setUserPreferences(preferences);
+    const success = await this.userPreferencesStorage.setUserPreferences(preferences);
     if (success) {
       // Also update the old store for backward compatibility
       this.syncWithLegacyStore(preferences);
@@ -19,19 +27,19 @@ export class UserPreferencesActions {
   }
 
   async getUserPreferences(): Promise<UserPreferences> {
-    return UserPreferencesStorage.getUserPreferences();
+    return this.userPreferencesStorage.getUserPreferences();
   }
 
   async hasStoredPreferences(): Promise<boolean> {
-    return UserPreferencesStorage.hasUserPreferences();
+    return this.userPreferencesStorage.hasUserPreferences();
   }
 
   async getPreferencesCompletion(): Promise<number> {
-    return UserPreferencesHelpers.getCompletionPercentage();
+    return this.userPreferencesHelpers.getCompletionPercentage();
   }
 
   async clearStoredPreferences(): Promise<boolean> {
-    const success = await UserPreferencesStorage.clearUserPreferences();
+    const success = await this.userPreferencesStorage.clearUserPreferences();
     if (success) {
       this.userPreferencesStore.reset();
     }
@@ -230,19 +238,20 @@ export class UserPreferencesActions {
  * Initialize user preferences data from storage and sync with stores
  */
 export async function initUserPreferencesData(
-  userPreferencesStore: UserPreferencesStore
+  userPreferencesStore: UserPreferencesStore,
+  userPreferencesStorage: typeof UserPreferencesStorage = UserPreferencesStorage
 ): Promise<void> {
   try {
     console.log('⚙️ [INIT_USER_PREFS] Loading user preferences from storage...');
     
     // Check if user has stored preferences
-    const hasStoredPrefs = await UserPreferencesStorage.hasUserPreferences();
+    const hasStoredPrefs = await userPreferencesStorage.hasUserPreferences();
     
     if (hasStoredPrefs) {
       console.log('⚙️ [INIT_USER_PREFS] Found stored preferences, loading...');
       
       // Get user preferences from storage
-      const preferences = await UserPreferencesStorage.getUserPreferences();
+      const preferences = await userPreferencesStorage.getUserPreferences();
       console.log('⚙️ [INIT_USER_PREFS] Loaded preferences:', {
         budgetRange: preferences.budgetRange,
         durationRange: preferences.durationRange,

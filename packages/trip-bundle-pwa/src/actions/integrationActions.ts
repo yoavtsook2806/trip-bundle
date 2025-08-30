@@ -1,30 +1,33 @@
 import UserPreferencesStore from '../store/userPreferences';
-import SpotifyIntegration from '../integrations/spotify';
+import SpotifyService from '../services/spotifyService';
 import { IntegrationsStorage } from '../storage/integrations';
 
 export class IntegrationActions {
   private userPreferencesStore: UserPreferencesStore;
-  private spotifyIntegration: SpotifyIntegration;
+  private spotifyService: SpotifyService;
+  private integrationsStorage: typeof IntegrationsStorage;
 
   constructor(
     userPreferencesStore: UserPreferencesStore,
-    spotifyIntegration: SpotifyIntegration
+    spotifyService: SpotifyService,
+    integrationsStorage: typeof IntegrationsStorage = IntegrationsStorage
   ) {
     this.userPreferencesStore = userPreferencesStore;
-    this.spotifyIntegration = spotifyIntegration;
+    this.spotifyService = spotifyService;
+    this.integrationsStorage = integrationsStorage;
   }
 
   // Spotify Integration Actions
   async connectSpotify(): Promise<boolean> {
     try {
-      if (!this.spotifyIntegration.isConfigured()) {
+      if (!this.spotifyService.isConfigured()) {
         throw new Error('Spotify integration not configured');
       }
 
       this.userPreferencesStore.setLoading(true);
       
       // Get auth URL and redirect user
-      const authUrl = await this.spotifyIntegration.getAuthUrl();
+      const authUrl = await this.spotifyService.getAuthUrl();
       window.location.href = authUrl;
       
       return true;
@@ -40,7 +43,7 @@ export class IntegrationActions {
       this.userPreferencesStore.setLoading(true);
       
       // Exchange code for tokens
-      const success = await this.spotifyIntegration.handleCallback(code);
+      const success = await this.spotifyService.handleCallback(code);
       if (!success) {
         throw new Error('Failed to exchange Spotify authorization code');
       }
@@ -48,8 +51,8 @@ export class IntegrationActions {
       // Get user profile and preferences
       console.log('🎵 [INTEGRATION_ACTIONS] Fetching user profile and preferences...');
       const [profile, preferences] = await Promise.all([
-        this.spotifyIntegration.getUserProfile(),
-        this.spotifyIntegration.getUserPreferences()
+        this.spotifyService.getUserProfile(),
+        this.spotifyService.getUserPreferences()
       ]);
 
       console.log('🎵 [INTEGRATION_ACTIONS] Profile:', { id: profile.id, displayName: profile.display_name });
@@ -57,7 +60,7 @@ export class IntegrationActions {
 
       // Save to storage first
       console.log('🎵 [INTEGRATION_ACTIONS] Saving Spotify data to storage...');
-      const storageSuccess = await IntegrationsStorage.connectSpotify(profile, preferences);
+      const storageSuccess = await this.integrationsStorage.connectSpotify(profile, preferences);
       if (!storageSuccess) {
         console.error('Failed to save Spotify data to storage');
       }
@@ -89,10 +92,10 @@ export class IntegrationActions {
 
   async disconnectSpotify(): Promise<void> {
     // Disconnect from integration service
-    this.spotifyIntegration.disconnect();
+    this.spotifyService.disconnect();
     
     // Clear from storage
-    await IntegrationsStorage.disconnectSpotify();
+    await this.integrationsStorage.disconnectSpotify();
     
     // Update store
     this.userPreferencesStore.setSpotifyConnection(false);
@@ -145,13 +148,14 @@ export class IntegrationActions {
  * Initialize integrations data from storage and sync with stores
  */
 export async function initIntegrationsData(
-  userPreferencesStore: UserPreferencesStore
+  userPreferencesStore: UserPreferencesStore,
+  integrationsStorage: typeof IntegrationsStorage = IntegrationsStorage
 ): Promise<void> {
   try {
     console.log('🔗 [INIT_INTEGRATIONS] Loading integrations data from storage...');
     
     // Get integrations data from storage
-    const integrationsData = await IntegrationsStorage.getIntegrationsData();
+    const integrationsData = await integrationsStorage.getIntegrationsData();
     console.log('🔗 [INIT_INTEGRATIONS] Loaded integrations data:', integrationsData);
 
     // Initialize Spotify integration if connected
