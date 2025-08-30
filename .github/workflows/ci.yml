@@ -40,7 +40,7 @@ jobs:
         yarn --version
       
     - name: Install dependencies
-      run: yarn install --immutable
+      run: yarn install --frozen-lockfile
       
     - name: Debug workspace structure
       run: |
@@ -94,7 +94,7 @@ jobs:
         yarn --version
       
     - name: Install dependencies
-      run: yarn install --immutable
+      run: yarn install --frozen-lockfile
       
     - name: Build prompts service first
       run: yarn workspace trip-bundle-prompts-service build
@@ -106,8 +106,10 @@ jobs:
         echo "VITE_MOCK=true" >> .env
         echo "GITHUB_PAGES=true" >> .env
       
-    - name: Build PWA (Mock)
-      run: yarn workspace trip-bundle-pwa build:mock
+    - name: Build PWA (Mock Mode)
+      run: |
+        cd packages/trip-bundle-pwa
+        VITE_MOCK=true GITHUB_PAGES=true yarn build
       
     - name: Create builds directory and copy mock build
       run: |
