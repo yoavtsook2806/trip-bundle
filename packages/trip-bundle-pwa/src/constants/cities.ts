@@ -12,7 +12,7 @@ export const CITIES: City[] = [
     timeZone: 'CET',
     language: ['French'],
     flagUrl: 'https://flagcdn.com/w320/fr.png',
-    symbolUrl: 'https://images.unsplash.com/photo-1549144511-f099e773c147?w=400&h=250&fit=crop&auto=format'
+    symbolUrl: 'https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=400&h=250&fit=crop&auto=format'
   },
   {
     code: 'ROM',
@@ -24,7 +24,7 @@ export const CITIES: City[] = [
     timeZone: 'CET',
     language: ['Italian'],
     flagUrl: 'https://flagcdn.com/w320/it.png',
-    symbolUrl: 'https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=400&h=250&fit=crop&auto=format'
+    symbolUrl: 'https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=400&h=250&fit=crop&auto=format'
   },
   {
     code: 'MAD',
@@ -36,7 +36,7 @@ export const CITIES: City[] = [
     timeZone: 'CET',
     language: ['Spanish'],
     flagUrl: 'https://flagcdn.com/w320/es.png',
-    symbolUrl: 'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&h=250&fit=crop&auto=format'
+    symbolUrl: 'https://images.unsplash.com/photo-1543785734-4b6e564642f8?w=400&h=250&fit=crop&auto=format'
   },
   {
     code: 'BER',
@@ -48,7 +48,7 @@ export const CITIES: City[] = [
     timeZone: 'CET',
     language: ['German'],
     flagUrl: 'https://flagcdn.com/w320/de.png',
-    symbolUrl: 'https://images.unsplash.com/photo-1587330979470-3016b6702d89?w=400&h=250&fit=crop&auto=format'
+    symbolUrl: 'https://images.unsplash.com/photo-1560969184-10fe8719e047?w=400&h=250&fit=crop&auto=format'
   },
   {
     code: 'LON',
@@ -60,7 +60,7 @@ export const CITIES: City[] = [
     timeZone: 'GMT',
     language: ['English'],
     flagUrl: 'https://flagcdn.com/w320/gb.png',
-    symbolUrl: 'https://images.unsplash.com/photo-1529655683826-aba9b3e77383?w=400&h=250&fit=crop&auto=format'
+    symbolUrl: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&h=250&fit=crop&auto=format'
   },
   {
     code: 'AMS',
@@ -72,7 +72,7 @@ export const CITIES: City[] = [
     timeZone: 'CET',
     language: ['Dutch'],
     flagUrl: 'https://flagcdn.com/w320/nl.png',
-    symbolUrl: 'https://images.unsplash.com/photo-1512470876302-972faa2aa9a4?w=400&h=250&fit=crop&auto=format'
+    symbolUrl: 'https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=400&h=250&fit=crop&auto=format'
   },
   {
     code: 'BRU',
@@ -84,7 +84,7 @@ export const CITIES: City[] = [
     timeZone: 'CET',
     language: ['Dutch', 'French'],
     flagUrl: 'https://flagcdn.com/w320/be.png',
-    symbolUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=250&fit=crop&auto=format'
+    symbolUrl: 'https://images.unsplash.com/photo-1559564484-0b8b2d7d1635?w=400&h=250&fit=crop&auto=format'
   },
   {
     code: 'VIE',
@@ -96,7 +96,7 @@ export const CITIES: City[] = [
     timeZone: 'CET',
     language: ['German'],
     flagUrl: 'https://flagcdn.com/w320/at.png',
-    symbolUrl: 'https://images.unsplash.com/photo-1516550893923-42d28e5677af?w=400&h=250&fit=crop&auto=format'
+    symbolUrl: 'https://images.unsplash.com/photo-1609856878074-cf31e21ccb6b?w=400&h=250&fit=crop&auto=format'
   },
   {
     code: 'LIS',
@@ -108,7 +108,7 @@ export const CITIES: City[] = [
     timeZone: 'WET',
     language: ['Portuguese'],
     flagUrl: 'https://flagcdn.com/w320/pt.png',
-    symbolUrl: 'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=400&h=250&fit=crop&auto=format'
+    symbolUrl: 'https://images.unsplash.com/photo-1588640203724-b4e8d3b8e7b8?w=400&h=250&fit=crop&auto=format'
   },
   // Nordic Capital Cities
   {
@@ -121,7 +121,7 @@ export const CITIES: City[] = [
     timeZone: 'CET',
     language: ['Swedish'],
     flagUrl: 'https://flagcdn.com/w320/se.png',
-    symbolUrl: 'https://images.unsplash.com/photo-1508189860359-777d945909ef?w=400&h=250&fit=crop&auto=format'
+    symbolUrl: 'https://images.unsplash.com/photo-1509356843151-3e7d96241e11?w=400&h=250&fit=crop&auto=format'
   },
   {
     code: 'OSL',
@@ -133,7 +133,7 @@ export const CITIES: City[] = [
     timeZone: 'CET',
     language: ['Norwegian'],
     flagUrl: 'https://flagcdn.com/w320/no.png',
-    symbolUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=250&fit=crop&auto=format'
+    symbolUrl: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=400&h=250&fit=crop&auto=format'
   },
   {
     code: 'COP',
@@ -219,7 +219,7 @@ export const CITIES: City[] = [
     timeZone: 'CET',
     language: ['Croatian'],
     flagUrl: 'https://flagcdn.com/w320/hr.png',
-    symbolUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=250&fit=crop&auto=format'
+    symbolUrl: 'https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=400&h=250&fit=crop&auto=format'
   },
   {
     code: 'DUB',
@@ -244,7 +244,7 @@ export const CITIES: City[] = [
     timeZone: 'CET',
     language: ['Spanish', 'Catalan'],
     flagUrl: 'https://flagcdn.com/w320/es.png',
-    symbolUrl: 'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&h=250&fit=crop&auto=format'
+    symbolUrl: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=400&h=250&fit=crop&auto=format'
   },
   {
     code: 'MIL',
