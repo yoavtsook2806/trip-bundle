@@ -122,32 +122,13 @@ const App: React.FC = observer(() => {
     const windowHeight = window.innerHeight;
     const docHeight = document.documentElement.offsetHeight;
     
-    console.log('Scroll Debug:', {
-      scrollTop,
-      windowHeight,
-      docHeight,
-      distanceFromBottom: docHeight - (scrollTop + windowHeight),
-      canLoadMore: bundleSuggestionsStore.canLoadMore,
-      isLoadingMore: bundleSuggestionsStore.pagination.isLoadingMore,
-      hasMore: bundleSuggestionsStore.pagination.hasMore,
-      currentPage: bundleSuggestionsStore.pagination.currentPage,
-      totalBundles: bundleSuggestionsStore.bundles.length
-    });
-    
     if (docHeight - (scrollTop + windowHeight) > 100) {
       return; // Not close enough to bottom
     }
     
     // User has scrolled near the bottom, load more bundles
     if (bundleSuggestionsStore.canLoadMore) {
-      console.log('🔄 Loading more bundles...');
       tripActions.loadMoreBundles();
-    } else {
-      console.log('❌ Cannot load more:', {
-        hasMore: bundleSuggestionsStore.pagination.hasMore,
-        isLoadingMore: bundleSuggestionsStore.pagination.isLoadingMore,
-        isLoading: bundleSuggestionsStore.isLoading
-      });
     }
   }, [bundleSuggestionsStore, tripActions]);
 
