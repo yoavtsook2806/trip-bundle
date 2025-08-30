@@ -99,8 +99,25 @@ jobs:
     - name: Build prompts service first
       run: yarn workspace trip-bundle-prompts-service build
       
+    - name: Create mock environment file
+      run: |
+        cd packages/trip-bundle-pwa
+        echo "# Mock mode - no API keys needed" > .env
+        echo "VITE_MOCK=true" >> .env
+        echo "GITHUB_PAGES=true" >> .env
+      
     - name: Build PWA (Mock)
       run: yarn workspace trip-bundle-pwa build:mock
+      
+    - name: Verify PWA files
+      run: |
+        cd packages/trip-bundle-pwa
+        echo "Checking if pwa.html was created:"
+        ls -la dist/pwa.html || echo "pwa.html not found!"
+        echo "Checking dist contents:"
+        ls -la dist/
+        echo "First few lines of pwa.html:"
+        head -10 dist/pwa.html || echo "Could not read pwa.html"
       
     - name: Build PWA (Prod)
       run: yarn workspace trip-bundle-pwa build:prod
