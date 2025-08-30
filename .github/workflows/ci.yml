@@ -117,14 +117,17 @@ jobs:
         mkdir -p builds/mock
         cp -r dist/* builds/mock/
       
-    - name: Build PWA (Prod)
-      run: yarn workspace trip-bundle-pwa build:prod
-      
-    - name: Copy prod build to builds directory
+    - name: Build PWA (Prod) for artifacts only
       run: |
         cd packages/trip-bundle-pwa
+        VITE_MOCK=false GITHUB_PAGES=true yarn build
         mkdir -p builds/prod
         cp -r dist/* builds/prod/
+        
+    - name: Restore Mock build for GitHub Pages deployment
+      run: |
+        cd packages/trip-bundle-pwa
+        VITE_MOCK=true GITHUB_PAGES=true yarn build
       
     - name: Verify PWA files
       run: |
