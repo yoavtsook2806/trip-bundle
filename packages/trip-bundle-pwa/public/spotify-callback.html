@@ -132,20 +132,23 @@
             try {
                 console.log('🎵 [CALLBACK DEBUG] handleAuthSuccess called with code:', code, 'state:', state);
                 
-                // Show success immediately - we'll handle token exchange in the main app
+                // Show success immediately
                 container.className = 'container success';
                 spinner.style.display = 'none';
                 title.textContent = 'Success!';
                 message.textContent = 'Spotify account connected successfully.';
 
-                // Notify parent window with the authorization code
+                // Store auth code for main app to pick up
+                console.log('🎵 [CALLBACK DEBUG] Storing auth code in localStorage');
+                localStorage.setItem('spotify_auth_code', code);
+                localStorage.setItem('spotify_auth_state', state);
+
+                // Check if this is a popup (has opener) or direct redirect (no opener)
                 if (window.opener) {
-                    // Use 127.0.0.1 consistently to match our setup
+                    console.log('🎵 [CALLBACK DEBUG] Popup mode - sending message to parent');
+                    // Popup mode - send message to parent
                     const currentOrigin = window.location.origin;
                     const targetOrigin = currentOrigin.replace('localhost', '127.0.0.1');
-                    
-                    console.log('🎵 [CALLBACK DEBUG] Sending success message to parent origin:', targetOrigin);
-                    console.log('🎵 [CALLBACK DEBUG] Message data:', { type: 'SPOTIFY_AUTH_SUCCESS', code, state });
                     
                     try {
                         window.opener.postMessage({
@@ -153,23 +156,28 @@
                             code: code,
                             state: state
                         }, targetOrigin);
-                        console.log('🎵 [CALLBACK DEBUG] Success message sent successfully');
+                        console.log('🎵 [CALLBACK DEBUG] Success message sent to parent');
                     } catch (e) {
-                        console.log('🎵 [CALLBACK DEBUG] Failed to send success message:', e);
+                        console.log('🎵 [CALLBACK DEBUG] Failed to send message:', e);
                     }
-                } else {
-                    console.warn('🎵 [CALLBACK DEBUG] No opener window found!');
-                }
-                
-                // Also store in localStorage as backup
-                console.log('🎵 [CALLBACK DEBUG] Storing auth code in localStorage');
-                localStorage.setItem('spotify_auth_code', code);
 
-                // Give the main window time to process the message before closing
-                setTimeout(() => {
-                    console.log('🎵 [CALLBACK DEBUG] Closing window after success');
-                    window.close();
-                }, 3000);
+                    // Close popup after delay
+                    setTimeout(() => {
+                        console.log('🎵 [CALLBACK DEBUG] Closing popup window');
+                        window.close();
+                    }, 2000);
+                } else {
+                    console.log('🎵 [CALLBACK DEBUG] Direct redirect mode - redirecting back to app');
+                    // Direct redirect mode (mobile/PWA) - redirect back to main app
+                    message.textContent = 'Redirecting back to app...';
+                    
+                    setTimeout(() => {
+                        // Get the base URL without query parameters
+                        const baseUrl = window.location.origin + window.location.pathname.replace('/spotify-callback.html', '/');
+                        console.log('🎵 [CALLBACK DEBUG] Redirecting to:', baseUrl);
+                        window.location.href = baseUrl;
+                    }, 1500);
+                }
             } catch (error) {
                 console.error('Callback handling error:', error);
                 
