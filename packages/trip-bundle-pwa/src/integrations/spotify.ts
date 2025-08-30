@@ -54,6 +54,34 @@ class SpotifyIntegration {
     
     // Try to restore tokens from localStorage
     this.loadTokensFromStorage();
+    
+    // Check if we're returning from a redirect auth
+    this.checkForRedirectAuth();
+  }
+
+  // Check if we're returning from OAuth redirect
+  private checkForRedirectAuth(): void {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const error = urlParams.get('error');
+    const authInProgress = localStorage.getItem('spotify_auth_in_progress');
+    
+    if (authInProgress && (code || error)) {
+      console.log('🎵 [DEBUG] Detected return from OAuth redirect');
+      localStorage.removeItem('spotify_auth_in_progress');
+      
+      if (error) {
+        console.error('🎵 [DEBUG] OAuth error:', error);
+        localStorage.setItem('spotify_auth_error', error);
+      } else if (code) {
+        console.log('🎵 [DEBUG] OAuth success, storing code');
+        localStorage.setItem('spotify_auth_code', code);
+      }
+      
+      // Clean up URL
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
   }
 
   // Get proper redirect URI - handle both local dev and production
@@ -86,6 +114,20 @@ class SpotifyIntegration {
   setCredentials(clientId: string, clientSecret: string) {
     this.clientId = clientId;
     this.clientSecret = clientSecret;
+  }
+
+  // Mobile/PWA detection
+  private isMobileOrPWA(): boolean {
+    // Check if running as PWA
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                  (window.navigator as any).standalone === true;
+    
+    // Check if mobile device
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                     window.innerWidth <= 768;
+    
+    console.log('🎵 [DEBUG] PWA mode:', isPWA, 'Mobile device:', isMobile);
+    return isPWA || isMobile;
   }
 
   // PKCE helper methods
@@ -141,6 +183,22 @@ class SpotifyIntegration {
       return true;
     }
 
+    // Check if we have an auth code from redirect
+    const authCode = localStorage.getItem('spotify_auth_code');
+    if (authCode) {
+      console.log('🎵 [DEBUG] Found auth code from redirect, exchanging for tokens...');
+      localStorage.removeItem('spotify_auth_code');
+      try {
+        const success = await this.handleCallback(authCode);
+        if (success && this.isAuthenticated()) {
+          console.log('🎵 [DEBUG] Successfully authenticated via redirect');
+          return true;
+        }
+      } catch (error) {
+        console.error('🎵 [DEBUG] Failed to exchange redirect auth code:', error);
+      }
+    }
+
     // Try to refresh token if available
     if (this.refreshToken) {
       console.log('🎵 [DEBUG] Attempting to refresh access token...');
@@ -175,8 +233,20 @@ class SpotifyIntegration {
         localStorage.removeItem('spotify_auth_code');
         localStorage.removeItem('spotify_auth_error');
         
-        // Open popup window for OAuth
-        console.log('🎵 [DEBUG] Opening popup window for OAuth...');
+        // Store the current state to resume after redirect
+        localStorage.setItem('spotify_auth_in_progress', 'true');
+        localStorage.setItem('spotify_auth_resolve_id', Date.now().toString());
+        
+        // For mobile/PWA: Use direct redirect instead of popup
+        if (this.isMobileOrPWA()) {
+          console.log('🎵 [DEBUG] Mobile/PWA detected - using direct redirect');
+          window.location.href = authUrl;
+          // The promise will be resolved when we return from the redirect
+          return;
+        }
+        
+        // Desktop: Try popup first, fallback to redirect
+        console.log('🎵 [DEBUG] Desktop detected - trying popup...');
         const popup = window.open(
           authUrl,
           'spotify-auth',
@@ -184,8 +254,8 @@ class SpotifyIntegration {
         );
 
         if (!popup) {
-          console.error('🎵 [DEBUG] Failed to open popup window');
-          reject(new Error('Failed to open authentication popup. Please allow popups for this site.'));
+          console.log('🎵 [DEBUG] Popup blocked - falling back to redirect');
+          window.location.href = authUrl;
           return;
         }
 
