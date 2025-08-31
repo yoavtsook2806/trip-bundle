@@ -7,12 +7,14 @@ interface UserPreferencesFormProps {
   onPreferencesUpdate?: (preferences: UserPreferences) => void;
   onClose?: () => void;
   integrationActions?: IntegrationActions;
+  isFirstTimeExperience?: boolean; // New prop to indicate if this is part of FTE
 }
 
 export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
   onPreferencesUpdate,
   onClose,
-  integrationActions
+  integrationActions,
+  isFirstTimeExperience = false
 }) => {
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
   const [loading, setLoading] = useState(true);
@@ -453,30 +455,43 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
       </div>
 
       <div className="form-actions">
-        <div className="navigation-buttons">
-          {currentSection > 0 && (
-            <button
-              className="nav-button prev"
-              onClick={() => setCurrentSection(currentSection - 1)}
-            >
-              ← Previous
-            </button>
-          )}
-          {currentSection < sections.length - 1 && (
-            <button
-              className="nav-button next"
-              onClick={() => setCurrentSection(currentSection + 1)}
-            >
-              Next →
-            </button>
-          )}
-        </div>
+        {/* Show navigation buttons only in FTE */}
+        {isFirstTimeExperience && (
+          <div className="navigation-buttons">
+            {currentSection > 0 && (
+              <button
+                className="nav-button prev"
+                onClick={() => setCurrentSection(currentSection - 1)}
+              >
+                ← Previous
+              </button>
+            )}
+            {currentSection < sections.length - 1 && (
+              <button
+                className="nav-button next"
+                onClick={() => setCurrentSection(currentSection + 1)}
+              >
+                Next →
+              </button>
+            )}
+          </div>
+        )}
         
         <div className="form-completion">
-          {onClose && (
-            <button className="close-preferences-btn" onClick={onClose}>
-              ✅ Done
-            </button>
+          {isFirstTimeExperience ? (
+            // In FTE: Show Done button only on the last tab
+            currentSection === sections.length - 1 && onClose && (
+              <button className="close-preferences-btn" onClick={onClose}>
+                ✅ Done
+              </button>
+            )
+          ) : (
+            // In regular flow: Show back/close button
+            onClose && (
+              <button className="close-preferences-btn back-btn" onClick={onClose}>
+                ← Back
+              </button>
+            )
           )}
         </div>
       </div>

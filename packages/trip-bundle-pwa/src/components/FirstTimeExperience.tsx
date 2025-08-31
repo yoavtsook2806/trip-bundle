@@ -76,6 +76,7 @@ const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComplete, i
           }}
           onClose={handleComplete}
           integrationActions={integrationActions}
+          isFirstTimeExperience={true}
         />
       </div>
     </div>

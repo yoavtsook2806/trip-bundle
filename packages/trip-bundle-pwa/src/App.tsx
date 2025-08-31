@@ -231,6 +231,7 @@ const App: React.FC = observer(() => {
             }}
             onClose={handlePreferencesComplete}
             integrationActions={integrationActions}
+            isFirstTimeExperience={false}
           />
         </div>
       ) : currentView === 'development' && isMockMode ? (
