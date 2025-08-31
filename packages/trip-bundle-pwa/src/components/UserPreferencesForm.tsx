@@ -9,17 +9,18 @@ interface UserPreferencesFormProps {
 
 export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
   onPreferencesUpdate,
-  onClose: _onClose
+  onClose
 }) => {
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentSection, setCurrentSection] = useState(0);
 
   const sections = [
-    { id: 'personal', title: '', icon: '👤' },
-    { id: 'travel', title: '', icon: '✈️' },
-    { id: 'entertainment', title: '', icon: '🎭' },
-    { id: 'accommodation', title: '', icon: '🏨' }
+    { id: 'personal', title: 'Personal', icon: '👤' },
+    { id: 'travel', title: 'Travel', icon: '✈️' },
+    { id: 'entertainment', title: 'Entertainment', icon: '🎭' },
+    { id: 'accommodation', title: 'Stay & Transport', icon: '🏨' },
+    { id: 'integrations', title: 'Integrations', icon: '🔗' }
   ];
 
   useEffect(() => {
@@ -84,6 +85,7 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
   };
 
   if (loading) {
+    console.log('🔄 [USER_PREFS_FORM] Loading preferences...');
     return (
       <div className="preferences-form">
         <div className="loading-spinner">
@@ -95,6 +97,7 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
   }
 
   if (!preferences) {
+    console.log('❌ [USER_PREFS_FORM] No preferences loaded');
     return (
       <div className="preferences-form">
         <div className="error-message">
@@ -103,6 +106,8 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
       </div>
     );
   }
+
+  console.log('✅ [USER_PREFS_FORM] Rendering form with preferences:', preferences);
 
   const renderPersonalSection = () => (
     <div className="form-section">
@@ -351,6 +356,66 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
     </div>
   );
 
+  const renderIntegrationsSection = () => (
+    <div className="form-section">
+      <h3>🔗 Integrations</h3>
+      
+      <div className="form-group">
+        <label>Spotify Integration</label>
+        <div className="integration-item">
+          <div className="integration-info">
+            <span className="integration-icon">🎵</span>
+            <div>
+              <h4>Spotify</h4>
+              <p>Connect your Spotify to get personalized music recommendations</p>
+            </div>
+          </div>
+          <button 
+            className={`integration-btn ${preferences.spotify?.connected ? 'connected' : ''}`}
+            onClick={() => {
+              // TODO: Implement Spotify connection
+              console.log('Spotify integration clicked');
+            }}
+          >
+            {preferences.spotify?.connected ? 'Connected' : 'Connect'}
+          </button>
+        </div>
+      </div>
+
+      <div className="form-group">
+        <label>Calendar Integration</label>
+        <div className="integration-item">
+          <div className="integration-info">
+            <span className="integration-icon">📅</span>
+            <div>
+              <h4>Calendar</h4>
+              <p>Sync your calendar to find the best travel dates</p>
+            </div>
+          </div>
+          <button className="integration-btn" disabled>
+            Coming Soon
+          </button>
+        </div>
+      </div>
+
+      <div className="form-group">
+        <label>Google Maps Integration</label>
+        <div className="integration-item">
+          <div className="integration-info">
+            <span className="integration-icon">🗺️</span>
+            <div>
+              <h4>Google Maps</h4>
+              <p>Get location-based recommendations and directions</p>
+            </div>
+          </div>
+          <button className="integration-btn" disabled>
+            Coming Soon
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="preferences-form">
       <div className="form-header">
@@ -376,6 +441,7 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
         {currentSection === 1 && renderTravelSection()}
         {currentSection === 2 && renderEntertainmentSection()}
         {currentSection === 3 && renderAccommodationSection()}
+        {currentSection === 4 && renderIntegrationsSection()}
       </div>
 
       <div className="form-actions">
@@ -398,8 +464,12 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
           )}
         </div>
         
-        <div className="auto-save-info">
-          <span>✨ Changes saved automatically</span>
+        <div className="form-completion">
+          {onClose && (
+            <button className="close-preferences-btn" onClick={onClose}>
+              ✅ Done
+            </button>
+          )}
         </div>
       </div>
     </div>

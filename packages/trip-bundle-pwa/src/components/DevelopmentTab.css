@@ -70,6 +70,16 @@
   box-shadow: 0 8px 25px rgba(240, 147, 251, 0.3);
 }
 
+.reset-btn {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  color: white;
+}
+
+.reset-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+}
+
 .prompt-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;

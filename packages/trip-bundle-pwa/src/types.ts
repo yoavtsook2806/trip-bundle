@@ -4,7 +4,6 @@
 
 // Import types for local usage
 import type { 
-  Event as TripEventImport, 
   TripBundle as TripBundleImport 
 } from 'trip-bundle-prompts-service';
 
@@ -82,18 +81,7 @@ export interface BundleOfferProps {
   isBookmarked?: boolean;
 }
 
-// Search Form Component
-export interface SearchFormProps {
-  onSearch: (city: string, startDate: string, endDate: string) => void;
-  isLoading?: boolean;
-}
-
-// Event Details Component
-export interface EventDetailsProps {
-  event: TripEventImport;
-  onClose: () => void;
-  onBook?: (event: TripEventImport) => void;
-}
+// Removed unused SearchFormProps and EventDetailsProps interfaces
 
 // =============================================================================
 // INTEGRATION TYPES (PWA-specific)

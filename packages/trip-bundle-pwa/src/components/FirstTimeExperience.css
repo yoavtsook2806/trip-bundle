@@ -1,0 +1,300 @@
+.fte-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.fte-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.fte-welcome h1 {
+  margin: 0 0 12px 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.fte-welcome p {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  color: #495057;
+  line-height: 1.5;
+}
+
+.fte-subtitle {
+  color: #6c757d !important;
+  font-style: italic;
+}
+
+.fte-actions {
+  display: flex;
+  align-items: center;
+}
+
+.fte-skip-btn {
+  padding: 10px 20px;
+  background: transparent;
+  border: 2px solid #6c757d;
+  border-radius: 8px;
+  color: #6c757d;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fte-skip-btn:hover {
+  background: #6c757d;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.fte-form-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: 600px; /* Ensure minimum height */
+}
+
+/* Ensure the preferences form is visible in FTE */
+.fte-container .preferences-form {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: none;
+  min-height: 500px; /* Ensure form has minimum height */
+}
+
+/* Removed duplicate completion button - now using UserPreferencesForm's built-in Done button */
+
+/* Skipped state */
+.fte-skipped {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px;
+}
+
+.fte-skipped-content {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 48px;
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  max-width: 500px;
+  width: 100%;
+}
+
+.fte-skipped-content h2 {
+  margin: 0 0 20px 0;
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.fte-skipped-content p {
+  margin: 0 0 32px 0;
+  font-size: 1.1rem;
+  color: #6c757d;
+  line-height: 1.6;
+}
+
+.fte-continue-btn {
+  padding: 16px 32px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.fte-continue-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+/* Removed duplicate rule - now handled above */
+
+.fte-container .form-header {
+  background: transparent;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.fte-container .form-header h2 {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Ensure form sections are visible in FTE */
+.fte-container .form-content {
+  display: block !important;
+  min-height: 400px;
+}
+
+.fte-container .form-section {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.fte-container .section-navigation {
+  display: flex !important;
+  justify-content: center !important;
+  margin-bottom: 2rem !important;
+}
+
+/* Fix text colors for FTE - make text dark on white background */
+.fte-container .form-section h3 {
+  color: #333 !important;
+}
+
+.fte-container .form-group label {
+  color: #555 !important;
+}
+
+.fte-container .form-group input,
+.fte-container .form-group select,
+.fte-container .form-group textarea {
+  color: #333 !important;
+  background: #fff !important;
+  border: 1px solid #ddd !important;
+}
+
+.fte-container .checkbox-group label {
+  color: #555 !important;
+}
+
+.fte-container .integration-item h4 {
+  color: #333 !important;
+}
+
+.fte-container .integration-item p {
+  color: #666 !important;
+}
+
+/* Fix navigation buttons */
+.fte-container .form-actions button {
+  color: #fff !important;
+}
+
+/* Fix section navigation buttons */
+.fte-container .section-navigation button {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #333 !important;
+  border: 1px solid #ddd !important;
+}
+
+.fte-container .section-navigation button.active {
+  background: linear-gradient(135deg, #667eea, #764ba2) !important;
+  color: #fff !important;
+}
+
+/* Fix checkbox styling */
+.fte-container .checkbox-group input[type="checkbox"] {
+  accent-color: #667eea !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .fte-container {
+    padding: 16px;
+  }
+
+  .fte-header {
+    flex-direction: column;
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  .fte-welcome h1 {
+    font-size: 2rem;
+  }
+
+  .fte-actions {
+    justify-content: center;
+  }
+
+  .fte-completion {
+    padding: 20px;
+  }
+
+  .fte-complete-btn {
+    width: 100%;
+    padding: 14px 24px;
+    font-size: 1.1rem;
+  }
+
+  .fte-skipped-content {
+    padding: 32px 24px;
+  }
+
+  .fte-skipped-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .fte-continue-btn {
+    width: 100%;
+    padding: 14px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .fte-container {
+    padding: 12px;
+  }
+
+  .fte-header {
+    padding: 20px;
+  }
+
+  .fte-welcome h1 {
+    font-size: 1.5rem;
+  }
+
+  .fte-welcome p {
+    font-size: 1rem;
+  }
+
+  .fte-skip-btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
+
+  .fte-skipped-content {
+    padding: 24px 20px;
+  }
+
+  .fte-skipped-content h2 {
+    font-size: 1.3rem;
+  }
+
+  .fte-skipped-content p {
+    font-size: 1rem;
+  }
+}

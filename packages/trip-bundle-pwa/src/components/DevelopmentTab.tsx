@@ -15,6 +15,7 @@ export const DevelopmentTab: React.FC<DevelopmentTabProps> = ({ onClose, userPre
   const [activeView, setActiveView] = useState<'userData' | 'stores' | null>(null);
   const [viewContent, setViewContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
   const handleShowUserData = () => {
     setIsLoading(true);
@@ -51,7 +52,43 @@ export const DevelopmentTab: React.FC<DevelopmentTabProps> = ({ onClose, userPre
     }
   };
 
+  const handleReset = async () => {
+    if (!confirm('⚠️ This will reset all your preferences and data. Are you sure?')) {
+      return;
+    }
 
+    setIsResetting(true);
+    try {
+      console.log('🔄 [DEV] Resetting all storage...');
+      
+      // Import storage classes
+      const { UserPreferencesStorage } = await import('../storage');
+      const { IntegrationsStorage } = await import('../storage');
+      
+      // Clear specific storage keys first
+      await UserPreferencesStorage.clearUserPreferences();
+      await IntegrationsStorage.clearAllIntegrations();
+      
+      // Clear localStorage completely (in case there are other keys)
+      localStorage.clear();
+      
+      // Reset stores to default values
+      userPreferencesStore.reset();
+      integrationsStore.reset();
+      
+      console.log('✅ [DEV] Storage reset completed, refreshing page...');
+      
+      // Refresh the page after a short delay
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+      
+    } catch (error) {
+      console.error('❌ [DEV] Error resetting storage:', error);
+      alert('Error resetting storage. Check console for details.');
+      setIsResetting(false);
+    }
+  };
 
   return (
     <div className="development-tab">
@@ -80,6 +117,14 @@ export const DevelopmentTab: React.FC<DevelopmentTabProps> = ({ onClose, userPre
           disabled={isLoading}
         >
           🗄️ See Raw Store Data
+        </button>
+        
+        <button 
+          className="prompt-button reset-btn"
+          onClick={handleReset}
+          disabled={isLoading || isResetting}
+        >
+          {isResetting ? '🔄 Resetting...' : '🗑️ Reset All Data'}
         </button>
       </div>
 

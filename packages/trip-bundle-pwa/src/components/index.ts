@@ -1,7 +1,6 @@
 export { default as BundleOffer } from './BundleOffer';
-export { TabNavigation } from './TabNavigation';
 export { UserPreferencesForm } from './UserPreferencesForm';
-export { default as EventDetails } from './EventDetails';
-export { SearchForm } from './SearchForm';
 export { DevelopmentTab } from './DevelopmentTab';
-export { IntegrationsTab } from './IntegrationsTab';
+export { default as BundleFeed } from './BundleFeed';
+export { default as BundlePage } from './BundlePage';
+export { default as FirstTimeExperience } from './FirstTimeExperience';

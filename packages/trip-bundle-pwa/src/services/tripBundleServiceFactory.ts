@@ -8,6 +8,7 @@ import {
   type ITripBundleService
 } from 'trip-bundle-prompts-service';
 import { MockTripBundleService } from './mockTripBundleService';
+import { LoggingTripBundleService } from './loggingTripBundleService';
 // import { CITIES } from '../constants/cities'; // Unused import
 
 // ITripBundleService interface is now imported from trip-bundle-prompts-service
@@ -19,20 +20,25 @@ export function createTripBundleService(userData: UserData, cities: string[]): I
   // Check if we're in mock mode
   const isMockMode = (import.meta as any).env?.VITE_MOCK === 'true';
   
+  let baseService: ITripBundleService;
+  
   if (isMockMode) {
     console.log('🎭 Creating mock trip bundle service (VITE_MOCK=true)');
-    return new MockTripBundleService(userData);
+    baseService = new MockTripBundleService(userData);
   } else {
     console.log('🤖 Creating real trip bundle service');
     const apiKey = (import.meta as any).env?.VITE_OPENAI_API_KEY || null;
     
-    return new TripBundlePromptService(userData, cities, {
+    baseService = new TripBundlePromptService(userData, cities, {
       apiKey,
       model: 'gpt-4o-mini',
       temperature: 0.7,
       maxTokens: 4000
     });
   }
+  
+  // Wrap with logging service
+  return new LoggingTripBundleService(baseService);
 }
 
 /**

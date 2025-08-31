@@ -1,0 +1,500 @@
+.bundle-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.bundle-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.back-btn {
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-2px);
+}
+
+.bundle-title h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.bundle-dates {
+  margin: 4px 0 0 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.bundle-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.bundle-overview {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.overview-card h2 {
+  margin: 0 0 20px 0;
+  font-size: 1.5rem;
+  color: #495057;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.overview-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.overview-icon {
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 50%;
+}
+
+.overview-item h4 {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-weight: 600;
+}
+
+.overview-item p {
+  margin: 4px 0 0 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #495057;
+}
+
+.bundle-section {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.bundle-section h2 {
+  margin: 0 0 20px 0;
+  font-size: 1.5rem;
+  color: #495057;
+}
+
+/* Accommodation Card */
+.accommodation-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.accommodation-info h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.3rem;
+  color: #495057;
+}
+
+.accommodation-type {
+  margin: 0 0 8px 0;
+  color: #6c757d;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.accommodation-rating {
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.accommodation-rating span {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.accommodation-description {
+  margin: 0;
+  color: #6c757d;
+  line-height: 1.5;
+}
+
+.accommodation-price {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.price-per-night {
+  font-size: 1.1rem;
+  color: #6c757d;
+}
+
+.total-price {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #495057;
+}
+
+/* Transport Card */
+.transport-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.transport-info h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.3rem;
+  color: #495057;
+  text-transform: capitalize;
+}
+
+.transport-info p {
+  margin: 0 0 12px 0;
+  color: #6c757d;
+  line-height: 1.5;
+}
+
+.transport-details span {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.transport-price {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #495057;
+}
+
+/* Activities Grid */
+.activities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.activity-card {
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  transition: transform 0.2s ease;
+}
+
+.activity-card:hover {
+  transform: translateY(-2px);
+}
+
+.activity-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.activity-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.activity-info h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #495057;
+}
+
+.activity-category {
+  font-size: 0.8rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.activity-description {
+  margin: 0 0 16px 0;
+  color: #6c757d;
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.activity-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.activity-cost {
+  font-weight: 700;
+  color: #495057;
+  font-size: 1.1rem;
+}
+
+.activity-tags {
+  display: flex;
+  gap: 4px;
+}
+
+.activity-tag {
+  padding: 2px 8px;
+  background: #e9ecef;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  color: #6c757d;
+}
+
+/* Events Section */
+.events-loading,
+.events-error,
+.no-events {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.events-loading .spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+.retry-btn {
+  padding: 8px 16px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+.retry-btn:hover {
+  background: #5a6fd8;
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.event-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-2px);
+}
+
+.event-header {
+  padding: 16px 20px 0 20px;
+}
+
+.event-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 16px;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.event-info {
+  padding: 16px 20px;
+}
+
+.event-info h4 {
+  margin: 0 0 8px 0;
+  font-size: 1.2rem;
+  color: #495057;
+}
+
+.event-description {
+  margin: 0 0 16px 0;
+  color: #6c757d;
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.event-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.event-detail {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.detail-icon {
+  font-size: 0.8rem;
+}
+
+.event-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.event-tag {
+  padding: 2px 8px;
+  background: #e9ecef;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  color: #6c757d;
+}
+
+.event-actions {
+  padding: 0 20px 20px 20px;
+}
+
+.book-event-btn {
+  display: inline-block;
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+  transition: transform 0.2s ease;
+}
+
+.book-event-btn:hover {
+  transform: translateY(-1px);
+  text-decoration: none;
+  color: white;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .bundle-page {
+    padding: 16px;
+  }
+
+  .bundle-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .bundle-title h1 {
+    font-size: 2rem;
+  }
+
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .accommodation-card,
+  .transport-card {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .accommodation-price,
+  .transport-price {
+    text-align: left;
+  }
+
+  .activities-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .events-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .event-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .bundle-page {
+    padding: 12px;
+  }
+
+  .bundle-title h1 {
+    font-size: 1.5rem;
+  }
+
+  .bundle-section {
+    padding: 20px;
+  }
+
+  .overview-item {
+    padding: 12px;
+  }
+
+  .activity-card,
+  .event-card {
+    margin: 0;
+  }
+}

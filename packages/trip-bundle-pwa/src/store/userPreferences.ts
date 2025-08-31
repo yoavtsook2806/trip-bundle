@@ -57,6 +57,11 @@ class UserPreferencesStore {
   isLoading = false;
   lastUpdated?: Date;
   spotifyConnected = false;
+  fteWasPresented = false;
+  searchDateRange = {
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 4 months from now
+  };
   spotifyProfile?: {
     id: string;
     displayName: string;
@@ -159,6 +164,18 @@ class UserPreferencesStore {
     this.updateTimestamp();
   }
 
+  // FTE actions
+  setFteWasPresented(presented: boolean) {
+    this.fteWasPresented = presented;
+    this.updateTimestamp();
+  }
+
+  // Search date range actions
+  setSearchDateRange(startDate: string, endDate: string) {
+    this.searchDateRange = { startDate, endDate };
+    this.updateTimestamp();
+  }
+
   // Spotify integration actions
   setSpotifyConnection(connected: boolean, profile?: UserPreferencesStore['spotifyProfile']) {
     console.log('🎵 [STORE] setSpotifyConnection called:', { connected, profile: !!profile });
@@ -199,6 +216,11 @@ class UserPreferencesStore {
     this.spotifyConnected = false;
     this.spotifyProfile = undefined;
     this.lastUpdated = undefined;
+    this.fteWasPresented = false;
+    this.searchDateRange = {
+      startDate: new Date().toISOString().split('T')[0],
+      endDate: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    };
   }
 
   // Computed values
