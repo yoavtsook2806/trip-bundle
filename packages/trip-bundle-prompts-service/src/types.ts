@@ -130,7 +130,7 @@ export interface UserPreferences {
   preferredCountries?: string[];
   travelStyle?: 'budget' | 'mid-range' | 'luxury';
   groupSize?: number;
-  accessibility?: boolean;
+  accessibility?: boolean | string[];
   languages?: string[];
   musicGenres?: string[];
   sportsInterests?: string[];

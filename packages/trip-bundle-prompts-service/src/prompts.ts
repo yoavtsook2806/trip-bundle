@@ -158,13 +158,9 @@ function generateUserPreferencesPrompt(prefs: UserData['userPreferences'], citie
     promptParts.push(`Entertainment preferences: ${entertainmentSummary}`);
   }
   
-  // Travel dates
-  if (prefs.travelDates?.flexible !== undefined) {
-    if (prefs.travelDates.flexible) {
-      promptParts.push('Travel dates are flexible');
-    } else {
-      promptParts.push('Travel dates are fixed (not flexible)');
-    }
+  // Search date range
+  if (prefs.searchDateRange?.startDate && prefs.searchDateRange?.endDate) {
+    promptParts.push(`Travel dates: ${prefs.searchDateRange.startDate} to ${prefs.searchDateRange.endDate}`);
   }
   
   return promptParts.length > 0 

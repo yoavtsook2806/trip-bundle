@@ -63,6 +63,9 @@ class UserPreferencesStore {
 
   // Countries actions
   addPreferredCountry(country: string) {
+    if (!this.preferences.preferredCountries) {
+      this.preferences.preferredCountries = [];
+    }
     if (!this.preferences.preferredCountries.includes(country)) {
       this.preferences.preferredCountries.push(country);
       this.updateTimestamp();
@@ -70,11 +73,16 @@ class UserPreferencesStore {
   }
 
   removePreferredCountry(country: string) {
-    this.preferences.preferredCountries = this.preferences.preferredCountries.filter(c => c !== country);
-    this.updateTimestamp();
+    if (this.preferences.preferredCountries) {
+      this.preferences.preferredCountries = this.preferences.preferredCountries.filter(c => c !== country);
+      this.updateTimestamp();
+    }
   }
 
   addExcludedCountry(country: string) {
+    if (!this.preferences.excludedCountries) {
+      this.preferences.excludedCountries = [];
+    }
     if (!this.preferences.excludedCountries.includes(country)) {
       this.preferences.excludedCountries.push(country);
       this.updateTimestamp();
@@ -82,24 +90,38 @@ class UserPreferencesStore {
   }
 
   removeExcludedCountry(country: string) {
-    this.preferences.excludedCountries = this.preferences.excludedCountries.filter(c => c !== country);
-    this.updateTimestamp();
+    if (this.preferences.excludedCountries) {
+      this.preferences.excludedCountries = this.preferences.excludedCountries.filter(c => c !== country);
+      this.updateTimestamp();
+    }
   }
 
   // Entertainment preferences actions
   addEntertainmentPreference(preference: UserPreference) {
-    const existingIndex = this.preferences.entertainmentPreferences.findIndex(p => p.id === preference.id);
+    if (!this.preferences.entertainmentPreferences) {
+      this.preferences.entertainmentPreferences = [];
+    }
+    // Convert UserPreference to the format expected by prompts service
+    const servicePreference = {
+      value: preference.value,
+      type: preference.type,
+      weight: preference.weight
+    };
+    const existingIndex = this.preferences.entertainmentPreferences.findIndex(p => p.value === preference.value && p.type === preference.type);
     if (existingIndex >= 0) {
-      this.preferences.entertainmentPreferences[existingIndex] = preference;
+      this.preferences.entertainmentPreferences[existingIndex] = servicePreference;
     } else {
-      this.preferences.entertainmentPreferences.push(preference);
+      this.preferences.entertainmentPreferences.push(servicePreference);
     }
     this.updateTimestamp();
   }
 
   removeEntertainmentPreference(id: string) {
-    this.preferences.entertainmentPreferences = this.preferences.entertainmentPreferences.filter(p => p.id !== id);
-    this.updateTimestamp();
+    if (this.preferences.entertainmentPreferences) {
+      // Since the service interface doesn't have id, we'll match by value
+      this.preferences.entertainmentPreferences = this.preferences.entertainmentPreferences.filter(p => p.value !== id);
+      this.updateTimestamp();
+    }
   }
 
   // Music preferences actions
@@ -109,6 +131,9 @@ class UserPreferencesStore {
   }
 
   addMusicGenre(genre: string) {
+    if (!this.preferences.musicGenres) {
+      this.preferences.musicGenres = [];
+    }
     if (!this.preferences.musicGenres.includes(genre)) {
       this.preferences.musicGenres.push(genre);
       this.updateTimestamp();
@@ -122,6 +147,9 @@ class UserPreferencesStore {
   }
 
   addSportsInterest(sport: string) {
+    if (!this.preferences.sportsInterests) {
+      this.preferences.sportsInterests = [];
+    }
     if (!this.preferences.sportsInterests.includes(sport)) {
       this.preferences.sportsInterests.push(sport);
       this.updateTimestamp();
@@ -201,20 +229,20 @@ class UserPreferencesStore {
 
   // Computed values
   get hasPreferences() {
-    return this.preferences.preferredCountries.length > 0 || 
-           this.preferences.entertainmentPreferences.length > 0 ||
-           this.preferences.musicGenres.length > 0 ||
-           this.preferences.sportsInterests.length > 0;
+    return (this.preferences.preferredCountries?.length || 0) > 0 || 
+           (this.preferences.entertainmentPreferences?.length || 0) > 0 ||
+           (this.preferences.musicGenres?.length || 0) > 0 ||
+           (this.preferences.sportsInterests?.length || 0) > 0;
   }
 
   get preferenceSummary() {
     return {
-      countries: this.preferences.preferredCountries.length,
-      entertainments: this.preferences.entertainmentPreferences.length,
-      musicGenres: this.preferences.musicGenres.length,
-      sportsInterests: this.preferences.sportsInterests.length,
-      budgetRange: `${this.preferences.budget.currency} ${this.preferences.budget.min}-${this.preferences.budget.max}`,
-      duration: `${this.preferences.duration.min}-${this.preferences.duration.max} days`
+      countries: this.preferences.preferredCountries?.length || 0,
+      entertainments: this.preferences.entertainmentPreferences?.length || 0,
+      musicGenres: this.preferences.musicGenres?.length || 0,
+      sportsInterests: this.preferences.sportsInterests?.length || 0,
+      budgetRange: this.preferences.budget ? `${this.preferences.budget.currency} ${this.preferences.budget.min}-${this.preferences.budget.max}` : 'Not set',
+      duration: this.preferences.duration ? `${this.preferences.duration.min}-${this.preferences.duration.max} days` : 'Not set'
     };
   }
 
