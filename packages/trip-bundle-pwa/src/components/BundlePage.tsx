@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TripBundle, Event } from '../types';
+import { TripBundle, TripEvent } from '../types';
 import { getTripBundleService } from '../services';
 import './BundlePage.css';
 
@@ -9,7 +9,7 @@ interface BundlePageProps {
 }
 
 const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<TripEvent[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
   const [eventsError, setEventsError] = useState<string | null>(null);
 

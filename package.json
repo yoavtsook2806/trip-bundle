@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "yarn workspaces foreach --all --topological run build",
+    "build": "yarn workspaces foreach --all run build",
     "dev": "yarn workspaces foreach --all run dev",
     "dev-mock": "yarn workspace trip-bundle-pwa dev-mock",
     "test": "yarn workspaces foreach --all run test",

@@ -47,7 +47,6 @@ export interface Tab {
 // Bundle Offer Component
 export interface BundleOfferProps {
   bundle: TripBundleImport;
-  onClose: () => void;
   onBookmark?: (bundleId: string) => void;
   onSelect?: (bundleId: string) => void;
   onEventClick?: (entertainment: any, date: string, time: string, venue: string, cost: number) => void;

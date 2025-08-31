@@ -63,9 +63,7 @@ export class UserPreferencesActions {
     });
   }
 
-  updateTravelDates(startDate?: Date, endDate?: Date, flexible = true): void {
-    // Travel dates functionality removed - use searchDateRange instead
-  }
+  // updateTravelDates method removed - use searchDateRange instead
 
   updateGroupSize(size: number): void {
     this.userPreferencesStore.setGroupSize(size);

@@ -169,7 +169,7 @@ export default function SettingsPanel({
           <label>
             <input
               type="checkbox"
-              checked={userPreferences.accessibility || false}
+              checked={typeof userPreferences.accessibility === 'boolean' ? userPreferences.accessibility : false}
               onChange={(e) => updatePreference('accessibility', e.target.checked)}
             />
             Accessibility Requirements
