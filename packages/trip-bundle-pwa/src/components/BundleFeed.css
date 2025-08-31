@@ -5,29 +5,27 @@
 }
 
 .feed-header {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  padding: 16px 20px;
+  margin-bottom: 20px;
 }
 
 .header-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
-.header-top h1 {
-  margin: 0;
-  font-size: 2rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.app-logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
 }
 
 .header-actions {
@@ -35,47 +33,68 @@
   gap: 12px;
 }
 
-.edit-preferences-btn,
-.dev-tab-btn {
-  padding: 10px 16px;
+.icon-btn {
+  width: 40px;
+  height: 40px;
   border: none;
-  border-radius: 8px;
-  font-weight: 600;
+  border-radius: 50%;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
 }
 
 .edit-preferences-btn {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: rgba(255, 255, 255, 0.2);
   color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .edit-preferences-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .dev-tab-btn {
-  background: #f8f9fa;
-  color: #6c757d;
-  border: 1px solid #dee2e6;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .dev-tab-btn:hover {
-  background: #e9ecef;
-  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.page-title {
+  text-align: center;
+  margin: 16px 0 20px 0;
+}
+
+.page-title h1 {
+  margin: 0 0 4px 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.page-title p {
+  margin: 0;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 400;
 }
 
 .date-range-selector {
-  border-top: 1px solid #e9ecef;
-  padding-top: 24px;
-}
-
-.date-range-selector h3 {
-  margin: 0 0 16px 0;
-  font-size: 1.2rem;
-  color: #495057;
+  padding-top: 8px;
 }
 
 .date-inputs {
@@ -92,30 +111,32 @@
   display: block;
   margin-bottom: 4px;
   font-weight: 600;
-  color: #6c757d;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 0.9rem;
 }
 
 .date-input-group input[type="date"] {
   width: 100%;
-  padding: 12px;
-  border: 2px solid #e9ecef;
+  padding: 10px 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.2s ease;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
 }
 
 .date-input-group input[type="date"]:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
 }
 
-.date-range-summary {
-  margin: 0;
-  color: #6c757d;
-  font-size: 0.9rem;
-  font-style: italic;
+.date-input-group input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
 }
 
 .bundles-container {
@@ -215,18 +236,22 @@
   }
 
   .header-top {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
+    margin-bottom: 12px;
   }
 
-  .header-top h1 {
-    font-size: 1.5rem;
+  .logo-icon {
+    width: 35px;
+    height: 35px;
+  }
+
+  .icon-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
   }
 
   .header-actions {
-    width: 100%;
-    justify-content: flex-end;
+    gap: 8px;
   }
 
   .date-inputs {
@@ -239,11 +264,7 @@
     gap: 16px;
   }
 
-  .edit-preferences-btn,
-  .dev-tab-btn {
-    padding: 8px 12px;
-    font-size: 0.8rem;
-  }
+
 }
 
 @media (max-width: 480px) {
@@ -255,19 +276,15 @@
     padding: 16px;
   }
 
-  .header-top h1 {
-    font-size: 1.3rem;
+  .logo-icon {
+    width: 32px;
+    height: 32px;
   }
 
-  .header-actions {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .edit-preferences-btn,
-  .dev-tab-btn {
-    width: 100%;
-    text-align: center;
+  .icon-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
   }
 }
 

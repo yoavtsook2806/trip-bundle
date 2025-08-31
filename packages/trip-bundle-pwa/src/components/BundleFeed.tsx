@@ -67,41 +67,44 @@ const BundleFeed: React.FC<BundleFeedProps> = observer(({
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
+
 
   return (
     <div className="bundle-feed">
-      {/* Header */}
+      {/* Compact Header */}
       <div className="feed-header">
         <div className="header-top">
-          <h1>🎯 Trip Bundles</h1>
+          <div className="app-logo">
+            <img src="/TripBundleIcon.jpeg" alt="TripBundle" className="logo-icon" />
+          </div>
           <div className="header-actions">
             <button 
-              className="edit-preferences-btn"
+              className="icon-btn edit-preferences-btn"
               onClick={onEditPreferences}
+              title="Edit Preferences"
             >
-              ⚙️ Edit Preferences
+              ⚙️
             </button>
             {isMockMode && onDevelopmentTab && (
               <button 
-                className="dev-tab-btn"
+                className="icon-btn dev-tab-btn"
                 onClick={onDevelopmentTab}
+                title="Development"
               >
-                🔧 Development
+                🔧
               </button>
             )}
           </div>
         </div>
 
+        {/* Title and Description */}
+        <div className="page-title">
+          <h1>Trip Bundle</h1>
+          <p>Your Journey, Personalized</p>
+        </div>
+
         {/* Date Range Selector */}
         <div className="date-range-selector">
-          <h3>📅 Travel Dates</h3>
           <div className="date-inputs">
             <div className="date-input-group">
               <label>From</label>
@@ -122,9 +125,6 @@ const BundleFeed: React.FC<BundleFeedProps> = observer(({
               />
             </div>
           </div>
-          <p className="date-range-summary">
-            Showing trips from {formatDate(searchDateRange.startDate)} to {formatDate(searchDateRange.endDate)}
-          </p>
         </div>
       </div>
 

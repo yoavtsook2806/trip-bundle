@@ -486,7 +486,7 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
               </button>
             )
           ) : (
-            // In regular flow: Show back/close button
+            // In regular flow: Show back/close button at bottom
             onClose && (
               <button className="close-preferences-btn back-btn" onClick={onClose}>
                 ← Back

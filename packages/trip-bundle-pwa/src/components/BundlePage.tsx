@@ -107,16 +107,19 @@ const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
 
   return (
     <div className="bundle-page">
-      {/* Header */}
+      {/* Compact Header */}
       <div className="bundle-header">
-        <button className="back-btn" onClick={onBack}>
-          ← Back to Feed
-        </button>
-        <div className="bundle-title">
-          <h1>{bundle.city}, {bundle.country}</h1>
-          <p className="bundle-dates">
-            {formatDate(bundle.startDate)} - {formatDate(bundle.endDate)}
-          </p>
+        <div className="header-top">
+          <button className="back-icon-btn" onClick={onBack} title="Back to Feed">
+            ←
+          </button>
+          <div className="bundle-title">
+            <h1>{bundle.city}, {bundle.country}</h1>
+            <p className="bundle-dates">
+              {formatDate(bundle.startDate)} - {formatDate(bundle.endDate)}
+            </p>
+          </div>
+          <div className="header-spacer"></div>
         </div>
       </div>
 
