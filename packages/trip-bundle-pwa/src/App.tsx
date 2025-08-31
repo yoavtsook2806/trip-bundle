@@ -43,7 +43,7 @@ const App: React.FC = observer(() => {
   const [showFTE, setShowFTE] = useState(false);
   const [currentView, setCurrentView] = useState<'feed' | 'bundle' | 'preferences' | 'development'>('feed');
   const [selectedBundle, setSelectedBundle] = useState<TripBundle | null>(null);
-  const [bundles, setBundles] = useState<TripBundle[]>([]);
+  // Remove local bundles state - use store directly
   const [isLoadingBundles, setIsLoadingBundles] = useState(false);
   const pwaInfo = usePWA();
 
@@ -134,11 +134,7 @@ const App: React.FC = observer(() => {
       // Use trip actions to generate bundles
       await tripActions.generateTripBundles();
       
-      // Get bundles from store
-      const generatedBundles = tripActions.getBundles();
-      setBundles(generatedBundles);
-      
-      console.log('✅ [APP] Bundles loaded:', generatedBundles.length);
+      console.log('✅ [APP] Bundles loaded:', bundleSuggestionsStore.bundles.length);
     } catch (error) {
       console.error('❌ [APP] Error loading bundles:', error);
     } finally {
@@ -153,7 +149,6 @@ const App: React.FC = observer(() => {
   };
 
   const handleBundleClick = (bundle: TripBundle) => {
-    console.log('🎯 [APP] Bundle selected:', bundle.id);
     setSelectedBundle(bundle);
     setCurrentView('bundle');
   };
@@ -246,12 +241,15 @@ const App: React.FC = observer(() => {
         />
       ) : (
         <BundleFeed
-          bundles={bundles}
+          bundles={bundleSuggestionsStore.bundles}
           onBundleClick={handleBundleClick}
           onEditPreferences={handleEditPreferences}
           onDevelopmentTab={isMockMode ? handleDevelopmentTab : undefined}
           onDateRangeChange={handleDateRangeChange}
+          onLoadMore={() => tripActions.loadMoreBundles()}
           isLoading={isLoadingBundles}
+          isLoadingMore={bundleSuggestionsStore.pagination.isLoadingMore}
+          hasMore={bundleSuggestionsStore.canLoadMore}
           isMockMode={isMockMode}
         />
       )}

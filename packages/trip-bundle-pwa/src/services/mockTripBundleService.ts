@@ -47,10 +47,10 @@ export class MockTripBundleService {
   /**
    * Get events for a specific city and date range using mock data
    */
-  async getEvents(city: string, startDate: string, endDate: string): Promise<EventsResponse> {
+  async getEvents(city: string, startDate: string, endDate: string, options: { page?: number; limit?: number } = {}): Promise<EventsResponse> {
     const processingTime = Math.random() * 1000 + 500; // Simulate processing time
 
-    // Create mock events based on the city
+    // Create more mock events based on the city for better pagination testing
     const mockEvents = [
       {
         entertainment: this.createMockEntertainment('concert-hall-event', `${city} Symphony Orchestra`, 'music', 'Classical music performance by local orchestra'),
@@ -95,13 +95,92 @@ export class MockTripBundleService {
         cost: 20,
         currency: 'EUR',
         bookingUrl: 'https://example.com/book-tour'
+      },
+      // Add more events for pagination testing
+      {
+        entertainment: this.createMockEntertainment('rock-concert', `${city} Rock Festival`, 'music', 'Multi-day rock festival featuring international bands'),
+        date: this.addDays(startDate, 4),
+        time: '20:00',
+        venue: `${city} Stadium`,
+        cost: 85,
+        currency: 'EUR',
+        bookingUrl: 'https://example.com/book-rock'
+      },
+      {
+        entertainment: this.createMockEntertainment('theater-show', `Shakespeare in the Park`, 'culture', 'Outdoor theater performance of classic Shakespeare'),
+        date: this.addDays(startDate, 5),
+        time: '19:00',
+        venue: `${city} Central Park`,
+        cost: 35,
+        currency: 'EUR',
+        bookingUrl: 'https://example.com/book-theater'
+      },
+      {
+        entertainment: this.createMockEntertainment('wine-tasting', `${city} Wine Experience`, 'food', 'Wine tasting with local vintners and cheese pairings'),
+        date: this.addDays(startDate, 6),
+        time: '17:00',
+        venue: `${city} Wine Bar`,
+        cost: 55,
+        currency: 'EUR',
+        bookingUrl: 'https://example.com/book-wine'
+      },
+      {
+        entertainment: this.createMockEntertainment('night-market', `${city} Night Market`, 'nightlife', 'Bustling night market with street food and crafts'),
+        date: this.addDays(startDate, 7),
+        time: '18:00',
+        venue: `${city} Market Square`,
+        cost: 10,
+        currency: 'EUR'
+      },
+      {
+        entertainment: this.createMockEntertainment('hiking-tour', `${city} Nature Hike`, 'nature', 'Guided hiking tour through scenic natural areas'),
+        date: this.addDays(startDate, 8),
+        time: '08:00',
+        venue: `${city} Nature Reserve`,
+        cost: 40,
+        currency: 'EUR',
+        bookingUrl: 'https://example.com/book-hike'
+      },
+      {
+        entertainment: this.createMockEntertainment('cooking-class', `Traditional ${city} Cooking`, 'food', 'Learn to cook traditional local dishes with expert chefs'),
+        date: this.addDays(startDate, 9),
+        time: '14:00',
+        venue: `${city} Culinary School`,
+        cost: 75,
+        currency: 'EUR',
+        bookingUrl: 'https://example.com/book-cooking'
+      },
+      {
+        entertainment: this.createMockEntertainment('sports-match', `${city} Football Match`, 'sports', 'Local football team championship match'),
+        date: this.addDays(startDate, 10),
+        time: '15:00',
+        venue: `${city} Sports Stadium`,
+        cost: 50,
+        currency: 'EUR',
+        bookingUrl: 'https://example.com/book-football'
       }
     ].filter(event => event.date <= endDate); // Only include events within date range
 
+    // Add pagination logic
+    const { page = 1, limit = 10 } = options;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedEvents = mockEvents.slice(startIndex, endIndex);
+    const totalEvents = mockEvents.length;
+    const hasMore = endIndex < totalEvents;
+
+
+
     return {
-      events: mockEvents,
-      reasoning: `Found ${mockEvents.length} diverse entertainment events in ${city} between ${startDate} and ${endDate}, including music, culture, and food experiences.`,
-      processingTime
+      events: paginatedEvents,
+      reasoning: `Found ${paginatedEvents.length} diverse entertainment events in ${city} between ${startDate} and ${endDate} (page ${page} of ${Math.ceil(totalEvents / limit)}), including music, culture, and food experiences.`,
+      processingTime,
+      pagination: {
+        page,
+        limit,
+        total: totalEvents,
+        hasMore
+      }
     };
   }
 

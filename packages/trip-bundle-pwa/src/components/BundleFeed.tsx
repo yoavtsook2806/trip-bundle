@@ -11,7 +11,10 @@ interface BundleFeedProps {
   onEditPreferences: () => void;
   onDevelopmentTab?: () => void;
   onDateRangeChange?: (startDate: string, endDate: string) => void;
+  onLoadMore?: () => void;
   isLoading?: boolean;
+  isLoadingMore?: boolean;
+  hasMore?: boolean;
   isMockMode?: boolean;
 }
 
@@ -21,7 +24,10 @@ const BundleFeed: React.FC<BundleFeedProps> = observer(({
   onEditPreferences,
   onDevelopmentTab,
   onDateRangeChange,
+  onLoadMore,
   isLoading = false,
+  isLoadingMore = false,
+  hasMore = false,
   isMockMode = false
 }) => {
   const [searchDateRange, setSearchDateRange] = useState({
@@ -141,17 +147,38 @@ const BundleFeed: React.FC<BundleFeedProps> = observer(({
             </button>
           </div>
         ) : (
-          <div className="bundles-grid">
-            {bundles.map((bundle) => (
-              <div key={bundle.id} className="bundle-item" onClick={() => onBundleClick(bundle)}>
-                <BundleOffer
-                  bundle={bundle}
-                  onSelect={() => onBundleClick(bundle)}
-                  onEventClick={() => {}} // Events will be handled in BundlePage
-                />
+          <>
+            <div className="bundles-grid">
+              {bundles.map((bundle) => (
+                <div key={bundle.id} className="bundle-item" onClick={() => onBundleClick(bundle)}>
+                  <BundleOffer
+                    bundle={bundle}
+                    onSelect={() => onBundleClick(bundle)}
+                    onEventClick={() => {}} // Events will be handled in BundlePage
+                  />
+                </div>
+              ))}
+            </div>
+            
+            {/* Load More Bundles Button */}
+            {hasMore && onLoadMore && (
+              <div className="load-more-bundles">
+                {isLoadingMore ? (
+                  <div className="loading-more-container">
+                    <div className="loader"></div>
+                    <p>Loading more trip bundles...</p>
+                  </div>
+                ) : (
+                  <button 
+                    className="load-more-btn" 
+                    onClick={onLoadMore}
+                  >
+                    🎯 Load More Trip Bundles
+                  </button>
+                )}
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
     </div>

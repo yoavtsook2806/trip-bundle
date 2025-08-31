@@ -12,32 +12,50 @@ const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
   const [events, setEvents] = useState<TripEvent[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
   const [eventsError, setEventsError] = useState<string | null>(null);
+  const [eventsPage, setEventsPage] = useState(1);
+  const [eventsHasMore, setEventsHasMore] = useState(true);
+  const [loadingMoreEvents, setLoadingMoreEvents] = useState(false);
 
   useEffect(() => {
     loadEvents();
   }, [bundle]);
 
-  const loadEvents = async () => {
+  const loadEvents = async (loadMore = false) => {
     try {
-      setEventsLoading(true);
+      if (loadMore) {
+        setLoadingMoreEvents(true);
+      } else {
+        setEventsLoading(true);
+        setEventsPage(1);
+        setEvents([]);
+      }
       setEventsError(null);
       
-      console.log('🎪 [BUNDLE_PAGE] Loading events for bundle:', bundle.id, 'in city:', bundle.city);
+      const page = loadMore ? eventsPage + 1 : 1;
+      const service = await getTripBundleService();
       
-      const service = getTripBundleService();
       const eventsResponse = await service.getEvents(
         bundle.city,
         bundle.startDate,
-        bundle.endDate
+        bundle.endDate,
+        { page, limit: 5 }
       );
       
-      console.log('🎪 [BUNDLE_PAGE] Events loaded:', eventsResponse.events.length, 'events');
-      setEvents(eventsResponse.events);
+      if (loadMore) {
+        setEvents(prev => [...prev, ...eventsResponse.events]);
+        setEventsPage(page);
+      } else {
+        setEvents(eventsResponse.events);
+        setEventsPage(1);
+      }
+      
+      setEventsHasMore(eventsResponse.pagination?.hasMore ?? false);
     } catch (error) {
       console.error('Error loading events:', error);
       setEventsError('Failed to load events. Please try again.');
     } finally {
       setEventsLoading(false);
+      setLoadingMoreEvents(false);
     }
   };
 
@@ -227,7 +245,7 @@ const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
           ) : eventsError ? (
             <div className="events-error">
               <p>{eventsError}</p>
-              <button onClick={loadEvents} className="retry-btn">
+              <button onClick={() => loadEvents()} className="retry-btn">
                 Try Again
               </button>
             </div>
@@ -236,62 +254,83 @@ const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
               <p>No additional events found for these dates.</p>
             </div>
           ) : (
-            <div className="events-grid">
-              {events.map((event, index) => (
-                <div key={index} className="event-card">
-                  <div className="event-header">
-                    <span 
-                      className="event-category"
-                      style={{ backgroundColor: getCategoryColor(event.entertainment.category) }}
-                    >
-                      {getCategoryIcon(event.entertainment.category)}
-                      {event.entertainment.category.toUpperCase()}
-                    </span>
-                  </div>
-                  <div className="event-info">
-                    <h4>{event.entertainment.name}</h4>
-                    <p className="event-description">{event.entertainment.description}</p>
-                    <div className="event-details">
-                      <div className="event-detail">
-                        <span className="detail-icon">📍</span>
-                        <span>{event.venue}</span>
-                      </div>
-                      <div className="event-detail">
-                        <span className="detail-icon">📅</span>
-                        <span>{formatDate(event.date)}</span>
-                      </div>
-                      <div className="event-detail">
-                        <span className="detail-icon">⏰</span>
-                        <span>{event.time}</span>
-                      </div>
-                      <div className="event-detail">
-                        <span className="detail-icon">💰</span>
-                        <span>{formatCurrency(event.cost, event.currency)}</span>
-                      </div>
+            <>
+              <div className="events-grid">
+                {events.map((event, index) => (
+                  <div key={index} className="event-card">
+                    <div className="event-header">
+                      <span 
+                        className="event-category"
+                        style={{ backgroundColor: getCategoryColor(event.entertainment.category) }}
+                      >
+                        {getCategoryIcon(event.entertainment.category)}
+                        {event.entertainment.category.toUpperCase()}
+                      </span>
                     </div>
-                    {event.entertainment.tags && event.entertainment.tags.length > 0 && (
-                      <div className="event-tags">
-                        {event.entertainment.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
-                          <span key={tagIndex} className="event-tag">{tag}</span>
-                        ))}
+                    <div className="event-info">
+                      <h4>{event.entertainment.name}</h4>
+                      <p className="event-description">{event.entertainment.description}</p>
+                      <div className="event-details">
+                        <div className="event-detail">
+                          <span className="detail-icon">📍</span>
+                          <span>{event.venue}</span>
+                        </div>
+                        <div className="event-detail">
+                          <span className="detail-icon">📅</span>
+                          <span>{formatDate(event.date)}</span>
+                        </div>
+                        <div className="event-detail">
+                          <span className="detail-icon">⏰</span>
+                          <span>{event.time}</span>
+                        </div>
+                        <div className="event-detail">
+                          <span className="detail-icon">💰</span>
+                          <span>{formatCurrency(event.cost, event.currency)}</span>
+                        </div>
+                      </div>
+                      {event.entertainment.tags && event.entertainment.tags.length > 0 && (
+                        <div className="event-tags">
+                          {event.entertainment.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
+                            <span key={tagIndex} className="event-tag">{tag}</span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {event.bookingUrl && (
+                      <div className="event-actions">
+                        <a
+                          href={event.bookingUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="book-event-btn"
+                        >
+                          Book Tickets
+                        </a>
                       </div>
                     )}
                   </div>
-                  {event.bookingUrl && (
-                    <div className="event-actions">
-                      <a
-                        href={event.bookingUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="book-event-btn"
-                      >
-                        Book Tickets
-                      </a>
+                ))}
+              </div>
+              
+              {/* Load More Events Button */}
+              {eventsHasMore && (
+                <div className="load-more-events">
+                  {loadingMoreEvents ? (
+                    <div className="loading-more-container">
+                      <div className="loader"></div>
+                      <p>Loading more events...</p>
                     </div>
+                  ) : (
+                    <button 
+                      className="load-more-btn" 
+                      onClick={() => loadEvents(true)}
+                    >
+                      🎪 Load More Events
+                    </button>
                   )}
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </div>
       </div>

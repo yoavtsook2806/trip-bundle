@@ -109,6 +109,12 @@ export interface EventsResponse {
   events: Event[];
   reasoning: string;
   processingTime: number;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    hasMore: boolean;
+  };
 }
 
 // =============================================================================
@@ -188,6 +194,6 @@ export interface GenerationOptions {
 export interface ITripBundleService {
   updateUserData(userData: UserData): void;
   generateTripBundles(options?: GenerationOptions): Promise<GPTResponse>;
-  getEvents(city: string, startDate: string, endDate: string): Promise<EventsResponse>;
+  getEvents(city: string, startDate: string, endDate: string, options?: { page?: number; limit?: number }): Promise<EventsResponse>;
   isConfigured(): boolean;
 }

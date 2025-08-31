@@ -131,7 +131,7 @@ export class TripBundlePromptService {
   /**
    * Get events for a specific city and date range
    */
-  async getEvents(city: string, startDate: string, endDate: string): Promise<EventsResponse> {
+  async getEvents(city: string, startDate: string, endDate: string, options: { page?: number; limit?: number } = {}): Promise<EventsResponse> {
     const startTime = Date.now();
 
     if (!this.isConfigured()) {
@@ -139,6 +139,7 @@ export class TripBundlePromptService {
     }
 
     try {
+      const { page = 1, limit = 10 } = options;
       const prompt = `Find entertainment events in ${city} between ${startDate} and ${endDate}.
       
 Please provide a list of events with the following information for each:
@@ -150,6 +151,7 @@ Please provide a list of events with the following information for each:
 - Booking URL if available
 
 Focus on diverse entertainment options that would appeal to travelers.
+Return page ${page} with up to ${limit} events per page.
 
 Return the response in this JSON format:
 {
@@ -165,7 +167,13 @@ Return the response in this JSON format:
       "bookingUrl": "https://example.com/book"
     }
   ],
-  "reasoning": "Brief explanation of event selection"
+  "reasoning": "Brief explanation of event selection",
+  "pagination": {
+    "page": ${page},
+    "limit": ${limit},
+    "total": 50,
+    "hasMore": true
+  }
 }`;
 
       const response = await fetch(this.baseUrl, {
@@ -223,7 +231,8 @@ Return the response in this JSON format:
       return {
         events,
         reasoning: parsedResponse.reasoning,
-        processingTime
+        processingTime,
+        pagination: parsedResponse.pagination
       };
 
     } catch (error) {
