@@ -1,0 +1,112 @@
+﻿2025-08-31T16:13:57.0261556Z ##[group]Run echo "=== Workspace info ==="
+2025-08-31T16:13:57.0261901Z [36;1mecho "=== Workspace info ==="[0m
+2025-08-31T16:13:57.0262149Z [36;1myarn workspaces list[0m
+2025-08-31T16:13:57.0262753Z [36;1mecho "=== Prompts service package.json ==="[0m
+2025-08-31T16:13:57.0263166Z [36;1mcat packages/trip-bundle-prompts-service/package.json[0m
+2025-08-31T16:13:57.0263495Z [36;1mecho "=== PWA package.json ==="[0m
+2025-08-31T16:13:57.0263777Z [36;1mcat packages/trip-bundle-pwa/package.json[0m
+2025-08-31T16:13:57.0354621Z shell: /usr/bin/bash -e {0}
+2025-08-31T16:13:57.0354860Z ##[endgroup]
+2025-08-31T16:13:57.0403628Z === Workspace info ===
+2025-08-31T16:13:57.3595696Z [94m➤[39m [90mYN0000[39m: .
+2025-08-31T16:13:57.3598352Z [94m➤[39m [90mYN0000[39m: packages/trip-bundle-playground
+2025-08-31T16:13:57.3599427Z [94m➤[39m [90mYN0000[39m: packages/trip-bundle-prompts-service
+2025-08-31T16:13:57.3600355Z [94m➤[39m [90mYN0000[39m: packages/trip-bundle-pwa
+2025-08-31T16:13:57.3601141Z [94m➤[39m YN0000: Done in 0s 1ms
+2025-08-31T16:13:57.3708407Z === Prompts service package.json ===
+2025-08-31T16:13:57.3719247Z {
+2025-08-31T16:13:57.3719681Z   "name": "trip-bundle-prompts-service",
+2025-08-31T16:13:57.3720199Z   "version": "1.0.0",
+2025-08-31T16:13:57.3720948Z   "description": "Node.js service for generating trip bundle prompts and interfacing with GPT",
+2025-08-31T16:13:57.3721496Z   "main": "dist/index.js",
+2025-08-31T16:13:57.3721795Z   "module": "dist/index.js",
+2025-08-31T16:13:57.3722223Z   "types": "dist/index.d.ts",
+2025-08-31T16:13:57.3722936Z   "type": "module",
+2025-08-31T16:13:57.3723252Z   "exports": {
+2025-08-31T16:13:57.3723551Z     ".": {
+2025-08-31T16:13:57.3723821Z       "types": "./dist/index.d.ts",
+2025-08-31T16:13:57.3724109Z       "import": "./dist/index.js",
+2025-08-31T16:13:57.3724367Z       "default": "./dist/index.js"
+2025-08-31T16:13:57.3724579Z     }
+2025-08-31T16:13:57.3724739Z   },
+2025-08-31T16:13:57.3724898Z   "scripts": {
+2025-08-31T16:13:57.3725073Z     "build": "tsc",
+2025-08-31T16:13:57.3725288Z     "dev": "tsc --watch",
+2025-08-31T16:13:57.3725497Z     "clean": "rm -rf dist",
+2025-08-31T16:13:57.3725704Z     "test": "jest",
+2025-08-31T16:13:57.3726180Z     "lint": "eslint src --ext .ts",
+2025-08-31T16:13:57.3726474Z     "lint-fix": "eslint src --ext .ts --fix",
+2025-08-31T16:13:57.3726773Z     "type-check": "tsc --noEmit"
+2025-08-31T16:13:57.3726987Z   },
+2025-08-31T16:13:57.3727152Z   "keywords": [
+2025-08-31T16:13:57.3727334Z     "travel",
+2025-08-31T16:13:57.3727511Z     "trip-planning",
+2025-08-31T16:13:57.3727762Z     "gpt",
+2025-08-31T16:13:57.3727964Z     "prompts",
+2025-08-31T16:13:57.3728133Z     "nodejs"
+2025-08-31T16:13:57.3728299Z   ],
+2025-08-31T16:13:57.3728486Z   "author": "Trip Bundle Team",
+2025-08-31T16:13:57.3728713Z   "license": "MIT",
+2025-08-31T16:13:57.3728901Z   "dependencies": {
+2025-08-31T16:13:57.3729136Z     "node-fetch": "^3.3.2"
+2025-08-31T16:13:57.3729334Z   },
+2025-08-31T16:13:57.3729506Z   "devDependencies": {
+2025-08-31T16:13:57.3729825Z     "@types/jest": "^29.0.0",
+2025-08-31T16:13:57.3730208Z     "@types/node": "^20.0.0",
+2025-08-31T16:13:57.3730680Z     "@typescript-eslint/eslint-plugin": "^6.0.0",
+2025-08-31T16:13:57.3731220Z     "@typescript-eslint/parser": "^6.0.0",
+2025-08-31T16:13:57.3731526Z     "eslint": "^8.0.0",
+2025-08-31T16:13:57.3731728Z     "jest": "^29.0.0",
+2025-08-31T16:13:57.3731924Z     "typescript": "^5.0.0"
+2025-08-31T16:13:57.3732118Z   },
+2025-08-31T16:13:57.3732268Z   "engines": {
+2025-08-31T16:13:57.3732687Z     "node": ">=18.0.0"
+2025-08-31T16:13:57.3732878Z   }
+2025-08-31T16:13:57.3733035Z }
+2025-08-31T16:13:57.3733224Z === PWA package.json ===
+2025-08-31T16:13:57.3733765Z {
+2025-08-31T16:13:57.3734085Z   "name": "trip-bundle-pwa",
+2025-08-31T16:13:57.3734455Z   "version": "1.0.0",
+2025-08-31T16:13:57.3734884Z   "description": "Trip Bundle Progressive Web App",
+2025-08-31T16:13:57.3735357Z   "type": "module",
+2025-08-31T16:13:57.3735645Z   "scripts": {
+2025-08-31T16:13:57.3735832Z     "dev": "vite",
+2025-08-31T16:13:57.3736297Z     "dev-mock": "VITE_MOCK=true vite",
+2025-08-31T16:13:57.3736756Z     "build": "VITE_MOCK=true GITHUB_PAGES=true tsc && vite build && node scripts/copy-to-pwa.cjs",
+2025-08-31T16:13:57.3737392Z     "build:mock": "VITE_MOCK=true GITHUB_PAGES=true tsc && vite build && node scripts/copy-to-pwa.cjs",
+2025-08-31T16:13:57.3738010Z     "build:prod": "VITE_MOCK=false GITHUB_PAGES=true tsc && vite build && node scripts/copy-to-pwa.cjs",
+2025-08-31T16:13:57.3738437Z     "preview": "vite preview",
+2025-08-31T16:13:57.3738748Z     "serve:local": "python3 -m http.server 8080 -d dist",
+2025-08-31T16:13:57.3739086Z     "predeploy:mock": "npm run build:mock",
+2025-08-31T16:13:57.3739405Z     "deploy:mock": "gh-pages -d dist -b gh-pages",
+2025-08-31T16:13:57.3739727Z     "predeploy:prod": "npm run build:prod",
+2025-08-31T16:13:57.3740064Z     "deploy:prod": "gh-pages -d dist -b gh-pages-prod",
+2025-08-31T16:13:57.3740758Z     "build:both": "npm run build:mock && mkdir -p builds/mock && cp -r dist/* builds/mock/ && npm run build:prod && mkdir -p builds/prod && cp -r dist/* builds/prod/",
+2025-08-31T16:13:57.3741411Z     "deploy:both": "npm run deploy:mock && npm run deploy:prod",
+2025-08-31T16:13:57.3741907Z     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+2025-08-31T16:13:57.3746758Z     "lint-fix": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix",
+2025-08-31T16:13:57.3747253Z     "type-check": "tsc --noEmit"
+2025-08-31T16:13:57.3747475Z   },
+2025-08-31T16:13:57.3747640Z   "dependencies": {
+2025-08-31T16:13:57.3747835Z     "mobx": "^6.13.7",
+2025-08-31T16:13:57.3748054Z     "mobx-react-lite": "^4.1.0",
+2025-08-31T16:13:57.3748276Z     "react": "^18.2.0",
+2025-08-31T16:13:57.3748474Z     "react-dom": "^18.2.0",
+2025-08-31T16:13:57.3748749Z     "trip-bundle-prompts-service": "workspace:*"
+2025-08-31T16:13:57.3749012Z   },
+2025-08-31T16:13:57.3749181Z   "devDependencies": {
+2025-08-31T16:13:57.3749409Z     "@types/react": "^18.2.66",
+2025-08-31T16:13:57.3749663Z     "@types/react-dom": "^18.2.22",
+2025-08-31T16:13:57.3749950Z     "@typescript-eslint/eslint-plugin": "^7.2.0",
+2025-08-31T16:13:57.3750265Z     "@typescript-eslint/parser": "^7.2.0",
+2025-08-31T16:13:57.3750703Z     "@vitejs/plugin-react": "^4.2.1",
+2025-08-31T16:13:57.3750939Z     "eslint": "^8.57.0",
+2025-08-31T16:13:57.3751187Z     "eslint-plugin-react-hooks": "^4.6.0",
+2025-08-31T16:13:57.3751486Z     "eslint-plugin-react-refresh": "^0.4.6",
+2025-08-31T16:13:57.3751766Z     "gh-pages": "^6.3.0",
+2025-08-31T16:13:57.3751982Z     "typescript": "^5.2.2",
+2025-08-31T16:13:57.3752203Z     "vite": "^5.2.0",
+2025-08-31T16:13:57.3752675Z     "vite-plugin-pwa": "^0.19.0",
+2025-08-31T16:13:57.3752997Z     "workbox-window": "^7.0.0"
+2025-08-31T16:13:57.3753210Z   }
+2025-08-31T16:13:57.3753372Z }

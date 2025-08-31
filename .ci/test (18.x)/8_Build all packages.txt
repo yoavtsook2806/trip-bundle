@@ -1,0 +1,39 @@
+﻿2025-08-31T16:14:03.7257965Z ##[group]Run echo "=== Building all packages with topological ordering ==="
+2025-08-31T16:14:03.7258487Z [36;1mecho "=== Building all packages with topological ordering ==="[0m
+2025-08-31T16:14:03.7258817Z [36;1myarn build[0m
+2025-08-31T16:14:03.7259048Z [36;1mecho "=== Verifying prompts service build ==="[0m
+2025-08-31T16:14:03.7259408Z [36;1mls -la packages/trip-bundle-prompts-service/dist/[0m
+2025-08-31T16:14:03.7259719Z [36;1mecho "=== Verifying PWA build ==="[0m
+2025-08-31T16:14:03.7260004Z [36;1mls -la packages/trip-bundle-pwa/dist/[0m
+2025-08-31T16:14:03.7289559Z shell: /usr/bin/bash -e {0}
+2025-08-31T16:14:03.7289799Z ##[endgroup]
+2025-08-31T16:14:03.7339094Z === Building all packages with topological ordering ===
+2025-08-31T16:14:06.3539499Z ##[error]src/App.tsx(2,41): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:06.3542553Z ##[error]src/App.tsx(3,77): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:06.3545295Z ##[error]src/components/MainContent.tsx(1,75): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:06.3548177Z ##[error]src/components/SettingsPanel.tsx(2,63): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:06.3550425Z ##[error]src/components/SettingsPanel.tsx(194,38): error TS7006: Parameter 'c' implicitly has an 'any' type.
+2025-08-31T16:14:10.9824018Z [36mvite v5.4.19 [32mbuilding for production...[36m[39m
+2025-08-31T16:14:11.0501892Z transforming...
+2025-08-31T16:14:12.2671621Z [32m✓[39m 93 modules transformed.
+2025-08-31T16:14:12.4410056Z [1m[33m[plugin:vite:reporter][39m[22m [33m[plugin vite:reporter] 
+2025-08-31T16:14:12.4417491Z (!) /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/storage/index.ts is dynamically imported by /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/components/DevelopmentTab.tsx, /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/components/DevelopmentTab.tsx but also statically imported by /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/App.tsx, /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/components/BundleFeed.tsx, /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/components/FirstTimeExperience.tsx, /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/components/UserPreferencesForm.tsx, dynamic import will not move module into another chunk.
+2025-08-31T16:14:12.4421615Z [39m
+2025-08-31T16:14:12.4421869Z rendering chunks...
+2025-08-31T16:14:12.4526072Z computing gzip size...
+2025-08-31T16:14:12.4630269Z [2mdist/[22m[32mregisterSW.js              [39m[1m[2m  0.13 kB[22m[1m[22m
+2025-08-31T16:14:12.4631595Z [2mdist/[22m[32mmanifest.webmanifest       [39m[1m[2m  1.16 kB[22m[1m[22m
+2025-08-31T16:14:12.4633315Z [2mdist/[22m[32mindex.html                 [39m[1m[2m  4.33 kB[22m[1m[22m[2m │ gzip:  1.42 kB[22m
+2025-08-31T16:14:12.4635313Z [2mdist/[22m[2massets/[22m[35mindex-_w9YxNB9.css  [39m[1m[2m 37.49 kB[22m[1m[22m[2m │ gzip:  6.97 kB[22m
+2025-08-31T16:14:12.4636889Z [2mdist/[22m[2massets/[22m[36mindex-XXohOHV4.js   [39m[1m[2m327.60 kB[22m[1m[22m[2m │ gzip: 94.61 kB[22m
+2025-08-31T16:14:12.4637477Z [32m✓ built in 1.45s[39m
+2025-08-31T16:14:14.3155578Z 
+2025-08-31T16:14:14.3156634Z [36mPWA v0.19.8[39m
+2025-08-31T16:14:14.3157200Z mode      [35mgenerateSW[39m
+2025-08-31T16:14:14.3157825Z precache  [32m12 entries[39m [2m(437.75 KiB)[22m
+2025-08-31T16:14:14.3158263Z files generated
+2025-08-31T16:14:14.3158604Z   [2mdist/sw.js[22m
+2025-08-31T16:14:14.3159022Z   [2mdist/workbox-62686582.js[22m
+2025-08-31T16:14:14.3905936Z ✅ Created pwa.html from index.html
+2025-08-31T16:14:14.3961765Z Done in 9s 921ms
+2025-08-31T16:14:14.4389011Z ##[error]The operation was canceled.

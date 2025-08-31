@@ -1,0 +1,69 @@
+﻿2025-08-31T16:13:42.6891973Z ##[group]Run actions/checkout@v4
+2025-08-31T16:13:42.6892791Z with:
+2025-08-31T16:13:42.6893197Z   repository: yoavtsook2806/trip-bundle
+2025-08-31T16:13:42.6893848Z   token: ***
+2025-08-31T16:13:42.6894240Z   ssh-strict: true
+2025-08-31T16:13:42.6894615Z   ssh-user: git
+2025-08-31T16:13:42.6895164Z   persist-credentials: true
+2025-08-31T16:13:42.6895601Z   clean: true
+2025-08-31T16:13:42.6895981Z   sparse-checkout-cone-mode: true
+2025-08-31T16:13:42.6896440Z   fetch-depth: 1
+2025-08-31T16:13:42.6896809Z   fetch-tags: false
+2025-08-31T16:13:42.6897196Z   show-progress: true
+2025-08-31T16:13:42.6897580Z   lfs: false
+2025-08-31T16:13:42.6897939Z   submodules: false
+2025-08-31T16:13:42.6898322Z   set-safe-directory: true
+2025-08-31T16:13:42.6898977Z ##[endgroup]
+2025-08-31T16:13:42.7969435Z Syncing repository: yoavtsook2806/trip-bundle
+2025-08-31T16:13:42.7971199Z ##[group]Getting Git version info
+2025-08-31T16:13:42.7971909Z Working directory is '/home/runner/work/trip-bundle/trip-bundle'
+2025-08-31T16:13:42.7972916Z [command]/usr/bin/git version
+2025-08-31T16:13:42.8026884Z git version 2.51.0
+2025-08-31T16:13:42.8054729Z ##[endgroup]
+2025-08-31T16:13:42.8072236Z Temporarily overriding HOME='/home/runner/work/_temp/d4af602d-5925-41e4-950d-852d0d63259c' before making global git config changes
+2025-08-31T16:13:42.8074591Z Adding repository directory to the temporary git global config as a safe directory
+2025-08-31T16:13:42.8087221Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/trip-bundle/trip-bundle
+2025-08-31T16:13:42.8126065Z Deleting the contents of '/home/runner/work/trip-bundle/trip-bundle'
+2025-08-31T16:13:42.8130308Z ##[group]Initializing the repository
+2025-08-31T16:13:42.8135343Z [command]/usr/bin/git init /home/runner/work/trip-bundle/trip-bundle
+2025-08-31T16:13:42.8201921Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-08-31T16:13:42.8203533Z hint: is subject to change. To configure the initial branch name to use in all
+2025-08-31T16:13:42.8205114Z hint: of your new repositories, which will suppress this warning, call:
+2025-08-31T16:13:42.8205821Z hint:
+2025-08-31T16:13:42.8206290Z hint: 	git config --global init.defaultBranch <name>
+2025-08-31T16:13:42.8207135Z hint:
+2025-08-31T16:13:42.8207663Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-08-31T16:13:42.8208530Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-08-31T16:13:42.8209384Z hint:
+2025-08-31T16:13:42.8210019Z hint: 	git branch -m <name>
+2025-08-31T16:13:42.8210503Z hint:
+2025-08-31T16:13:42.8211061Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-08-31T16:13:42.8212033Z Initialized empty Git repository in /home/runner/work/trip-bundle/trip-bundle/.git/
+2025-08-31T16:13:42.8215498Z [command]/usr/bin/git remote add origin https://github.com/yoavtsook2806/trip-bundle
+2025-08-31T16:13:42.8249098Z ##[endgroup]
+2025-08-31T16:13:42.8249809Z ##[group]Disabling automatic garbage collection
+2025-08-31T16:13:42.8253222Z [command]/usr/bin/git config --local gc.auto 0
+2025-08-31T16:13:42.8281729Z ##[endgroup]
+2025-08-31T16:13:42.8282388Z ##[group]Setting up auth
+2025-08-31T16:13:42.8288781Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-08-31T16:13:42.8318535Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-08-31T16:13:42.8593970Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-08-31T16:13:42.8622593Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-08-31T16:13:42.8868422Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-08-31T16:13:42.8904674Z ##[endgroup]
+2025-08-31T16:13:42.8905687Z ##[group]Fetching the repository
+2025-08-31T16:13:42.8913617Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +1bf294f52bdea37114a79d2b744f973d470f0370:refs/remotes/origin/main
+2025-08-31T16:13:43.1189652Z From https://github.com/yoavtsook2806/trip-bundle
+2025-08-31T16:13:43.1191121Z  * [new ref]         1bf294f52bdea37114a79d2b744f973d470f0370 -> origin/main
+2025-08-31T16:13:43.1219095Z ##[endgroup]
+2025-08-31T16:13:43.1219805Z ##[group]Determining the checkout info
+2025-08-31T16:13:43.1221245Z ##[endgroup]
+2025-08-31T16:13:43.1227097Z [command]/usr/bin/git sparse-checkout disable
+2025-08-31T16:13:43.1264652Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-08-31T16:13:43.1293928Z ##[group]Checking out the ref
+2025-08-31T16:13:43.1298648Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-08-31T16:13:43.1413793Z Switched to a new branch 'main'
+2025-08-31T16:13:43.1415253Z branch 'main' set up to track 'origin/main'.
+2025-08-31T16:13:43.1421972Z ##[endgroup]
+2025-08-31T16:13:43.1458558Z [command]/usr/bin/git log -1 --format=%H
+2025-08-31T16:13:43.1479864Z 1bf294f52bdea37114a79d2b744f973d470f0370

@@ -1,0 +1,21 @@
+﻿2025-08-31T16:13:49.2007969Z ##[group]Run yarn install --immutable
+2025-08-31T16:13:49.2008339Z [36;1myarn install --immutable[0m
+2025-08-31T16:13:49.2038185Z shell: /usr/bin/bash -e {0}
+2025-08-31T16:13:49.2038454Z ##[endgroup]
+2025-08-31T16:13:49.5401638Z [94m➤[39m YN0000: · Yarn 4.0.0
+2025-08-31T16:13:49.5541256Z [94m➤[39m [90mYN0000[39m: ┌ Resolution step
+2025-08-31T16:13:49.5542122Z ##[group]Resolution step
+2025-08-31T16:13:49.8474017Z ##[endgroup]
+2025-08-31T16:13:49.8475605Z [94m➤[39m [90mYN0000[39m: └ Completed in 0s 293ms
+2025-08-31T16:13:49.8890080Z [94m➤[39m [90mYN0000[39m: ┌ Fetch step
+2025-08-31T16:13:49.8890987Z ##[group]Fetch step
+2025-08-31T16:13:53.2436830Z [93m➤[39m YN0066: │ [38;5;173mtypescript[39m[38;5;111m@[39m[38;5;111mpatch:typescript@npm%3A5.9.2#optional!builtin<compat/typescript>::version=5.9.2&hash=29ae49[39m: Cannot apply hunk #1
+2025-08-31T16:13:53.3821227Z [94m➤[39m YN0013: │ [38;5;220m725[39m packages were added to the project ([38;5;160m+ 165.52 MiB[39m).
+2025-08-31T16:13:53.3823366Z ##[endgroup]
+2025-08-31T16:13:53.3824332Z [94m➤[39m [90mYN0000[39m: └ Completed in 3s 493ms
+2025-08-31T16:13:53.4226866Z [94m➤[39m [90mYN0000[39m: ┌ Link step
+2025-08-31T16:13:53.4227803Z ##[group]Link step
+2025-08-31T16:13:56.6973808Z [94m➤[39m YN0007: │ [38;5;173mesbuild[39m[38;5;111m@[39m[38;5;111mnpm:0.21.5[39m must be built because it never has been before or the last one failed
+2025-08-31T16:13:56.8433627Z ##[endgroup]
+2025-08-31T16:13:56.8434844Z [94m➤[39m [90mYN0000[39m: └ Completed in 3s 420ms
+2025-08-31T16:13:56.8983629Z [93m➤[39m YN0000: · Done with warnings in 7s 359ms

@@ -1,0 +1,335 @@
+﻿2025-08-31T16:13:42.9545786Z Current runner version: '2.328.0'
+2025-08-31T16:13:42.9569076Z ##[group]Runner Image Provisioner
+2025-08-31T16:13:42.9570036Z Hosted Compute Agent
+2025-08-31T16:13:42.9570555Z Version: 20250829.383
+2025-08-31T16:13:42.9571134Z Commit: 27cb235aab5b0e52e153a26cd86b4742e89dac5d
+2025-08-31T16:13:42.9571855Z Build Date: 2025-08-29T13:48:48Z
+2025-08-31T16:13:42.9572599Z ##[endgroup]
+2025-08-31T16:13:42.9573140Z ##[group]Operating System
+2025-08-31T16:13:42.9573758Z Ubuntu
+2025-08-31T16:13:42.9574199Z 24.04.3
+2025-08-31T16:13:42.9574652Z LTS
+2025-08-31T16:13:42.9575093Z ##[endgroup]
+2025-08-31T16:13:42.9575587Z ##[group]Runner Image
+2025-08-31T16:13:42.9576153Z Image: ubuntu-24.04
+2025-08-31T16:13:42.9576640Z Version: 20250824.1.0
+2025-08-31T16:13:42.9577650Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20250824.1/images/ubuntu/Ubuntu2404-Readme.md
+2025-08-31T16:13:42.9579115Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20250824.1
+2025-08-31T16:13:42.9580117Z ##[endgroup]
+2025-08-31T16:13:42.9581137Z ##[group]GITHUB_TOKEN Permissions
+2025-08-31T16:13:42.9583156Z Contents: read
+2025-08-31T16:13:42.9583707Z Metadata: read
+2025-08-31T16:13:42.9584148Z Pages: write
+2025-08-31T16:13:42.9584749Z ##[endgroup]
+2025-08-31T16:13:42.9586734Z Secret source: Actions
+2025-08-31T16:13:42.9587404Z Prepare workflow directory
+2025-08-31T16:13:42.9904404Z Prepare all required actions
+2025-08-31T16:13:42.9941860Z Getting action download info
+2025-08-31T16:13:43.4524851Z Download action repository 'actions/checkout@v4' (SHA:08eba0b27e820071cde6df949e0beb9ba4906955)
+2025-08-31T16:13:43.9290482Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2025-08-31T16:13:44.1683321Z Complete job name: test (18.x)
+2025-08-31T16:13:44.2334167Z ##[group]Run actions/checkout@v4
+2025-08-31T16:13:44.2335170Z with:
+2025-08-31T16:13:44.2335644Z   repository: yoavtsook2806/trip-bundle
+2025-08-31T16:13:44.2336389Z   token: ***
+2025-08-31T16:13:44.2336831Z   ssh-strict: true
+2025-08-31T16:13:44.2337242Z   ssh-user: git
+2025-08-31T16:13:44.2337674Z   persist-credentials: true
+2025-08-31T16:13:44.2338145Z   clean: true
+2025-08-31T16:13:44.2338579Z   sparse-checkout-cone-mode: true
+2025-08-31T16:13:44.2339091Z   fetch-depth: 1
+2025-08-31T16:13:44.2339517Z   fetch-tags: false
+2025-08-31T16:13:44.2339950Z   show-progress: true
+2025-08-31T16:13:44.2340377Z   lfs: false
+2025-08-31T16:13:44.2340782Z   submodules: false
+2025-08-31T16:13:44.2341211Z   set-safe-directory: true
+2025-08-31T16:13:44.2341918Z ##[endgroup]
+2025-08-31T16:13:44.3423440Z Syncing repository: yoavtsook2806/trip-bundle
+2025-08-31T16:13:44.3425750Z ##[group]Getting Git version info
+2025-08-31T16:13:44.3426661Z Working directory is '/home/runner/work/trip-bundle/trip-bundle'
+2025-08-31T16:13:44.3427773Z [command]/usr/bin/git version
+2025-08-31T16:13:44.4793883Z git version 2.51.0
+2025-08-31T16:13:44.4821563Z ##[endgroup]
+2025-08-31T16:13:44.4844895Z Temporarily overriding HOME='/home/runner/work/_temp/0df74f0c-ed59-4440-9c40-046355c8b9b7' before making global git config changes
+2025-08-31T16:13:44.4846291Z Adding repository directory to the temporary git global config as a safe directory
+2025-08-31T16:13:44.4850398Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/trip-bundle/trip-bundle
+2025-08-31T16:13:44.4934223Z Deleting the contents of '/home/runner/work/trip-bundle/trip-bundle'
+2025-08-31T16:13:44.4937979Z ##[group]Initializing the repository
+2025-08-31T16:13:44.4942097Z [command]/usr/bin/git init /home/runner/work/trip-bundle/trip-bundle
+2025-08-31T16:13:44.5533553Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-08-31T16:13:44.5534868Z hint: is subject to change. To configure the initial branch name to use in all
+2025-08-31T16:13:44.5535837Z hint: of your new repositories, which will suppress this warning, call:
+2025-08-31T16:13:44.5536573Z hint:
+2025-08-31T16:13:44.5537124Z hint: 	git config --global init.defaultBranch <name>
+2025-08-31T16:13:44.5538027Z hint:
+2025-08-31T16:13:44.5538625Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-08-31T16:13:44.5539598Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-08-31T16:13:44.5540367Z hint:
+2025-08-31T16:13:44.5540762Z hint: 	git branch -m <name>
+2025-08-31T16:13:44.5541243Z hint:
+2025-08-31T16:13:44.5541867Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-08-31T16:13:44.5581272Z Initialized empty Git repository in /home/runner/work/trip-bundle/trip-bundle/.git/
+2025-08-31T16:13:44.5594233Z [command]/usr/bin/git remote add origin https://github.com/yoavtsook2806/trip-bundle
+2025-08-31T16:13:44.5727566Z ##[endgroup]
+2025-08-31T16:13:44.5728399Z ##[group]Disabling automatic garbage collection
+2025-08-31T16:13:44.5731847Z [command]/usr/bin/git config --local gc.auto 0
+2025-08-31T16:13:44.5760892Z ##[endgroup]
+2025-08-31T16:13:44.5761565Z ##[group]Setting up auth
+2025-08-31T16:13:44.5768261Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-08-31T16:13:44.5798358Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-08-31T16:13:44.8198777Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-08-31T16:13:44.8232025Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-08-31T16:13:44.8453482Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-08-31T16:13:44.8496159Z ##[endgroup]
+2025-08-31T16:13:44.8497460Z ##[group]Fetching the repository
+2025-08-31T16:13:44.8505715Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +1bf294f52bdea37114a79d2b744f973d470f0370:refs/remotes/origin/main
+2025-08-31T16:13:45.4538551Z From https://github.com/yoavtsook2806/trip-bundle
+2025-08-31T16:13:45.4540334Z  * [new ref]         1bf294f52bdea37114a79d2b744f973d470f0370 -> origin/main
+2025-08-31T16:13:45.4625538Z ##[endgroup]
+2025-08-31T16:13:45.4627269Z ##[group]Determining the checkout info
+2025-08-31T16:13:45.4629543Z ##[endgroup]
+2025-08-31T16:13:45.4632192Z [command]/usr/bin/git sparse-checkout disable
+2025-08-31T16:13:45.4716664Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-08-31T16:13:45.4745220Z ##[group]Checking out the ref
+2025-08-31T16:13:45.4748113Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-08-31T16:13:45.4908702Z Switched to a new branch 'main'
+2025-08-31T16:13:45.4910751Z branch 'main' set up to track 'origin/main'.
+2025-08-31T16:13:45.4918308Z ##[endgroup]
+2025-08-31T16:13:45.4956133Z [command]/usr/bin/git log -1 --format=%H
+2025-08-31T16:13:45.4981204Z 1bf294f52bdea37114a79d2b744f973d470f0370
+2025-08-31T16:13:45.5287488Z ##[group]Run actions/setup-node@v4
+2025-08-31T16:13:45.5288639Z with:
+2025-08-31T16:13:45.5289457Z   node-version: 18.x
+2025-08-31T16:13:45.5290382Z   always-auth: false
+2025-08-31T16:13:45.5291316Z   check-latest: false
+2025-08-31T16:13:45.5292821Z   token: ***
+2025-08-31T16:13:45.5293650Z ##[endgroup]
+2025-08-31T16:13:45.7461233Z Found in cache @ /opt/hostedtoolcache/node/18.20.8/x64
+2025-08-31T16:13:45.7468561Z ##[group]Environment details
+2025-08-31T16:13:47.9270611Z node: v18.20.8
+2025-08-31T16:13:47.9271191Z npm: 10.8.2
+2025-08-31T16:13:47.9271476Z yarn: 1.22.22
+2025-08-31T16:13:47.9272288Z ##[endgroup]
+2025-08-31T16:13:47.9373482Z ##[group]Run corepack enable
+2025-08-31T16:13:47.9373833Z [36;1mcorepack enable[0m
+2025-08-31T16:13:47.9374104Z [36;1mcorepack prepare yarn@4.0.0 --activate[0m
+2025-08-31T16:13:47.9374399Z [36;1myarn --version[0m
+2025-08-31T16:13:47.9640202Z shell: /usr/bin/bash -e {0}
+2025-08-31T16:13:47.9640801Z ##[endgroup]
+2025-08-31T16:13:48.1640102Z Preparing yarn@4.0.0 for immediate activation...
+2025-08-31T16:13:49.1750792Z 4.0.0
+2025-08-31T16:13:49.2007993Z ##[group]Run yarn install --immutable
+2025-08-31T16:13:49.2008344Z [36;1myarn install --immutable[0m
+2025-08-31T16:13:49.2038203Z shell: /usr/bin/bash -e {0}
+2025-08-31T16:13:49.2038458Z ##[endgroup]
+2025-08-31T16:13:49.5401678Z [94m➤[39m YN0000: · Yarn 4.0.0
+2025-08-31T16:13:49.5541290Z [94m➤[39m [90mYN0000[39m: ┌ Resolution step
+2025-08-31T16:13:49.5542127Z ##[group]Resolution step
+2025-08-31T16:13:49.8474063Z ##[endgroup]
+2025-08-31T16:13:49.8475618Z [94m➤[39m [90mYN0000[39m: └ Completed in 0s 293ms
+2025-08-31T16:13:49.8890122Z [94m➤[39m [90mYN0000[39m: ┌ Fetch step
+2025-08-31T16:13:49.8890995Z ##[group]Fetch step
+2025-08-31T16:13:53.2436868Z [93m➤[39m YN0066: │ [38;5;173mtypescript[39m[38;5;111m@[39m[38;5;111mpatch:typescript@npm%3A5.9.2#optional!builtin<compat/typescript>::version=5.9.2&hash=29ae49[39m: Cannot apply hunk #1
+2025-08-31T16:13:53.3821389Z [94m➤[39m YN0013: │ [38;5;220m725[39m packages were added to the project ([38;5;160m+ 165.52 MiB[39m).
+2025-08-31T16:13:53.3823373Z ##[endgroup]
+2025-08-31T16:13:53.3824349Z [94m➤[39m [90mYN0000[39m: └ Completed in 3s 493ms
+2025-08-31T16:13:53.4226906Z [94m➤[39m [90mYN0000[39m: ┌ Link step
+2025-08-31T16:13:53.4227808Z ##[group]Link step
+2025-08-31T16:13:56.6973859Z [94m➤[39m YN0007: │ [38;5;173mesbuild[39m[38;5;111m@[39m[38;5;111mnpm:0.21.5[39m must be built because it never has been before or the last one failed
+2025-08-31T16:13:56.8433664Z ##[endgroup]
+2025-08-31T16:13:56.8434854Z [94m➤[39m [90mYN0000[39m: └ Completed in 3s 420ms
+2025-08-31T16:13:56.8983677Z [93m➤[39m YN0000: · Done with warnings in 7s 359ms
+2025-08-31T16:13:57.0261569Z ##[group]Run echo "=== Workspace info ==="
+2025-08-31T16:13:57.0261904Z [36;1mecho "=== Workspace info ==="[0m
+2025-08-31T16:13:57.0262151Z [36;1myarn workspaces list[0m
+2025-08-31T16:13:57.0262758Z [36;1mecho "=== Prompts service package.json ==="[0m
+2025-08-31T16:13:57.0263169Z [36;1mcat packages/trip-bundle-prompts-service/package.json[0m
+2025-08-31T16:13:57.0263498Z [36;1mecho "=== PWA package.json ==="[0m
+2025-08-31T16:13:57.0263779Z [36;1mcat packages/trip-bundle-pwa/package.json[0m
+2025-08-31T16:13:57.0354628Z shell: /usr/bin/bash -e {0}
+2025-08-31T16:13:57.0354863Z ##[endgroup]
+2025-08-31T16:13:57.0403639Z === Workspace info ===
+2025-08-31T16:13:57.3595737Z [94m➤[39m [90mYN0000[39m: .
+2025-08-31T16:13:57.3598367Z [94m➤[39m [90mYN0000[39m: packages/trip-bundle-playground
+2025-08-31T16:13:57.3599436Z [94m➤[39m [90mYN0000[39m: packages/trip-bundle-prompts-service
+2025-08-31T16:13:57.3600365Z [94m➤[39m [90mYN0000[39m: packages/trip-bundle-pwa
+2025-08-31T16:13:57.3601244Z [94m➤[39m YN0000: Done in 0s 1ms
+2025-08-31T16:13:57.3708434Z === Prompts service package.json ===
+2025-08-31T16:13:57.3719261Z {
+2025-08-31T16:13:57.3719687Z   "name": "trip-bundle-prompts-service",
+2025-08-31T16:13:57.3720203Z   "version": "1.0.0",
+2025-08-31T16:13:57.3720953Z   "description": "Node.js service for generating trip bundle prompts and interfacing with GPT",
+2025-08-31T16:13:57.3721499Z   "main": "dist/index.js",
+2025-08-31T16:13:57.3721799Z   "module": "dist/index.js",
+2025-08-31T16:13:57.3722228Z   "types": "dist/index.d.ts",
+2025-08-31T16:13:57.3722943Z   "type": "module",
+2025-08-31T16:13:57.3723257Z   "exports": {
+2025-08-31T16:13:57.3723555Z     ".": {
+2025-08-31T16:13:57.3723824Z       "types": "./dist/index.d.ts",
+2025-08-31T16:13:57.3724111Z       "import": "./dist/index.js",
+2025-08-31T16:13:57.3724369Z       "default": "./dist/index.js"
+2025-08-31T16:13:57.3724582Z     }
+2025-08-31T16:13:57.3724741Z   },
+2025-08-31T16:13:57.3724900Z   "scripts": {
+2025-08-31T16:13:57.3725093Z     "build": "tsc",
+2025-08-31T16:13:57.3725290Z     "dev": "tsc --watch",
+2025-08-31T16:13:57.3725499Z     "clean": "rm -rf dist",
+2025-08-31T16:13:57.3725706Z     "test": "jest",
+2025-08-31T16:13:57.3726182Z     "lint": "eslint src --ext .ts",
+2025-08-31T16:13:57.3726477Z     "lint-fix": "eslint src --ext .ts --fix",
+2025-08-31T16:13:57.3726775Z     "type-check": "tsc --noEmit"
+2025-08-31T16:13:57.3726989Z   },
+2025-08-31T16:13:57.3727154Z   "keywords": [
+2025-08-31T16:13:57.3727336Z     "travel",
+2025-08-31T16:13:57.3727513Z     "trip-planning",
+2025-08-31T16:13:57.3727765Z     "gpt",
+2025-08-31T16:13:57.3727966Z     "prompts",
+2025-08-31T16:13:57.3728136Z     "nodejs"
+2025-08-31T16:13:57.3728301Z   ],
+2025-08-31T16:13:57.3728488Z   "author": "Trip Bundle Team",
+2025-08-31T16:13:57.3728715Z   "license": "MIT",
+2025-08-31T16:13:57.3728903Z   "dependencies": {
+2025-08-31T16:13:57.3729138Z     "node-fetch": "^3.3.2"
+2025-08-31T16:13:57.3729337Z   },
+2025-08-31T16:13:57.3729517Z   "devDependencies": {
+2025-08-31T16:13:57.3729832Z     "@types/jest": "^29.0.0",
+2025-08-31T16:13:57.3730211Z     "@types/node": "^20.0.0",
+2025-08-31T16:13:57.3730684Z     "@typescript-eslint/eslint-plugin": "^6.0.0",
+2025-08-31T16:13:57.3731224Z     "@typescript-eslint/parser": "^6.0.0",
+2025-08-31T16:13:57.3731529Z     "eslint": "^8.0.0",
+2025-08-31T16:13:57.3731730Z     "jest": "^29.0.0",
+2025-08-31T16:13:57.3731927Z     "typescript": "^5.0.0"
+2025-08-31T16:13:57.3732120Z   },
+2025-08-31T16:13:57.3732270Z   "engines": {
+2025-08-31T16:13:57.3732690Z     "node": ">=18.0.0"
+2025-08-31T16:13:57.3732880Z   }
+2025-08-31T16:13:57.3733037Z }
+2025-08-31T16:13:57.3733226Z === PWA package.json ===
+2025-08-31T16:13:57.3733772Z {
+2025-08-31T16:13:57.3734090Z   "name": "trip-bundle-pwa",
+2025-08-31T16:13:57.3734458Z   "version": "1.0.0",
+2025-08-31T16:13:57.3734888Z   "description": "Trip Bundle Progressive Web App",
+2025-08-31T16:13:57.3735360Z   "type": "module",
+2025-08-31T16:13:57.3735647Z   "scripts": {
+2025-08-31T16:13:57.3736050Z     "dev": "vite",
+2025-08-31T16:13:57.3736300Z     "dev-mock": "VITE_MOCK=true vite",
+2025-08-31T16:13:57.3736759Z     "build": "VITE_MOCK=true GITHUB_PAGES=true tsc && vite build && node scripts/copy-to-pwa.cjs",
+2025-08-31T16:13:57.3737395Z     "build:mock": "VITE_MOCK=true GITHUB_PAGES=true tsc && vite build && node scripts/copy-to-pwa.cjs",
+2025-08-31T16:13:57.3738012Z     "build:prod": "VITE_MOCK=false GITHUB_PAGES=true tsc && vite build && node scripts/copy-to-pwa.cjs",
+2025-08-31T16:13:57.3738440Z     "preview": "vite preview",
+2025-08-31T16:13:57.3738751Z     "serve:local": "python3 -m http.server 8080 -d dist",
+2025-08-31T16:13:57.3739088Z     "predeploy:mock": "npm run build:mock",
+2025-08-31T16:13:57.3739407Z     "deploy:mock": "gh-pages -d dist -b gh-pages",
+2025-08-31T16:13:57.3739729Z     "predeploy:prod": "npm run build:prod",
+2025-08-31T16:13:57.3740066Z     "deploy:prod": "gh-pages -d dist -b gh-pages-prod",
+2025-08-31T16:13:57.3740766Z     "build:both": "npm run build:mock && mkdir -p builds/mock && cp -r dist/* builds/mock/ && npm run build:prod && mkdir -p builds/prod && cp -r dist/* builds/prod/",
+2025-08-31T16:13:57.3741414Z     "deploy:both": "npm run deploy:mock && npm run deploy:prod",
+2025-08-31T16:13:57.3741910Z     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+2025-08-31T16:13:57.3746766Z     "lint-fix": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix",
+2025-08-31T16:13:57.3747255Z     "type-check": "tsc --noEmit"
+2025-08-31T16:13:57.3747478Z   },
+2025-08-31T16:13:57.3747643Z   "dependencies": {
+2025-08-31T16:13:57.3747837Z     "mobx": "^6.13.7",
+2025-08-31T16:13:57.3748057Z     "mobx-react-lite": "^4.1.0",
+2025-08-31T16:13:57.3748278Z     "react": "^18.2.0",
+2025-08-31T16:13:57.3748476Z     "react-dom": "^18.2.0",
+2025-08-31T16:13:57.3748752Z     "trip-bundle-prompts-service": "workspace:*"
+2025-08-31T16:13:57.3749014Z   },
+2025-08-31T16:13:57.3749183Z   "devDependencies": {
+2025-08-31T16:13:57.3749419Z     "@types/react": "^18.2.66",
+2025-08-31T16:13:57.3749665Z     "@types/react-dom": "^18.2.22",
+2025-08-31T16:13:57.3749952Z     "@typescript-eslint/eslint-plugin": "^7.2.0",
+2025-08-31T16:13:57.3750267Z     "@typescript-eslint/parser": "^7.2.0",
+2025-08-31T16:13:57.3750705Z     "@vitejs/plugin-react": "^4.2.1",
+2025-08-31T16:13:57.3750941Z     "eslint": "^8.57.0",
+2025-08-31T16:13:57.3751189Z     "eslint-plugin-react-hooks": "^4.6.0",
+2025-08-31T16:13:57.3751496Z     "eslint-plugin-react-refresh": "^0.4.6",
+2025-08-31T16:13:57.3751769Z     "gh-pages": "^6.3.0",
+2025-08-31T16:13:57.3751984Z     "typescript": "^5.2.2",
+2025-08-31T16:13:57.3752206Z     "vite": "^5.2.0",
+2025-08-31T16:13:57.3752681Z     "vite-plugin-pwa": "^0.19.0",
+2025-08-31T16:13:57.3753000Z     "workbox-window": "^7.0.0"
+2025-08-31T16:13:57.3753218Z   }
+2025-08-31T16:13:57.3753375Z }
+2025-08-31T16:13:57.3775134Z ##[group]Run yarn workspaces foreach --all run type-check || true
+2025-08-31T16:13:57.3775574Z [36;1myarn workspaces foreach --all run type-check || true[0m
+2025-08-31T16:13:57.3804603Z shell: /usr/bin/bash -e {0}
+2025-08-31T16:13:57.3804836Z ##[endgroup]
+2025-08-31T16:13:59.7083391Z ##[error]src/App.tsx(2,41): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:13:59.7092273Z ##[error]src/App.tsx(3,77): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:13:59.7094273Z ##[error]src/components/MainContent.tsx(1,75): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:13:59.7095999Z ##[error]src/components/SettingsPanel.tsx(2,63): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:13:59.7097465Z ##[error]src/components/SettingsPanel.tsx(194,38): error TS7006: Parameter 'c' implicitly has an 'any' type.
+2025-08-31T16:14:03.6600188Z ##[error]src/actions/tripActions.ts(6,53): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6604257Z ##[error]src/components/BundlePage.tsx(185,33): error TS7006: Parameter 'event' implicitly has an 'any' type.
+2025-08-31T16:14:03.6614175Z ##[error]src/components/DevelopmentTab.tsx(3,31): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6623158Z ##[error]src/constants/cities.ts(1,27): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6626512Z ##[error]src/constants/entertainments.ts(1,36): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6629507Z ##[error]src/services/index.ts(8,41): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6632749Z ##[error]src/services/loggingTripBundleService.ts(7,8): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6635904Z ##[error]src/services/mockTripBundleService.ts(12,8): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6639190Z ##[error]src/services/tripBundleServiceFactory.ts(9,8): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6642534Z ##[error]src/storage/userPreferences.ts(2,61): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6645500Z ##[error]src/store/bundleSuggestions.ts(2,33): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6648008Z ##[error]src/store/bundleSuggestions.ts(221,26): error TS7006: Parameter 'ent' implicitly has an 'any' type.
+2025-08-31T16:14:03.6650245Z ##[error]src/store/bundleSuggestions.ts(243,26): error TS7006: Parameter 'ent' implicitly has an 'any' type.
+2025-08-31T16:14:03.6653110Z ##[error]src/store/userPreferences.ts(2,38): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6655925Z ##[error]src/store/userPreferences.ts(76,88): error TS7006: Parameter 'c' implicitly has an 'any' type.
+2025-08-31T16:14:03.6658124Z ##[error]src/store/userPreferences.ts(93,86): error TS7006: Parameter 'c' implicitly has an 'any' type.
+2025-08-31T16:14:03.6660194Z ##[error]src/store/userPreferences.ts(109,79): error TS7006: Parameter 'p' implicitly has an 'any' type.
+2025-08-31T16:14:03.6662804Z ##[error]src/store/userPreferences.ts(121,100): error TS7006: Parameter 'p' implicitly has an 'any' type.
+2025-08-31T16:14:03.6665653Z ##[error]src/types.ts(8,8): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6668234Z ##[error]src/types.ts(20,8): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.7059473Z Done in 5s 909ms
+2025-08-31T16:14:03.7257978Z ##[group]Run echo "=== Building all packages with topological ordering ==="
+2025-08-31T16:14:03.7258491Z [36;1mecho "=== Building all packages with topological ordering ==="[0m
+2025-08-31T16:14:03.7258820Z [36;1myarn build[0m
+2025-08-31T16:14:03.7259050Z [36;1mecho "=== Verifying prompts service build ==="[0m
+2025-08-31T16:14:03.7259410Z [36;1mls -la packages/trip-bundle-prompts-service/dist/[0m
+2025-08-31T16:14:03.7259727Z [36;1mecho "=== Verifying PWA build ==="[0m
+2025-08-31T16:14:03.7260006Z [36;1mls -la packages/trip-bundle-pwa/dist/[0m
+2025-08-31T16:14:03.7289565Z shell: /usr/bin/bash -e {0}
+2025-08-31T16:14:03.7289801Z ##[endgroup]
+2025-08-31T16:14:03.7339108Z === Building all packages with topological ordering ===
+2025-08-31T16:14:06.3539538Z ##[error]src/App.tsx(2,41): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:06.3542638Z ##[error]src/App.tsx(3,77): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:06.3545300Z ##[error]src/components/MainContent.tsx(1,75): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:06.3548183Z ##[error]src/components/SettingsPanel.tsx(2,63): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:06.3550430Z ##[error]src/components/SettingsPanel.tsx(194,38): error TS7006: Parameter 'c' implicitly has an 'any' type.
+2025-08-31T16:14:10.9824059Z [36mvite v5.4.19 [32mbuilding for production...[36m[39m
+2025-08-31T16:14:11.0501915Z transforming...
+2025-08-31T16:14:12.2671671Z [32m✓[39m 93 modules transformed.
+2025-08-31T16:14:12.4410098Z [1m[33m[plugin:vite:reporter][39m[22m [33m[plugin vite:reporter] 
+2025-08-31T16:14:12.4417539Z (!) /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/storage/index.ts is dynamically imported by /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/components/DevelopmentTab.tsx, /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/components/DevelopmentTab.tsx but also statically imported by /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/App.tsx, /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/components/BundleFeed.tsx, /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/components/FirstTimeExperience.tsx, /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/components/UserPreferencesForm.tsx, dynamic import will not move module into another chunk.
+2025-08-31T16:14:12.4421619Z [39m
+2025-08-31T16:14:12.4421872Z rendering chunks...
+2025-08-31T16:14:12.4526091Z computing gzip size...
+2025-08-31T16:14:12.4630291Z [2mdist/[22m[32mregisterSW.js              [39m[1m[2m  0.13 kB[22m[1m[22m
+2025-08-31T16:14:12.4631649Z [2mdist/[22m[32mmanifest.webmanifest       [39m[1m[2m  1.16 kB[22m[1m[22m
+2025-08-31T16:14:12.4633331Z [2mdist/[22m[32mindex.html                 [39m[1m[2m  4.33 kB[22m[1m[22m[2m │ gzip:  1.42 kB[22m
+2025-08-31T16:14:12.4635330Z [2mdist/[22m[2massets/[22m[35mindex-_w9YxNB9.css  [39m[1m[2m 37.49 kB[22m[1m[22m[2m │ gzip:  6.97 kB[22m
+2025-08-31T16:14:12.4636901Z [2mdist/[22m[2massets/[22m[36mindex-XXohOHV4.js   [39m[1m[2m327.60 kB[22m[1m[22m[2m │ gzip: 94.61 kB[22m
+2025-08-31T16:14:12.4637480Z [32m✓ built in 1.45s[39m
+2025-08-31T16:14:14.3155632Z 
+2025-08-31T16:14:14.3156653Z [36mPWA v0.19.8[39m
+2025-08-31T16:14:14.3157204Z mode      [35mgenerateSW[39m
+2025-08-31T16:14:14.3157830Z precache  [32m12 entries[39m [2m(437.75 KiB)[22m
+2025-08-31T16:14:14.3158266Z files generated
+2025-08-31T16:14:14.3158608Z   [2mdist/sw.js[22m
+2025-08-31T16:14:14.3159025Z   [2mdist/workbox-62686582.js[22m
+2025-08-31T16:14:14.3905969Z ✅ Created pwa.html from index.html
+2025-08-31T16:14:14.3961789Z Done in 9s 921ms
+2025-08-31T16:14:14.4389354Z ##[error]The operation was canceled.
+2025-08-31T16:14:14.4484419Z Post job cleanup.
+2025-08-31T16:14:14.5448955Z [command]/usr/bin/git version
+2025-08-31T16:14:14.5488065Z git version 2.51.0
+2025-08-31T16:14:14.5533562Z Temporarily overriding HOME='/home/runner/work/_temp/dda4b0e4-5c29-4367-9b1f-f15b4fcf32c2' before making global git config changes
+2025-08-31T16:14:14.5534532Z Adding repository directory to the temporary git global config as a safe directory
+2025-08-31T16:14:14.5549019Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/trip-bundle/trip-bundle
+2025-08-31T16:14:14.5587195Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-08-31T16:14:14.5621731Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-08-31T16:14:14.5856767Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-08-31T16:14:14.5878397Z http.https://github.com/.extraheader
+2025-08-31T16:14:14.5891648Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2025-08-31T16:14:14.5923083Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-08-31T16:14:14.6252724Z Cleaning up orphan processes
