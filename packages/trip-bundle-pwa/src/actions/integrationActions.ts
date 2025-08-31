@@ -24,19 +24,31 @@ export class IntegrationActions {
   // Spotify Integration Actions
   async connectSpotify(): Promise<boolean> {
     try {
-      if (!this.spotifyService.isConfigured()) {
+      console.log('🎵 [INTEGRATION_ACTIONS] connectSpotify called');
+      
+      console.log('🎵 [INTEGRATION_ACTIONS] Checking if Spotify service is configured...');
+      const isConfigured = this.spotifyService.isConfigured();
+      console.log('🎵 [INTEGRATION_ACTIONS] Spotify service configured:', isConfigured);
+      
+      if (!isConfigured) {
+        console.error('🎵 [INTEGRATION_ACTIONS] Spotify integration not configured');
         throw new Error('Spotify integration not configured');
       }
 
+      console.log('🎵 [INTEGRATION_ACTIONS] Setting loading state...');
       this.userPreferencesStore.setLoading(true);
       
       // Get auth URL and redirect user
+      console.log('🎵 [INTEGRATION_ACTIONS] Getting auth URL...');
       const authUrl = await this.spotifyService.getAuthUrl();
+      console.log('🎵 [INTEGRATION_ACTIONS] Got auth URL:', authUrl);
+      
+      console.log('🎵 [INTEGRATION_ACTIONS] Redirecting to Spotify auth...');
       window.location.href = authUrl;
       
       return true;
     } catch (error) {
-      console.error('Failed to connect Spotify:', error);
+      console.error('🎵 [INTEGRATION_ACTIONS] Failed to connect Spotify:', error);
       this.userPreferencesStore.setLoading(false);
       return false;
     }

@@ -48,15 +48,25 @@ class SpotifyService {
   private codeVerifier: string | null = null;
 
   constructor() {
+    console.log('🎵 [SPOTIFY_SERVICE] Constructor called');
+    
     // Get credentials from environment variables or use your provided Client ID
     this.clientId = (import.meta as any).env?.VITE_SPOTIFY_CLIENT_ID || 'bc5f89044c854343a3408f12a4f4a0be';
     this.clientSecret = (import.meta as any).env?.VITE_SPOTIFY_CLIENT_SECRET || null;
     
+    console.log('🎵 [SPOTIFY_SERVICE] Config loaded - Client ID:', !!this.clientId, 'Client Secret:', !!this.clientSecret);
+    console.log('🎵 [SPOTIFY_SERVICE] Environment variables:', {
+      VITE_SPOTIFY_CLIENT_ID: !!(import.meta as any).env?.VITE_SPOTIFY_CLIENT_ID,
+      VITE_SPOTIFY_CLIENT_SECRET: !!(import.meta as any).env?.VITE_SPOTIFY_CLIENT_SECRET
+    });
+    
     // Try to restore tokens from localStorage
     this.loadTokensFromStorage();
+    console.log('🎵 [SPOTIFY_SERVICE] After loading tokens - Access token:', !!this.accessToken, 'Refresh token:', !!this.refreshToken);
     
     // Check if we're returning from a redirect auth
     this.checkForRedirectAuth();
+    console.log('🎵 [SPOTIFY_SERVICE] Constructor completed');
   }
 
   // Check if we're returning from OAuth redirect
@@ -398,16 +408,26 @@ class SpotifyService {
   }
 
   async getAuthUrl(): Promise<string> {
+    console.log('🎵 [SPOTIFY_SERVICE] getAuthUrl called');
+    console.log('🎵 [SPOTIFY_SERVICE] Client ID check:', { clientId: this.clientId, hasClientId: !!this.clientId });
+    
     if (!this.clientId) {
+      console.error('🎵 [SPOTIFY_SERVICE] No client ID configured!');
       throw new Error('Spotify client ID not configured');
     }
 
+    console.log('🎵 [SPOTIFY_SERVICE] Generating PKCE parameters...');
     // Generate PKCE parameters
     this.codeVerifier = this.generateCodeVerifier();
     const codeChallenge = await this.generateCodeChallenge(this.codeVerifier);
     
+    console.log('🎵 [SPOTIFY_SERVICE] PKCE parameters generated:', {
+      codeVerifier: !!this.codeVerifier,
+      codeChallenge: !!codeChallenge
+    });
+    
     // Store code verifier in localStorage for direct redirects
-    console.log('🎵 [DEBUG] Storing code verifier in localStorage for redirect flow');
+    console.log('🎵 [SPOTIFY_SERVICE] Storing code verifier in localStorage for redirect flow');
     localStorage.setItem('spotify_code_verifier', this.codeVerifier);
 
     const scopes = [
@@ -421,6 +441,12 @@ class SpotifyService {
       'user-read-currently-playing'
     ].join(' ');
 
+    console.log('🎵 [SPOTIFY_SERVICE] Building auth URL with params:', {
+      clientId: this.clientId,
+      redirectUri: this.redirectUri,
+      scopes: scopes.split(' ').length + ' scopes'
+    });
+
     const params = new URLSearchParams({
       response_type: 'code',
       client_id: this.clientId,
@@ -431,7 +457,14 @@ class SpotifyService {
       code_challenge: codeChallenge
     });
 
-    return `https://accounts.spotify.com/authorize?${params.toString()}`;
+    const authUrl = `https://accounts.spotify.com/authorize?${params.toString()}`;
+    console.log('🎵 [SPOTIFY_SERVICE] Generated auth URL:', authUrl);
+    
+    // Set the auth in progress flag for the redirect flow
+    console.log('🎵 [SPOTIFY_SERVICE] Setting auth in progress flag for redirect...');
+    localStorage.setItem('spotify_auth_in_progress', 'true');
+    
+    return authUrl;
   }
 
   async handleCallback(code: string): Promise<boolean> {
@@ -772,17 +805,34 @@ class SpotifyService {
   }
 
   private loadTokensFromStorage(): void {
+    console.log('🎵 [SPOTIFY_SERVICE] Loading tokens from localStorage...');
     this.accessToken = localStorage.getItem('spotify_access_token');
     this.refreshToken = localStorage.getItem('spotify_refresh_token');
     const expiry = localStorage.getItem('spotify_token_expiry');
     if (expiry) {
       this.tokenExpiry = parseInt(expiry);
     }
+    
+    console.log('🎵 [SPOTIFY_SERVICE] Loaded tokens:', {
+      accessToken: !!this.accessToken,
+      refreshToken: !!this.refreshToken,
+      tokenExpiry: this.tokenExpiry,
+      isExpired: this.tokenExpiry ? Date.now() > this.tokenExpiry : 'no expiry'
+    });
   }
 
   // Public utility methods
   isAuthenticated(): boolean {
-    return this.accessToken !== null && this.tokenExpiry !== null && Date.now() < this.tokenExpiry;
+    const isAuth = this.accessToken !== null && this.tokenExpiry !== null && Date.now() < this.tokenExpiry;
+    console.log('🎵 [SPOTIFY_SERVICE] isAuthenticated check:', {
+      hasAccessToken: !!this.accessToken,
+      hasTokenExpiry: !!this.tokenExpiry,
+      currentTime: Date.now(),
+      tokenExpiry: this.tokenExpiry,
+      isExpired: this.tokenExpiry ? Date.now() > this.tokenExpiry : 'no expiry',
+      result: isAuth
+    });
+    return isAuth;
   }
 
   disconnect(): void {
@@ -803,7 +853,13 @@ class SpotifyService {
 
   isConfigured(): boolean {
     // For PKCE flow, we only need clientId, not clientSecret
-    return this.clientId !== null;
+    const configured = this.clientId !== null;
+    console.log('🎵 [SPOTIFY_SERVICE] isConfigured check:', {
+      clientId: this.clientId,
+      hasClientId: !!this.clientId,
+      result: configured
+    });
+    return configured;
   }
 }
 

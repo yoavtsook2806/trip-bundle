@@ -108,7 +108,7 @@ const App: React.FC = observer(() => {
       authCodeValue: authCode
     });
     
-    if (authCode && authInProgress) {
+    if (authCode) {
       console.log('🎵 [APP] Found auth code, clearing flags and processing...');
       localStorage.removeItem('spotify_auth_code');
       localStorage.removeItem('spotify_auth_in_progress');
@@ -118,11 +118,17 @@ const App: React.FC = observer(() => {
         console.log('🎵 [APP] Calling integrationActions.handleSpotifyCallback with code:', authCode);
         const success = await integrationActions.handleSpotifyCallback(authCode);
         console.log('🎵 [APP] Spotify callback processing result:', success);
+        
+        if (success) {
+          console.log('🎵 [APP] Spotify integration successful!');
+        } else {
+          console.error('🎵 [APP] Spotify integration failed');
+        }
       } catch (error) {
         console.error('🎵 [APP] Error processing Spotify auth return:', error);
       }
     } else {
-      console.log('🎵 [APP] No valid auth code found for processing');
+      console.log('🎵 [APP] No auth code found for processing');
     }
   };
 
