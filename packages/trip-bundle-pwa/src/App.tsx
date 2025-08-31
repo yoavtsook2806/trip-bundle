@@ -122,10 +122,17 @@ const App: React.FC = observer(() => {
         
         if (success) {
           console.log('🎵 [APP] Spotify integration successful!');
-          // Navigate back to preferences view and set integration tab
-          console.log('🎵 [APP] Navigating back to preferences view with integration tab');
+          // Set integration tab for when preferences form loads
+          console.log('🎵 [APP] Setting integration tab for preferences form');
           localStorage.setItem('preferences_active_tab', 'integrations');
-          setCurrentView('preferences');
+          
+          // If we're in FTE mode, don't change the view - just let the FTE handle it
+          if (!showFTE) {
+            console.log('🎵 [APP] Navigating back to preferences view');
+            setCurrentView('preferences');
+          } else {
+            console.log('🎵 [APP] In FTE mode - integration tab will be restored automatically');
+          }
         } else {
           console.error('🎵 [APP] Spotify integration failed');
         }

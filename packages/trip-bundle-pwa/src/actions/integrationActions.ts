@@ -114,6 +114,12 @@ export class IntegrationActions {
         };
         await this.userPreferencesStorage.setUserPreferences(updatedPrefs);
         console.log('🎵 [INTEGRATION_ACTIONS] UserPreferences storage updated successfully');
+        
+        // Dispatch custom event to notify UI components
+        console.log('🎵 [INTEGRATION_ACTIONS] Dispatching integration update event');
+        window.dispatchEvent(new CustomEvent('spotify-integration-updated', {
+          detail: { connected: true, profile, preferences }
+        }));
       } catch (error) {
         console.error('🎵 [INTEGRATION_ACTIONS] Failed to update UserPreferences storage:', error);
       }

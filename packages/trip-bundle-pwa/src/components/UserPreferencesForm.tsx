@@ -51,15 +51,35 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
       loadPreferences();
     };
 
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('🔄 [USER_PREFS_FORM] Page became visible, reloading preferences...');
+        loadPreferences();
+      }
+    };
+
+    const handleIntegrationUpdate = (event: CustomEvent) => {
+      console.log('🔄 [USER_PREFS_FORM] Integration updated, reloading preferences...', event.detail);
+      loadPreferences();
+    };
+
     // Listen for storage changes (when integration completes)
     window.addEventListener('storage', handleStorageChange);
     
     // Also listen for focus events (when returning from auth)
     window.addEventListener('focus', handleStorageChange);
+    
+    // Listen for visibility changes (better for mobile/PWA)
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Listen for custom integration events
+    window.addEventListener('spotify-integration-updated', handleIntegrationUpdate as EventListener);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('focus', handleStorageChange);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('spotify-integration-updated', handleIntegrationUpdate as EventListener);
     };
   }, []);
 
