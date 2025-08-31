@@ -22,11 +22,11 @@ const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
       setEventsLoading(true);
       setEventsError(null);
       
-      console.log('🎪 [BUNDLE_PAGE] Loading events for bundle:', bundle.id, 'in city:', bundle.city.name);
+      console.log('🎪 [BUNDLE_PAGE] Loading events for bundle:', bundle.id, 'in city:', bundle.city);
       
       const service = getTripBundleService();
       const eventsResponse = await service.getEvents(
-        bundle.city.name,
+        bundle.city,
         bundle.startDate,
         bundle.endDate
       );
@@ -84,10 +84,7 @@ const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
   };
 
   const calculateTotalCost = () => {
-    const accommodationCost = bundle.accommodation.pricePerNight * bundle.duration;
-    const transportCost = bundle.transport.cost;
-    const entertainmentCost = bundle.entertainments.reduce((sum, ent) => sum + ent.estimatedCost, 0);
-    return accommodationCost + transportCost + entertainmentCost;
+    return bundle.totalCost.amount;
   };
 
   return (
@@ -98,7 +95,7 @@ const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
           ← Back to Feed
         </button>
         <div className="bundle-title">
-          <h1>{bundle.city.name}, {bundle.city.country}</h1>
+          <h1>{bundle.city}, {bundle.country}</h1>
           <p className="bundle-dates">
             {formatDate(bundle.startDate)} - {formatDate(bundle.endDate)}
           </p>
@@ -122,21 +119,21 @@ const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
                 <span className="overview-icon">💰</span>
                 <div>
                   <h4>Total Cost</h4>
-                  <p>{formatCurrency(calculateTotalCost(), bundle.currency)}</p>
+                  <p>{formatCurrency(calculateTotalCost(), bundle.totalCost.currency)}</p>
                 </div>
               </div>
               <div className="overview-item">
                 <span className="overview-icon">🎭</span>
                 <div>
                   <h4>Activities</h4>
-                  <p>{bundle.entertainments.length} included</p>
+                  <p>{bundle.events.length} included</p>
                 </div>
               </div>
               <div className="overview-item">
                 <span className="overview-icon">⭐</span>
                 <div>
                   <h4>Match Score</h4>
-                  <p>{Math.round(bundle.matchScore * 100)}%</p>
+                  <p>{Math.round(bundle.confidence)}%</p>
                 </div>
               </div>
             </div>
@@ -154,14 +151,14 @@ const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
                 {'⭐'.repeat(bundle.accommodation.rating)}
                 <span>({bundle.accommodation.rating}/5)</span>
               </div>
-              <p className="accommodation-description">{bundle.accommodation.description}</p>
+              <p className="accommodation-description">Comfortable {bundle.accommodation.type} in {bundle.accommodation.location}</p>
             </div>
             <div className="accommodation-price">
               <span className="price-per-night">
-                {formatCurrency(bundle.accommodation.pricePerNight, bundle.currency)}/night
+                {formatCurrency(bundle.accommodation.pricePerNight, bundle.totalCost.currency)}/night
               </span>
               <span className="total-price">
-                Total: {formatCurrency(bundle.accommodation.pricePerNight * bundle.duration, bundle.currency)}
+                Total: {formatCurrency(bundle.accommodation.pricePerNight * bundle.duration, bundle.totalCost.currency)}
               </span>
             </div>
           </div>
@@ -172,14 +169,11 @@ const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
           <h2>🚗 Transport</h2>
           <div className="transport-card">
             <div className="transport-info">
-              <h3>{bundle.transport.type}</h3>
-              <p>{bundle.transport.description}</p>
-              <div className="transport-details">
-                <span>Duration: {bundle.transport.duration}</span>
-              </div>
+              <h3>{bundle.transportation.type}</h3>
+              <p>{bundle.transportation.details}</p>
             </div>
             <div className="transport-price">
-              {formatCurrency(bundle.transport.cost, bundle.currency)}
+              {formatCurrency(bundle.transportation.cost, bundle.transportation.currency)}
             </div>
           </div>
         </div>
@@ -188,28 +182,28 @@ const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
         <div className="bundle-section">
           <h2>🎭 Included Activities</h2>
           <div className="activities-grid">
-            {bundle.entertainments.map((entertainment: any, index: number) => (
+            {bundle.events.map((event, index: number) => (
               <div key={index} className="activity-card">
                 <div className="activity-header">
                   <span 
                     className="activity-icon"
-                    style={{ backgroundColor: getCategoryColor(entertainment.category) }}
+                    style={{ backgroundColor: getCategoryColor(event.entertainment.category) }}
                   >
-                    {getCategoryIcon(entertainment.category)}
+                    {getCategoryIcon(event.entertainment.category)}
                   </span>
                   <div className="activity-info">
-                    <h4>{entertainment.name}</h4>
-                    <span className="activity-category">{entertainment.category}</span>
+                    <h4>{event.entertainment.name}</h4>
+                    <span className="activity-category">{event.entertainment.category}</span>
                   </div>
                 </div>
-                <p className="activity-description">{entertainment.description}</p>
+                <p className="activity-description">{event.entertainment.description}</p>
                 <div className="activity-footer">
                   <span className="activity-cost">
-                    {formatCurrency(entertainment.estimatedCost, 'EUR')}
+                    {formatCurrency(event.cost, event.currency)}
                   </span>
-                  {entertainment.tags && entertainment.tags.length > 0 && (
+                  {event.entertainment.tags && event.entertainment.tags.length > 0 && (
                     <div className="activity-tags">
-                      {entertainment.tags.slice(0, 2).map((tag: string, tagIndex: number) => (
+                      {event.entertainment.tags.slice(0, 2).map((tag: string, tagIndex: number) => (
                         <span key={tagIndex} className="activity-tag">{tag}</span>
                       ))}
                     </div>
@@ -222,7 +216,7 @@ const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
 
         {/* More Events */}
         <div className="bundle-section">
-          <h2>🎪 More Events in {typeof bundle.city === 'string' ? bundle.city : bundle.city.name}</h2>
+          <h2>🎪 More Events in {bundle.city}</h2>
           {eventsLoading ? (
             <div className="events-loading">
               <div className="loading-spinner">
