@@ -44,7 +44,6 @@ export interface TripPreferences {
     weight: number;
   }>;
   groupSize: number;
-  };
 }
 
 export interface UserPreference {
