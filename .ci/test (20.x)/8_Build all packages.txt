@@ -1,0 +1,39 @@
+﻿2025-08-31T16:13:59.7812531Z ##[group]Run echo "=== Building all packages with topological ordering ==="
+2025-08-31T16:13:59.7813079Z [36;1mecho "=== Building all packages with topological ordering ==="[0m
+2025-08-31T16:13:59.7813416Z [36;1myarn build[0m
+2025-08-31T16:13:59.7813650Z [36;1mecho "=== Verifying prompts service build ==="[0m
+2025-08-31T16:13:59.7813994Z [36;1mls -la packages/trip-bundle-prompts-service/dist/[0m
+2025-08-31T16:13:59.7814303Z [36;1mecho "=== Verifying PWA build ==="[0m
+2025-08-31T16:13:59.7814578Z [36;1mls -la packages/trip-bundle-pwa/dist/[0m
+2025-08-31T16:13:59.7844339Z shell: /usr/bin/bash -e {0}
+2025-08-31T16:13:59.7844573Z ##[endgroup]
+2025-08-31T16:13:59.7893719Z === Building all packages with topological ordering ===
+2025-08-31T16:14:02.2505126Z ##[error]src/App.tsx(2,41): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:02.2509287Z ##[error]src/App.tsx(3,77): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:02.2511110Z ##[error]src/components/MainContent.tsx(1,75): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:02.2512830Z ##[error]src/components/SettingsPanel.tsx(2,63): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:02.2514579Z ##[error]src/components/SettingsPanel.tsx(194,38): error TS7006: Parameter 'c' implicitly has an 'any' type.
+2025-08-31T16:14:06.5666075Z [36mvite v5.4.19 [32mbuilding for production...[36m[39m
+2025-08-31T16:14:06.6297262Z transforming...
+2025-08-31T16:14:07.6554194Z [32m✓[39m 93 modules transformed.
+2025-08-31T16:14:07.8100380Z [1m[33m[plugin:vite:reporter][39m[22m [33m[plugin vite:reporter] 
+2025-08-31T16:14:07.8107630Z (!) /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/storage/index.ts is dynamically imported by /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/components/DevelopmentTab.tsx, /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/components/DevelopmentTab.tsx but also statically imported by /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/App.tsx, /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/components/BundleFeed.tsx, /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/components/FirstTimeExperience.tsx, /home/runner/work/trip-bundle/trip-bundle/packages/trip-bundle-pwa/src/components/UserPreferencesForm.tsx, dynamic import will not move module into another chunk.
+2025-08-31T16:14:07.8113011Z [39m
+2025-08-31T16:14:07.8113322Z rendering chunks...
+2025-08-31T16:14:07.8234430Z computing gzip size...
+2025-08-31T16:14:07.8598468Z [2mdist/[22m[32mregisterSW.js              [39m[1m[2m  0.13 kB[22m[1m[22m
+2025-08-31T16:14:07.8600355Z [2mdist/[22m[32mmanifest.webmanifest       [39m[1m[2m  1.16 kB[22m[1m[22m
+2025-08-31T16:14:07.8602113Z [2mdist/[22m[32mindex.html                 [39m[1m[2m  4.33 kB[22m[1m[22m[2m │ gzip:  1.42 kB[22m
+2025-08-31T16:14:07.8604102Z [2mdist/[22m[2massets/[22m[35mindex-_w9YxNB9.css  [39m[1m[2m 37.49 kB[22m[1m[22m[2m │ gzip:  6.97 kB[22m
+2025-08-31T16:14:07.8605906Z [2mdist/[22m[2massets/[22m[36mindex-XXohOHV4.js   [39m[1m[2m327.60 kB[22m[1m[22m[2m │ gzip: 94.61 kB[22m
+2025-08-31T16:14:07.8606904Z [32m✓ built in 1.27s[39m
+2025-08-31T16:14:09.6045670Z 
+2025-08-31T16:14:09.6046501Z [36mPWA v0.19.8[39m
+2025-08-31T16:14:09.6047267Z mode      [35mgenerateSW[39m
+2025-08-31T16:14:09.6057429Z precache  [32m12 entries[39m [2m(437.75 KiB)[22m
+2025-08-31T16:14:09.6058249Z files generated
+2025-08-31T16:14:09.6058696Z   [2mdist/sw.js[22m
+2025-08-31T16:14:09.6059168Z   [2mdist/workbox-62686582.js[22m
+2025-08-31T16:14:09.6596901Z ✅ Created pwa.html from index.html
+2025-08-31T16:14:09.6638403Z Done in 9s 203ms
+2025-08-31T16:14:09.6896852Z ##[error]Process completed with exit code 1.

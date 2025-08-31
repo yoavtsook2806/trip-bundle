@@ -1,0 +1,8 @@
+﻿2025-08-31T16:13:47.9373457Z ##[group]Run corepack enable
+2025-08-31T16:13:47.9373828Z [36;1mcorepack enable[0m
+2025-08-31T16:13:47.9374099Z [36;1mcorepack prepare yarn@4.0.0 --activate[0m
+2025-08-31T16:13:47.9374395Z [36;1myarn --version[0m
+2025-08-31T16:13:47.9640177Z shell: /usr/bin/bash -e {0}
+2025-08-31T16:13:47.9640793Z ##[endgroup]
+2025-08-31T16:13:48.1640045Z Preparing yarn@4.0.0 for immediate activation...
+2025-08-31T16:13:49.1750732Z 4.0.0

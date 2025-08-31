@@ -181,7 +181,7 @@ export default function SettingsPanel({
       <div className="section">
         <h3>Preferred Categories</h3>
         <div className="checkbox-group">
-          {CATEGORIES.map(category => (
+          {CATEGORIES.map((category) => (
             <div key={category} className="checkbox-item">
               <input
                 type="checkbox"
@@ -191,7 +191,7 @@ export default function SettingsPanel({
                   const current = userPreferences.preferredCategories || [];
                   const updated = e.target.checked
                     ? [...current, category]
-                    : current.filter(c => c !== category);
+                    : current.filter((currentCategory) => currentCategory !== category);
                   updatePreference('preferredCategories', updated);
                 }}
               />

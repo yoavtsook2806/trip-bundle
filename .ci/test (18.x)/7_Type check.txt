@@ -1,0 +1,30 @@
+﻿2025-08-31T16:13:57.3775125Z ##[group]Run yarn workspaces foreach --all run type-check || true
+2025-08-31T16:13:57.3775571Z [36;1myarn workspaces foreach --all run type-check || true[0m
+2025-08-31T16:13:57.3804597Z shell: /usr/bin/bash -e {0}
+2025-08-31T16:13:57.3804834Z ##[endgroup]
+2025-08-31T16:13:59.7083357Z ##[error]src/App.tsx(2,41): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:13:59.7092261Z ##[error]src/App.tsx(3,77): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:13:59.7094269Z ##[error]src/components/MainContent.tsx(1,75): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:13:59.7095996Z ##[error]src/components/SettingsPanel.tsx(2,63): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:13:59.7097398Z ##[error]src/components/SettingsPanel.tsx(194,38): error TS7006: Parameter 'c' implicitly has an 'any' type.
+2025-08-31T16:14:03.6600151Z ##[error]src/actions/tripActions.ts(6,53): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6604238Z ##[error]src/components/BundlePage.tsx(185,33): error TS7006: Parameter 'event' implicitly has an 'any' type.
+2025-08-31T16:14:03.6614149Z ##[error]src/components/DevelopmentTab.tsx(3,31): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6623142Z ##[error]src/constants/cities.ts(1,27): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6626505Z ##[error]src/constants/entertainments.ts(1,36): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6629478Z ##[error]src/services/index.ts(8,41): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6632739Z ##[error]src/services/loggingTripBundleService.ts(7,8): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6635897Z ##[error]src/services/mockTripBundleService.ts(12,8): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6639182Z ##[error]src/services/tripBundleServiceFactory.ts(9,8): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6642522Z ##[error]src/storage/userPreferences.ts(2,61): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6645493Z ##[error]src/store/bundleSuggestions.ts(2,33): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6647988Z ##[error]src/store/bundleSuggestions.ts(221,26): error TS7006: Parameter 'ent' implicitly has an 'any' type.
+2025-08-31T16:14:03.6650238Z ##[error]src/store/bundleSuggestions.ts(243,26): error TS7006: Parameter 'ent' implicitly has an 'any' type.
+2025-08-31T16:14:03.6653101Z ##[error]src/store/userPreferences.ts(2,38): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6655918Z ##[error]src/store/userPreferences.ts(76,88): error TS7006: Parameter 'c' implicitly has an 'any' type.
+2025-08-31T16:14:03.6658114Z ##[error]src/store/userPreferences.ts(93,86): error TS7006: Parameter 'c' implicitly has an 'any' type.
+2025-08-31T16:14:03.6660189Z ##[error]src/store/userPreferences.ts(109,79): error TS7006: Parameter 'p' implicitly has an 'any' type.
+2025-08-31T16:14:03.6662795Z ##[error]src/store/userPreferences.ts(121,100): error TS7006: Parameter 'p' implicitly has an 'any' type.
+2025-08-31T16:14:03.6665335Z ##[error]src/types.ts(8,8): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.6668228Z ##[error]src/types.ts(20,8): error TS2307: Cannot find module 'trip-bundle-prompts-service' or its corresponding type declarations.
+2025-08-31T16:14:03.7059422Z Done in 5s 909ms
