@@ -7,12 +7,12 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "yarn workspaces foreach --all --fail-fast run build",
+    "build": "yarn workspaces foreach --all --topological run build",
     "dev": "yarn workspaces foreach --all run dev",
     "dev-mock": "yarn workspace trip-bundle-pwa dev-mock",
-    "test": "yarn workspaces foreach --all --fail-fast run test",
-    "lint": "yarn workspaces foreach --all --fail-fast run lint",
-    "lint-fix": "yarn workspaces foreach --all --fail-fast run lint-fix"
+    "test": "yarn workspaces foreach --all run test",
+    "lint": "yarn workspaces foreach --all run lint",
+    "lint-fix": "yarn workspaces foreach --all run lint-fix"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
