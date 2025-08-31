@@ -30,7 +30,8 @@ const integrationActions = new IntegrationActions(
   userPreferencesStore,
   integrationsStore,
   spotifyService,
-  IntegrationsStorage
+  IntegrationsStorage,
+  UserPreferencesStorage
 );
 
 const fteActions = new FirstTimeExperienceActions(
@@ -121,6 +122,10 @@ const App: React.FC = observer(() => {
         
         if (success) {
           console.log('🎵 [APP] Spotify integration successful!');
+          // Navigate back to preferences view and set integration tab
+          console.log('🎵 [APP] Navigating back to preferences view with integration tab');
+          localStorage.setItem('preferences_active_tab', 'integrations');
+          setCurrentView('preferences');
         } else {
           console.error('🎵 [APP] Spotify integration failed');
         }

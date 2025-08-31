@@ -2,23 +2,27 @@ import UserPreferencesStore from '../store/userPreferences';
 import IntegrationsStore from '../store/integrations';
 import SpotifyService from '../services/spotifyService';
 import { IntegrationsStorage } from '../storage/integrations';
+import { UserPreferencesStorage } from '../storage/userPreferences';
 
 export class IntegrationActions {
   private userPreferencesStore: UserPreferencesStore;
   private integrationsStore: IntegrationsStore;
   private spotifyService: SpotifyService;
   private integrationsStorage: typeof IntegrationsStorage;
+  private userPreferencesStorage: typeof UserPreferencesStorage;
 
   constructor(
     userPreferencesStore: UserPreferencesStore,
     integrationsStore: IntegrationsStore,
     spotifyService: SpotifyService,
-    integrationsStorage: typeof IntegrationsStorage = IntegrationsStorage
+    integrationsStorage: typeof IntegrationsStorage = IntegrationsStorage,
+    userPreferencesStorage: typeof UserPreferencesStorage = UserPreferencesStorage
   ) {
     this.userPreferencesStore = userPreferencesStore;
     this.integrationsStore = integrationsStore;
     this.spotifyService = spotifyService;
     this.integrationsStorage = integrationsStorage;
+    this.userPreferencesStorage = userPreferencesStorage;
   }
 
   // Spotify Integration Actions
@@ -93,6 +97,26 @@ export class IntegrationActions {
       // Update integrations store with Spotify data
       this.integrationsStore.setSpotifyIntegration(true, profile, preferences);
       console.log('🎵 [INTEGRATION_ACTIONS] Spotify connection set successfully');
+
+      // Also update UserPreferences storage to persist the connection
+      console.log('🎵 [INTEGRATION_ACTIONS] Updating UserPreferences storage...');
+      try {
+        const currentPrefs = await this.userPreferencesStorage.getUserPreferences();
+        const updatedPrefs = {
+          ...currentPrefs,
+          spotify: {
+            connected: true,
+            userId: profile.id,
+            displayName: profile.display_name,
+            topGenres: preferences.topGenres,
+            topArtists: preferences.topArtists.map(artist => artist.name)
+          }
+        };
+        await this.userPreferencesStorage.setUserPreferences(updatedPrefs);
+        console.log('🎵 [INTEGRATION_ACTIONS] UserPreferences storage updated successfully');
+      } catch (error) {
+        console.error('🎵 [INTEGRATION_ACTIONS] Failed to update UserPreferences storage:', error);
+      }
 
       // Update music preferences
       this.userPreferencesStore.setMusicGenres(preferences.topGenres);

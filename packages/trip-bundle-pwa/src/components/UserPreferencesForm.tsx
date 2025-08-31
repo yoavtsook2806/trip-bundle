@@ -30,6 +30,37 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
 
   useEffect(() => {
     loadPreferences();
+    
+    // Check if we should navigate to a specific tab (e.g., after integration)
+    const activeTab = localStorage.getItem('preferences_active_tab');
+    if (activeTab) {
+      console.log('🔄 [USER_PREFS_FORM] Restoring active tab:', activeTab);
+      const tabIndex = sections.findIndex(section => section.id === activeTab);
+      if (tabIndex !== -1) {
+        setCurrentSection(tabIndex);
+      }
+      // Clear the flag after using it
+      localStorage.removeItem('preferences_active_tab');
+    }
+  }, []);
+
+  // Add effect to reload preferences when returning from integration
+  useEffect(() => {
+    const handleStorageChange = () => {
+      console.log('🔄 [USER_PREFS_FORM] Storage changed, reloading preferences...');
+      loadPreferences();
+    };
+
+    // Listen for storage changes (when integration completes)
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also listen for focus events (when returning from auth)
+    window.addEventListener('focus', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('focus', handleStorageChange);
+    };
   }, []);
 
   const loadPreferences = async () => {
@@ -380,6 +411,8 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
             onClick={async () => {
               if (integrationActions) {
                 console.log('🎵 [USER_PREFS_FORM] Connecting to Spotify...');
+                // Store current tab so we can return to it after auth
+                localStorage.setItem('preferences_active_tab', 'integrations');
                 await integrationActions.connectSpotify();
               } else {
                 console.warn('⚠️ [USER_PREFS_FORM] Integration actions not available');
