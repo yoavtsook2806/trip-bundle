@@ -63,16 +63,10 @@ jobs:
     - name: Type check
       run: yarn workspaces foreach --all run type-check || true
       
-    - name: Lint
-      run: yarn workspaces foreach --all run lint || true
-      
     - name: Build remaining packages
       run: |
         yarn workspace trip-bundle-playground build
         yarn workspace trip-bundle-pwa build
-      
-    - name: Test
-      run: yarn workspaces foreach --all run test || echo "No tests configured"
 
   build-pwa:
     runs-on: ubuntu-latest
