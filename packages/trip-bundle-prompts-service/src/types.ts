@@ -134,14 +134,23 @@ export interface UserPreferences {
   languages?: string[];
   musicGenres?: string[];
   sportsInterests?: string[];
+  cultureInterests?: string[];
+  excludedCountries?: string[];
   entertainmentPreferences?: Array<{
     value: string;
     type: string;
     weight: number;
   }>;
-  travelDates?: {
-    flexible?: boolean;
+  searchDateRange?: {
+    startDate: string; // ISO date string (YYYY-MM-DD)
+    endDate: string; // ISO date string (YYYY-MM-DD)
   };
+  
+  // PWA-specific fields
+  name?: string;
+  accommodationType?: string;
+  transportPreference?: string;
+  fteWasPresented?: boolean;
 }
 
 // Integration Summary Type

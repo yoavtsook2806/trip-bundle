@@ -1,4 +1,5 @@
 import { makeAutoObservable } from 'mobx';
+import type { UserPreferences } from 'trip-bundle-prompts-service';
 
 export interface UserPreference {
   id: string;
@@ -7,27 +8,8 @@ export interface UserPreference {
   weight: number; // 1-10 importance scale
 }
 
-export interface TripPreferences {
-  budget: {
-    min: number;
-    max: number;
-    currency: string;
-  };
-  duration: {
-    min: number; // days
-    max: number; // days
-  };
-  groupSize: number;
-  preferredCountries: string[];
-  excludedCountries: string[];
-  entertainmentPreferences: UserPreference[];
-  musicGenres: string[];
-  sportsInterests: string[];
-  culturalInterests: string[];
-}
-
 class UserPreferencesStore {
-  preferences: TripPreferences = {
+  preferences: UserPreferences = {
     budget: {
       min: 500,
       max: 3000,
@@ -43,17 +25,17 @@ class UserPreferencesStore {
     entertainmentPreferences: [],
     musicGenres: [],
     sportsInterests: [],
-    culturalInterests: []
+    cultureInterests: [],
+    searchDateRange: {
+      startDate: new Date().toISOString().split('T')[0],
+      endDate: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 4 months from now
+    },
+    fteWasPresented: false
   };
 
   isLoading = false;
   lastUpdated?: Date;
   spotifyConnected = false;
-  fteWasPresented = false;
-  searchDateRange = {
-    startDate: new Date().toISOString().split('T')[0],
-    endDate: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 4 months from now
-  };
   spotifyProfile?: {
     id: string;
     displayName: string;
@@ -154,13 +136,20 @@ class UserPreferencesStore {
 
   // FTE actions
   setFteWasPresented(presented: boolean) {
-    this.fteWasPresented = presented;
+    if (this.preferences.fteWasPresented !== undefined) {
+      this.preferences.fteWasPresented = presented;
+    }
     this.updateTimestamp();
   }
 
   // Search date range actions
   setSearchDateRange(startDate: string, endDate: string) {
-    this.searchDateRange = { startDate, endDate };
+    if (!this.preferences.searchDateRange) {
+      this.preferences.searchDateRange = { startDate, endDate };
+    } else {
+      this.preferences.searchDateRange.startDate = startDate;
+      this.preferences.searchDateRange.endDate = endDate;
+    }
     this.updateTimestamp();
   }
 
@@ -198,16 +187,16 @@ class UserPreferencesStore {
       entertainmentPreferences: [],
       musicGenres: [],
       sportsInterests: [],
-      culturalInterests: []
+      cultureInterests: [],
+      searchDateRange: {
+        startDate: new Date().toISOString().split('T')[0],
+        endDate: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+      },
+      fteWasPresented: false
     };
     this.spotifyConnected = false;
     this.spotifyProfile = undefined;
     this.lastUpdated = undefined;
-    this.fteWasPresented = false;
-    this.searchDateRange = {
-      startDate: new Date().toISOString().split('T')[0],
-      endDate: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-    };
   }
 
   // Computed values

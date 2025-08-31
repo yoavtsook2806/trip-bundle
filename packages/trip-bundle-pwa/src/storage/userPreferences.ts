@@ -1,5 +1,7 @@
 // Mobile storage for user preferences
-export interface UserPreferences {
+import type { UserPreferences as BaseUserPreferences } from 'trip-bundle-prompts-service';
+
+export interface UserPreferences extends BaseUserPreferences {
   // Personal Info
   name?: string;
   age?: number;

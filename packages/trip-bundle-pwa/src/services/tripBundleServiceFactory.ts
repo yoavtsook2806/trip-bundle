@@ -55,10 +55,17 @@ export function convertStoreDataToUserData(
       budget: prefs.budget,
       duration: prefs.duration,
       preferredCountries: prefs.preferredCountries,
+      excludedCountries: prefs.excludedCountries,
       musicGenres: prefs.musicGenres,
       sportsInterests: prefs.sportsInterests,
+      cultureInterests: prefs.cultureInterests,
       entertainmentPreferences: prefs.entertainmentPreferences,
-      groupSize: prefs.groupSize
+      groupSize: prefs.groupSize,
+      searchDateRange: prefs.searchDateRange,
+      name: prefs.name,
+      accommodationType: prefs.accommodationType,
+      transportPreference: prefs.transportPreference,
+      fteWasPresented: prefs.fteWasPresented
     },
     integrations: generateIntegrationsData(integrationsStore)
   };

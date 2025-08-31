@@ -23,28 +23,7 @@ export type {
 // USER PREFERENCES TYPES (PWA-specific extensions)
 // =============================================================================
 
-// Extended user preferences for PWA store
-export interface TripPreferences {
-  budget: {
-    min: number;
-    max: number;
-    currency: string;
-  };
-  duration: {
-    min: number;
-    max: number;
-  };
-  preferredCountries: string[];
-  excludedCountries: string[];
-  musicGenres: string[];
-  sportsInterests: string[];
-  entertainmentPreferences: Array<{
-    value: string;
-    type: string;
-    weight: number;
-  }>;
-  groupSize: number;
-}
+// TripPreferences removed - use UserPreferences from prompts service instead
 
 export interface UserPreference {
   id: string;
