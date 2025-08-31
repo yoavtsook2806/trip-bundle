@@ -185,7 +185,7 @@ const App: React.FC = observer(() => {
   if (showFTE) {
     return (
       <div className={`App ${pwaInfo.isStandalone ? 'standalone' : 'browser'}`}>
-        <FirstTimeExperience onComplete={handleFTEComplete} />
+        <FirstTimeExperience onComplete={handleFTEComplete} integrationActions={integrationActions} />
       </div>
     );
   }
@@ -218,6 +218,7 @@ const App: React.FC = observer(() => {
               console.log('🎯 [APP] Preferences updated');
             }}
             onClose={handlePreferencesComplete}
+            integrationActions={integrationActions}
           />
         </div>
       ) : currentView === 'development' && isMockMode ? (

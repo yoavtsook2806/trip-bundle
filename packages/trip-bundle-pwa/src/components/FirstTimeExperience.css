@@ -220,6 +220,31 @@
   accent-color: #667eea !important;
 }
 
+/* Fix integration buttons visibility */
+.fte-container .integration-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2) !important;
+  color: white !important;
+  border: none !important;
+  opacity: 1 !important;
+}
+
+.fte-container .integration-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #5a6fd8, #6a4190) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
+}
+
+.fte-container .integration-btn.connected {
+  background: linear-gradient(135deg, #28a745, #20c997) !important;
+  color: white !important;
+}
+
+.fte-container .integration-btn:disabled {
+  background: #ccc !important;
+  color: #666 !important;
+  opacity: 0.7 !important;
+}
+
 /* Mobile responsiveness */
 @media (max-width: 768px) {
   .fte-container {

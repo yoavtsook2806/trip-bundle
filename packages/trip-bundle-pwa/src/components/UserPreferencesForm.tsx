@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { UserPreferences, UserPreferencesStorage } from '../storage';
+import type { IntegrationActions } from '../actions/integrationActions';
 import './UserPreferencesForm.css';
 
 interface UserPreferencesFormProps {
   onPreferencesUpdate?: (preferences: UserPreferences) => void;
   onClose?: () => void;
+  integrationActions?: IntegrationActions;
 }
 
 export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
   onPreferencesUpdate,
-  onClose
+  onClose,
+  integrationActions
 }) => {
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
   const [loading, setLoading] = useState(true);
@@ -372,10 +375,15 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
           </div>
           <button 
             className={`integration-btn ${preferences.spotify?.connected ? 'connected' : ''}`}
-            onClick={() => {
-              // TODO: Implement Spotify connection
-              console.log('Spotify integration clicked');
+            onClick={async () => {
+              if (integrationActions) {
+                console.log('🎵 [USER_PREFS_FORM] Connecting to Spotify...');
+                await integrationActions.connectSpotify();
+              } else {
+                console.warn('⚠️ [USER_PREFS_FORM] Integration actions not available');
+              }
             }}
+            disabled={!integrationActions}
           >
             {preferences.spotify?.connected ? 'Connected' : 'Connect'}
           </button>

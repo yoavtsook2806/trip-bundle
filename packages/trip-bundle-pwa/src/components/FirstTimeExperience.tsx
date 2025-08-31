@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import UserPreferencesForm from './UserPreferencesForm';
 import { UserPreferencesStorage } from '../storage';
+import type { IntegrationActions } from '../actions/integrationActions';
 import './FirstTimeExperience.css';
 
 interface FirstTimeExperienceProps {
   onComplete: () => void;
+  integrationActions?: IntegrationActions;
 }
 
-const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComplete }) => {
+const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComplete, integrationActions }) => {
   const [isSkipped] = useState(false);
 
   const handleComplete = async () => {
@@ -73,6 +75,7 @@ const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComplete })
             console.log('🎯 [FTE] Preferences updated during FTE');
           }}
           onClose={handleComplete}
+          integrationActions={integrationActions}
         />
       </div>
     </div>
