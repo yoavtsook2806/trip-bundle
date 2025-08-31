@@ -6,3 +6,5 @@ export type { BundleSuggestionsState } from './bundleSuggestions';
 
 export { default as IntegrationsStore } from './integrations';
 export type { IntegrationsState, SpotifyIntegrationState } from './integrations';
+
+export { default as FirstTimeExperienceStore } from './firstTimeExperience';

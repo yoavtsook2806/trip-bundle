@@ -29,8 +29,7 @@ class UserPreferencesStore {
     searchDateRange: {
       startDate: new Date().toISOString().split('T')[0],
       endDate: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 4 months from now
-    },
-    fteWasPresented: false
+    }
   };
 
   isLoading = false;
@@ -162,13 +161,7 @@ class UserPreferencesStore {
     this.updateTimestamp();
   }
 
-  // FTE actions
-  setFteWasPresented(presented: boolean) {
-    if (this.preferences.fteWasPresented !== undefined) {
-      this.preferences.fteWasPresented = presented;
-    }
-    this.updateTimestamp();
-  }
+
 
   // Search date range actions
   setSearchDateRange(startDate: string, endDate: string) {
@@ -219,8 +212,7 @@ class UserPreferencesStore {
       searchDateRange: {
         startDate: new Date().toISOString().split('T')[0],
         endDate: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-      },
-      fteWasPresented: false
+      }
     };
     this.spotifyConnected = false;
     this.spotifyProfile = undefined;

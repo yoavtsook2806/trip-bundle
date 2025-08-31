@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import UserPreferencesForm from './UserPreferencesForm';
-import { UserPreferencesStorage } from '../storage';
+import { FirstTimeExperienceStorage } from '../storage';
 import type { IntegrationActions } from '../actions/integrationActions';
 import './FirstTimeExperience.css';
 
@@ -15,7 +15,7 @@ const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComplete, i
   const handleComplete = async () => {
     try {
       // Mark FTE as completed
-      await UserPreferencesStorage.updatePreference('fteWasPresented', true);
+      await FirstTimeExperienceStorage.setFteWasPresented(true);
       console.log('✨ [FTE] First Time Experience completed');
       onComplete();
     } catch (error) {
@@ -28,7 +28,7 @@ const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComplete, i
   const handleSkip = async () => {
     try {
       // Mark FTE as completed even when skipped
-      await UserPreferencesStorage.updatePreference('fteWasPresented', true);
+      await FirstTimeExperienceStorage.setFteWasPresented(true);
       console.log('⏭️ [FTE] First Time Experience skipped');
       onComplete();
     } catch (error) {

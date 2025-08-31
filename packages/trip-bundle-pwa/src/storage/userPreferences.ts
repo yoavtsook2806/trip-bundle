@@ -27,9 +27,6 @@ export interface UserPreferences extends BaseUserPreferences {
     endDate: string; // ISO string
   };
   
-  // First Time Experience
-  fteWasPresented: boolean;
-  
   // Location Preferences
   preferredCountries: string[];
   excludedCountries: string[];
@@ -96,7 +93,6 @@ export const defaultUserPreferences: UserPreferences = {
     startDate: new Date().toISOString().split('T')[0],
     endDate: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 4 months from now
   },
-  fteWasPresented: false,
   preferredCountries: [],
   excludedCountries: [],
   preferredCities: [],

@@ -3,10 +3,10 @@ import { observer } from 'mobx-react-lite';
 import './App.css';
 
 // Import our stores, services, and actions
-import { UserPreferencesStore, BundleSuggestionsStore, IntegrationsStore } from './store';
+import { UserPreferencesStore, BundleSuggestionsStore, IntegrationsStore, FirstTimeExperienceStore } from './store';
 import { SpotifyService } from './services';
-import { TripActions, IntegrationActions, initIntegrationsData, initUserPreferencesData } from './actions';
-import { IntegrationsStorage, UserPreferencesStorage } from './storage';
+import { TripActions, IntegrationActions, initIntegrationsData, initUserPreferencesData, FirstTimeExperienceActions, initFirstTimeExperienceData } from './actions';
+import { IntegrationsStorage, UserPreferencesStorage, FirstTimeExperienceStorage } from './storage';
 import { BundleFeed, BundlePage, UserPreferencesForm, DevelopmentTab, FirstTimeExperience } from './components';
 import type { TripBundle } from './types';
 import { usePWA } from './hooks/usePWA';
@@ -15,6 +15,7 @@ import { usePWA } from './hooks/usePWA';
 const userPreferencesStore = new UserPreferencesStore();
 const bundleSuggestionsStore = new BundleSuggestionsStore();
 const integrationsStore = new IntegrationsStore();
+const fteStore = new FirstTimeExperienceStore();
 // gptService removed - now using TripBundlePromptService via factory in TripActions
 const spotifyService = new SpotifyService();
 
@@ -30,6 +31,11 @@ const integrationActions = new IntegrationActions(
   integrationsStore,
   spotifyService,
   IntegrationsStorage
+);
+
+const fteActions = new FirstTimeExperienceActions(
+  fteStore,
+  FirstTimeExperienceStorage
 );
 
 const App: React.FC = observer(() => {
@@ -49,15 +55,16 @@ const App: React.FC = observer(() => {
       console.log('🚀 [APP] Initializing app with stored data...');
       setHasInitialized(true);
       
-      // Initialize user preferences and integrations data from storage
+      // Initialize user preferences, integrations, and FTE data from storage
       await Promise.all([
         initUserPreferencesData(userPreferencesStore, UserPreferencesStorage),
-        initIntegrationsData(userPreferencesStore, integrationsStore, IntegrationsStorage)
+        initIntegrationsData(userPreferencesStore, integrationsStore, IntegrationsStorage),
+        initFirstTimeExperienceData(fteStore, FirstTimeExperienceStorage)
       ]);
       
       // Check if FTE should be shown
-      const preferences = await UserPreferencesStorage.getUserPreferences();
-      if (!preferences.fteWasPresented) {
+      const fteWasPresented = await fteActions.getFteWasPresented();
+      if (!fteWasPresented) {
         console.log('✨ [APP] First time user, showing FTE');
         setShowFTE(true);
       } else {

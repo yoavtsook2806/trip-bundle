@@ -11,3 +11,7 @@ export {
   type IntegrationsData,
   type SpotifyIntegrationData
 } from './integrations';
+
+export {
+  FirstTimeExperienceStorage
+} from './firstTimeExperience';

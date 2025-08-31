@@ -64,8 +64,7 @@ export function convertStoreDataToUserData(
       searchDateRange: prefs.searchDateRange,
       name: prefs.name,
       accommodationType: prefs.accommodationType,
-      transportPreference: prefs.transportPreference,
-      fteWasPresented: prefs.fteWasPresented
+      transportPreference: prefs.transportPreference
     },
     integrations: generateIntegrationsData(integrationsStore)
   };
