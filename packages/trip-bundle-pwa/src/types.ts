@@ -44,10 +44,6 @@ export interface TripPreferences {
     weight: number;
   }>;
   groupSize: number;
-  travelDates?: {
-    flexible?: boolean;
-    startDate?: string;
-    endDate?: string;
   };
 }
 

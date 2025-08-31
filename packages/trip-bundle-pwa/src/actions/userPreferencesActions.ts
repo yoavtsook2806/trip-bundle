@@ -64,15 +64,7 @@ export class UserPreferencesActions {
   }
 
   updateTravelDates(startDate?: Date, endDate?: Date, flexible = true): void {
-    this.userPreferencesStore.setTravelDates(startDate, endDate, flexible);
-    // Also update in new storage
-    this.updateUserPreferences({
-      travelDates: {
-        startDate: startDate?.toISOString(),
-        endDate: endDate?.toISOString(),
-        flexible
-      }
-    });
+    // Travel dates functionality removed - use searchDateRange instead
   }
 
   updateGroupSize(size: number): void {
@@ -160,11 +152,7 @@ export class UserPreferencesActions {
       this.userPreferencesStore.setGroupSize(preferences.groupSize);
     }
 
-    if (preferences.travelDates) {
-      const startDate = preferences.travelDates.startDate ? new Date(preferences.travelDates.startDate) : undefined;
-      const endDate = preferences.travelDates.endDate ? new Date(preferences.travelDates.endDate) : undefined;
-      this.userPreferencesStore.setTravelDates(startDate, endDate, preferences.travelDates.flexible);
-    }
+    // travelDates removed - using searchDateRange instead
 
     if (preferences.preferredCountries) {
       // Clear and re-add preferred countries
@@ -281,11 +269,7 @@ export async function initUserPreferencesData(
         userPreferencesStore.setGroupSize(preferences.groupSize);
       }
 
-      if (preferences.travelDates) {
-        const startDate = preferences.travelDates.startDate ? new Date(preferences.travelDates.startDate) : undefined;
-        const endDate = preferences.travelDates.endDate ? new Date(preferences.travelDates.endDate) : undefined;
-        userPreferencesStore.setTravelDates(startDate, endDate, preferences.travelDates.flexible);
-      }
+      // travelDates removed - using searchDateRange instead
 
       if (preferences.preferredCountries) {
         preferences.preferredCountries.forEach(country => {

@@ -10,6 +10,7 @@ interface BundleFeedProps {
   onBundleClick: (bundle: TripBundle) => void;
   onEditPreferences: () => void;
   onDevelopmentTab?: () => void;
+  onDateRangeChange?: (startDate: string, endDate: string) => void;
   isLoading?: boolean;
   isMockMode?: boolean;
 }
@@ -19,6 +20,7 @@ const BundleFeed: React.FC<BundleFeedProps> = observer(({
   onBundleClick,
   onEditPreferences,
   onDevelopmentTab,
+  onDateRangeChange,
   isLoading = false,
   isMockMode = false
 }) => {
@@ -49,8 +51,11 @@ const BundleFeed: React.FC<BundleFeedProps> = observer(({
     try {
       await UserPreferencesStorage.updatePreference('searchDateRange', { startDate, endDate });
       
-      // TODO: Call prompt service to refresh bundles with new date range
-      console.log('🔄 [BUNDLE_FEED] Date range changed, should refresh bundles:', { startDate, endDate });
+      // Call callback to refresh bundles with new date range
+      if (onDateRangeChange) {
+        console.log('🔄 [BUNDLE_FEED] Date range changed, refreshing bundles:', { startDate, endDate });
+        onDateRangeChange(startDate, endDate);
+      }
     } catch (error) {
       console.error('Error saving date range:', error);
     }

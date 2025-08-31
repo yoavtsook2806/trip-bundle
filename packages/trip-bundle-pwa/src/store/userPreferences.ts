@@ -17,11 +17,6 @@ export interface TripPreferences {
     min: number; // days
     max: number; // days
   };
-  travelDates: {
-    startDate?: Date;
-    endDate?: Date;
-    flexible: boolean;
-  };
   groupSize: number;
   preferredCountries: string[];
   excludedCountries: string[];
@@ -41,9 +36,6 @@ class UserPreferencesStore {
     duration: {
       min: 3,
       max: 7
-    },
-    travelDates: {
-      flexible: true
     },
     groupSize: 1,
     preferredCountries: [],
@@ -85,11 +77,7 @@ class UserPreferencesStore {
     this.updateTimestamp();
   }
 
-  // Travel dates actions
-  setTravelDates(startDate?: Date, endDate?: Date, flexible = true) {
-    this.preferences.travelDates = { startDate, endDate, flexible };
-    this.updateTimestamp();
-  }
+
 
   // Countries actions
   addPreferredCountry(country: string) {
@@ -204,7 +192,6 @@ class UserPreferencesStore {
     this.preferences = {
       budget: { min: 500, max: 3000, currency: 'USD' },
       duration: { min: 3, max: 7 },
-      travelDates: { flexible: true },
       groupSize: 1,
       preferredCountries: [],
       excludedCountries: [],

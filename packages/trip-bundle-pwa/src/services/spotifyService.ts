@@ -802,7 +802,8 @@ class SpotifyService {
   }
 
   isConfigured(): boolean {
-    return this.clientId !== null && this.clientSecret !== null;
+    // For PKCE flow, we only need clientId, not clientSecret
+    return this.clientId !== null;
   }
 }
 

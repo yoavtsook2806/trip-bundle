@@ -58,8 +58,7 @@ export function convertStoreDataToUserData(
       musicGenres: prefs.musicGenres,
       sportsInterests: prefs.sportsInterests,
       entertainmentPreferences: prefs.entertainmentPreferences,
-      groupSize: prefs.groupSize,
-      travelDates: prefs.travelDates
+      groupSize: prefs.groupSize
     },
     integrations: generateIntegrationsData(integrationsStore)
   };

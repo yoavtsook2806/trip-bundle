@@ -19,13 +19,7 @@ export interface UserPreferences {
   
   groupSize: number;
   
-  travelDates?: {
-    startDate?: string; // ISO string
-    endDate?: string; // ISO string
-    flexible: boolean;
-  };
-  
-  // Date range for bundle search (separate from travel dates)
+  // Date range for bundle search
   searchDateRange: {
     startDate: string; // ISO string
     endDate: string; // ISO string
@@ -96,9 +90,6 @@ export const defaultUserPreferences: UserPreferences = {
     max: 7
   },
   groupSize: 1,
-  travelDates: {
-    flexible: true
-  },
   searchDateRange: {
     startDate: new Date().toISOString().split('T')[0],
     endDate: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 4 months from now
@@ -286,7 +277,7 @@ export class UserPreferencesHelpers {
       prefs.accommodationType !== 'any',
       prefs.transportPreference !== 'any',
       prefs.name !== undefined,
-      prefs.travelDates?.startDate !== undefined
+      prefs.searchDateRange.startDate !== undefined
     ];
     
     total += optionalFields.length;

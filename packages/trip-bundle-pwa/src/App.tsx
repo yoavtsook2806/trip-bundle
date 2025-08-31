@@ -168,6 +168,16 @@ const App: React.FC = observer(() => {
     await loadBundles();
   };
 
+  const handleDateRangeChange = async (startDate: string, endDate: string) => {
+    console.log('📅 [APP] Date range changed, updating store and reloading bundles:', { startDate, endDate });
+    
+    // Update the store with new date range
+    userPreferencesStore.setSearchDateRange(startDate, endDate);
+    
+    // Reload bundles with new date range
+    await loadBundles();
+  };
+
   const handleDevelopmentTab = () => {
     console.log('🔧 [APP] Development tab');
     setCurrentView('development');
@@ -233,6 +243,7 @@ const App: React.FC = observer(() => {
           onBundleClick={handleBundleClick}
           onEditPreferences={handleEditPreferences}
           onDevelopmentTab={isMockMode ? handleDevelopmentTab : undefined}
+          onDateRangeChange={handleDateRangeChange}
           isLoading={isLoadingBundles}
           isMockMode={isMockMode}
         />

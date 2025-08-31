@@ -13,7 +13,7 @@ export class LoggingTripBundleService implements ITripBundleService {
   constructor(private wrappedService: ITripBundleService) {}
 
   updateUserData(userData: UserData): void {
-    console.log('📝 [PROMPT_SERVICE] updateUserData called');
+    console.log('📝 [PROMPT_SERVICE] updateUserData called with userData:', userData);
     this.wrappedService.updateUserData(userData);
   }
 
