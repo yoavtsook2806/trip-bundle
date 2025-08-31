@@ -51,22 +51,17 @@ jobs:
         echo "=== PWA package.json ==="
         cat packages/trip-bundle-pwa/package.json
       
-    - name: Build prompts service first
-      run: |
-        echo "=== Building prompts service ==="
-        yarn workspace trip-bundle-prompts-service build
-        echo "=== Checking dist folder ==="
-        ls -la packages/trip-bundle-prompts-service/dist/
-        echo "=== Checking if types are generated ==="
-        ls -la packages/trip-bundle-prompts-service/dist/*.d.ts
-      
     - name: Type check
       run: yarn workspaces foreach --all run type-check || true
       
-    - name: Build remaining packages
+    - name: Build all packages
       run: |
-        yarn workspace trip-bundle-playground build
-        yarn workspace trip-bundle-pwa build
+        echo "=== Building all packages with topological ordering ==="
+        yarn build
+        echo "=== Verifying prompts service build ==="
+        ls -la packages/trip-bundle-prompts-service/dist/
+        echo "=== Verifying PWA build ==="
+        ls -la packages/trip-bundle-pwa/dist/
 
   build-pwa:
     runs-on: ubuntu-latest
@@ -90,8 +85,8 @@ jobs:
     - name: Install dependencies
       run: yarn install --immutable
       
-    - name: Build prompts service first
-      run: yarn workspace trip-bundle-prompts-service build
+    - name: Build all packages
+      run: yarn build
       
     - name: Create mock environment file
       run: |
