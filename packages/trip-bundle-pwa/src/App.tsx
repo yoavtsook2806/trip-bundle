@@ -7,6 +7,7 @@ import { UserPreferencesStore, BundleSuggestionsStore, IntegrationsStore, FirstT
 
 import { IntegrationActions, FirstTimeExperienceActions, initFirstTimeExperienceData } from './actions';
 import { FirstTimeExperienceStorage } from './storage';
+import { getTripBundleService } from './services';
 import { BundleFeed, BundlePage, UserPreferencesForm, DevelopmentTab, FirstTimeExperience } from './components';
 import type { TripBundle } from './types';
 import { usePWA } from './hooks/usePWA';
@@ -189,6 +190,50 @@ const App: React.FC = observer(() => {
     setCurrentView('feed');
   };
 
+  const handleLoadMoreBundles = async () => {
+    console.log('📄 [APP] Loading more bundles');
+    
+    if (bundleSuggestionsStore.pagination.isLoadingMore || !bundleSuggestionsStore.canLoadMore) {
+      console.log('⏸️ [APP] Already loading or no more bundles available');
+      return;
+    }
+
+    bundleSuggestionsStore.setLoadingMore(true);
+    
+    try {
+      const nextPage = bundleSuggestionsStore.nextPage;
+      const userData = userPreferencesStore.userData;
+      const cities = ['Paris', 'London', 'Tokyo', 'New York', 'Barcelona']; // Default cities for pagination
+      
+      console.log(`📄 [APP] Loading page ${nextPage}`);
+      
+      const generateTripBundles = getTripBundleService();
+      const response = await generateTripBundles(userData, cities, { 
+        page: nextPage, 
+        limit: 5 
+      });
+      
+      console.log(`✅ [APP] Loaded ${response.bundles.length} more bundles`);
+      
+      // Append the new bundles to existing ones
+      bundleSuggestionsStore.setBundles(
+        response.bundles, 
+        {
+          page: nextPage,
+          total: response.totalResults || 0,
+          hasMore: response.pagination?.hasMore || false
+        },
+        true // append = true
+      );
+      
+    } catch (error) {
+      console.error('❌ [APP] Error loading more bundles:', error);
+      bundleSuggestionsStore.setError('Failed to load more bundles');
+    } finally {
+      bundleSuggestionsStore.setLoadingMore(false);
+    }
+  };
+
   // Check if we're in mock mode to show development tab
   const isMockMode = (import.meta as any).env?.VITE_MOCK === 'true';
 
@@ -267,7 +312,7 @@ const App: React.FC = observer(() => {
           onBundleClick={handleBundleClick}
           onEditPreferences={handleEditPreferences}
           onDevelopmentTab={isMockMode ? handleDevelopmentTab : undefined}
-          onLoadMore={() => console.log('Load more not implemented in simplified version')}
+          onLoadMore={handleLoadMoreBundles}
           isLoading={isLoadingBundles}
           isLoadingMore={bundleSuggestionsStore.pagination.isLoadingMore}
           hasMore={bundleSuggestionsStore.canLoadMore}
