@@ -1,58 +1,34 @@
-import React, { useState } from 'react';
+import React from 'react';
 import UserPreferencesForm from './UserPreferencesForm';
 import { FirstTimeExperienceStorage } from '../storage';
 import type { IntegrationActions } from '../actions/integrationActions';
+import type { UserData } from '../storage/userPreferences';
 import './FirstTimeExperience.css';
 
 interface FirstTimeExperienceProps {
   onComplete: () => void;
+  onGoPressed: (userData: UserData) => void; // New prop for GO button press
   integrationActions?: IntegrationActions;
 }
 
-const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComplete, integrationActions }) => {
-  const [isSkipped] = useState(false);
+const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ 
+  onGoPressed,
+  integrationActions 
+}) => {
 
-  const handleComplete = async () => {
+
+  const handleGoPressed = async (userData: UserData) => {
     try {
-      // Mark FTE as completed
+      // Mark FTE as completed when GO is pressed
       await FirstTimeExperienceStorage.setFteWasPresented(true);
-      console.log('✨ [FTE] First Time Experience completed');
-      onComplete();
+      console.log('🚀 [FTE] GO button pressed, completing FTE');
+      onGoPressed(userData);
     } catch (error) {
       console.error('Error completing FTE:', error);
-      // Still complete the FTE even if storage fails
-      onComplete();
+      // Still proceed even if storage fails
+      onGoPressed(userData);
     }
   };
-
-  const handleSkip = async () => {
-    try {
-      // Mark FTE as completed even when skipped
-      await FirstTimeExperienceStorage.setFteWasPresented(true);
-      console.log('⏭️ [FTE] First Time Experience skipped');
-      onComplete();
-    } catch (error) {
-      console.error('Error skipping FTE:', error);
-      // Still complete the FTE even if storage fails
-      onComplete();
-    }
-  };
-
-  if (isSkipped) {
-    return (
-      <div className="fte-container">
-        <div className="fte-skipped">
-          <div className="fte-skipped-content">
-            <h2>🎯 Welcome to Trip Bundle!</h2>
-            <p>You can always set up your preferences later from the main screen.</p>
-            <button className="fte-continue-btn" onClick={handleComplete}>
-              Continue to App
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="fte-container">
@@ -62,19 +38,14 @@ const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComplete, i
           <p>Let's personalize your travel experience by setting up your preferences.</p>
           <p className="fte-subtitle">This will help us find the perfect trips for you.</p>
         </div>
-        <div className="fte-actions">
-          <button className="fte-skip-btn" onClick={handleSkip}>
-            Skip for now
-          </button>
-        </div>
       </div>
 
       <div className="fte-form-container">
         <UserPreferencesForm 
-          onPreferencesUpdate={() => {
-            console.log('🎯 [FTE] Preferences updated during FTE');
+          onUserDataUpdate={() => {
+            console.log('🎯 [FTE] User data updated during FTE');
           }}
-          onClose={handleComplete}
+          onGoPressed={handleGoPressed}
           integrationActions={integrationActions}
           isFirstTimeExperience={true}
         />

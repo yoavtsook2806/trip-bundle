@@ -48,6 +48,20 @@ class IntegrationsStore {
     };
   }
 
+  setSpotifyConnected(connected: boolean) {
+    this.integrations.spotify.isConnected = connected;
+    if (!connected) {
+      this.integrations.spotify.profile = undefined;
+      this.integrations.spotify.preferences = undefined;
+      this.integrations.spotify.connectedAt = undefined;
+      this.integrations.spotify.lastSyncAt = undefined;
+    }
+  }
+
+  setSpotifyProfile(profile: SpotifyUserProfile | undefined) {
+    this.integrations.spotify.profile = profile;
+  }
+
   disconnectSpotify() {
     this.integrations.spotify = {
       isConnected: false,

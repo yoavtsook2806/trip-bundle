@@ -109,9 +109,9 @@ Focus on realistic pricing, actual venues, and current entertainment options.`;
  */
 export function getUserPrompt(userData: UserData, cities: string[]): string {
   const userPreferencesPrompt = generateUserPreferencesPrompt(userData.userPreferences, cities);
-  const integrationsContext = generateIntegrationsPromptContext(userData.integrations);
+  const dateRangePrompt = generateDateRangePrompt(userData.dateRange);
 
-  return userPreferencesPrompt + integrationsContext;
+  return userPreferencesPrompt + dateRangePrompt;
 }
 
 /**
@@ -120,47 +120,26 @@ export function getUserPrompt(userData: UserData, cities: string[]): string {
 function generateUserPreferencesPrompt(prefs: UserData['userPreferences'], cities: string[]): string {
   const promptParts: string[] = [];
   
-  // Budget information
-  if (prefs.budget) {
-    promptParts.push(`Budget: ${prefs.budget.min}-${prefs.budget.max} ${prefs.budget.currency}`);
+  // Interest types
+  const enabledInterests = [];
+  if (prefs.interestTypes.concerts.isEnabled) enabledInterests.push('concerts');
+  if (prefs.interestTypes.sports.isEnabled) enabledInterests.push('sports');
+  if (prefs.interestTypes.artDesign.isEnabled) enabledInterests.push('art & design');
+  if (prefs.interestTypes.localCulture.isEnabled) enabledInterests.push('local culture');
+  if (prefs.interestTypes.culinary.isEnabled) enabledInterests.push('culinary experiences');
+  
+  if (enabledInterests.length > 0) {
+    promptParts.push(`Interested in: ${enabledInterests.join(', ')}`);
   }
   
-  // Duration
-  if (prefs.duration) {
-    promptParts.push(`Trip duration: ${prefs.duration.min}-${prefs.duration.max} days`);
+  // Music profile
+  if (prefs.musicProfile && prefs.musicProfile.trim()) {
+    promptParts.push(`Music taste: ${prefs.musicProfile}`);
   }
   
-  // Group size
-  if (prefs.groupSize && prefs.groupSize > 1) {
-    promptParts.push(`Group size: ${prefs.groupSize} people`);
-  }
-  
-  // Location preferences
-  if (prefs.preferredCountries && prefs.preferredCountries.length > 0) {
-    promptParts.push(`Preferred countries: ${prefs.preferredCountries.join(', ')}`);
-  }
-  
-  // Music genres
-  if (prefs.musicGenres && prefs.musicGenres.length > 0) {
-    promptParts.push(`Music genres: ${prefs.musicGenres.join(', ')}`);
-  }
-  
-  // Sports interests
-  if (prefs.sportsInterests && prefs.sportsInterests.length > 0) {
-    promptParts.push(`Sports interests: ${prefs.sportsInterests.join(', ')}`);
-  }
-  
-  // Entertainment preferences
-  if (prefs.entertainmentPreferences && prefs.entertainmentPreferences.length > 0) {
-    const entertainmentSummary = prefs.entertainmentPreferences
-      .map(pref => `${pref.value} (${pref.type}, weight: ${pref.weight})`)
-      .join(', ');
-    promptParts.push(`Entertainment preferences: ${entertainmentSummary}`);
-  }
-  
-  // Search date range
-  if (prefs.searchDateRange?.startDate && prefs.searchDateRange?.endDate) {
-    promptParts.push(`Travel dates: ${prefs.searchDateRange.startDate} to ${prefs.searchDateRange.endDate}`);
+  // Free text interests
+  if (prefs.freeTextInterests && prefs.freeTextInterests.trim()) {
+    promptParts.push(`Additional interests: ${prefs.freeTextInterests}`);
   }
   
   return promptParts.length > 0 
@@ -169,19 +148,13 @@ function generateUserPreferencesPrompt(prefs: UserData['userPreferences'], citie
 }
 
 /**
- * Generates integrations context section of the prompt
+ * Generates date range section of the prompt
  */
-function generateIntegrationsPromptContext(integrations: UserData['integrations']): string {
-  const contextParts: string[] = [];
-
-  // Process each integration
-  Object.entries(integrations).forEach(([integrationName, data]) => {
-    if (data.summary) {
-      contextParts.push(`${integrationName.charAt(0).toUpperCase() + integrationName.slice(1)} Integration: ${data.summary}`);
-    }
-  });
-
-  return contextParts.length > 0 
-    ? `\n\nIntegrated Services Data:\n${contextParts.join('\n')}`
-    : '';
+function generateDateRangePrompt(dateRange: UserData['dateRange']): string {
+  if (dateRange.startDate && dateRange.endDate) {
+    const startDate = new Date(dateRange.startDate).toISOString().split('T')[0];
+    const endDate = new Date(dateRange.endDate).toISOString().split('T')[0];
+    return `\n\nTravel dates: ${startDate} to ${endDate}`;
+  }
+  return '';
 }

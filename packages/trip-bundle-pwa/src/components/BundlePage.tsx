@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TripBundle, TripEvent } from '../types';
-import { getTripBundleService } from '../services';
+
 import './BundlePage.css';
 
 interface BundlePageProps {
@@ -32,24 +32,25 @@ const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
       setEventsError(null);
       
       const page = loadMore ? eventsPage + 1 : 1;
-      const service = await getTripBundleService();
       
-      const eventsResponse = await service.getEvents(
-        bundle.city,
-        bundle.startDate,
-        bundle.endDate,
-        { page, limit: 5 }
-      );
+      // Use subEvents from the bundle instead of fetching events
+      const bundleEvents = bundle.subEvents || [];
       
       if (loadMore) {
-        setEvents(prev => [...prev, ...eventsResponse.events]);
+        // For pagination, we would slice the subEvents
+        const startIndex = (page - 1) * 5;
+        const endIndex = startIndex + 5;
+        const pageEvents = bundleEvents.slice(startIndex, endIndex);
+        setEvents(prev => [...prev, ...pageEvents]);
         setEventsPage(page);
+        setEventsHasMore(endIndex < bundleEvents.length);
       } else {
-        setEvents(eventsResponse.events);
+        // Show first 5 subEvents
+        const pageEvents = bundleEvents.slice(0, 5);
+        setEvents(pageEvents);
         setEventsPage(1);
+        setEventsHasMore(bundleEvents.length > 5);
       }
-      
-      setEventsHasMore(eventsResponse.pagination?.hasMore ?? false);
     } catch (error) {
       console.error('Error loading events:', error);
       setEventsError('Failed to load events. Please try again.');

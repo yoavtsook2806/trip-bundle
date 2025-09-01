@@ -13,8 +13,7 @@ export type {
   Entertainment, 
   Event as TripEvent, 
   TripBundle, 
-  GPTResponse, 
-  EventsResponse,
+  GPTResponse,
   UserData,
   UserPreferences
 } from 'trip-bundle-prompts-service';

@@ -1,5 +1,5 @@
 export { default as UserPreferencesStore } from './userPreferences';
-export type { UserPreference } from './userPreferences';
+// export type { UserPreference } from './userPreferences'; // Removed as not needed in new structure
 
 export { default as BundleSuggestionsStore } from './bundleSuggestions';
 export type { BundleSuggestionsState } from './bundleSuggestions';

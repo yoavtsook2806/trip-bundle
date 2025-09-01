@@ -1,67 +1,8 @@
 // Mobile storage for user preferences
-import type { UserPreferences as BaseUserPreferences } from 'trip-bundle-prompts-service';
+import type { UserData as BaseUserData } from 'trip-bundle-prompts-service';
 
-export interface UserPreferences extends BaseUserPreferences {
-  // Personal Info
-  name?: string;
-  age?: number;
-  email?: string;
-  
-  // Travel Preferences
-  budgetRange: {
-    min: number;
-    max: number;
-    currency: string;
-  };
-  
-  durationRange: {
-    min: number; // days
-    max: number; // days
-  };
-  
-  groupSize: number;
-  
-  // Date range for bundle search
-  searchDateRange: {
-    startDate: string; // ISO string
-    endDate: string; // ISO string
-  };
-  
-  // Location Preferences
-  preferredCountries: string[];
-  excludedCountries: string[];
-  preferredCities: string[];
-  
-  // Entertainment Preferences
-  musicGenres: string[];
-  sportsInterests: string[];
-  cultureInterests: string[];
-  foodPreferences: string[];
-  nightlifePreferences: string[];
-  naturePreferences: string[];
-  
-  // Entertainment weights (1-10 scale)
-  entertainmentWeights: {
-    music: number;
-    sports: number;
-    culture: number;
-    food: number;
-    nightlife: number;
-    nature: number;
-  };
-  
-  // Accommodation Preferences
-  accommodationType: 'hotel' | 'hostel' | 'apartment' | 'resort' | 'any';
-  accommodationRating: number; // 1-5 stars
-  
-  // Transport Preferences
-  transportPreference: 'flight' | 'train' | 'bus' | 'car' | 'any';
-  
-  // Special Requirements
-  accessibility?: string[];
-  dietaryRestrictions?: string[];
-  languagePreference?: string;
-  
+// PWA-specific extensions to the base UserData
+export interface UserData extends BaseUserData {
   // Spotify Integration (if connected)
   spotify?: {
     connected: boolean;
@@ -77,93 +18,90 @@ export interface UserPreferences extends BaseUserPreferences {
   version: string;
 }
 
-// Default user preferences
-export const defaultUserPreferences: UserPreferences = {
-  budgetRange: {
-    min: 500,
-    max: 2000,
-    currency: 'USD'
+// Default user data
+export const defaultUserData: UserData = {
+  userPreferences: {
+    interestTypes: {
+      concerts: { isEnabled: false },
+      sports: { isEnabled: false },
+      artDesign: { isEnabled: false },
+      localCulture: { isEnabled: false },
+      culinary: { isEnabled: false }
+    },
+    musicProfile: '',
+    freeTextInterests: ''
   },
-  durationRange: {
-    min: 3,
-    max: 7
+  dateRange: {
+    startDate: Date.now(),
+    endDate: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 days from now
   },
-  groupSize: 1,
-  searchDateRange: {
-    startDate: new Date().toISOString().split('T')[0],
-    endDate: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 4 months from now
-  },
-  preferredCountries: [],
-  excludedCountries: [],
-  preferredCities: [],
-  musicGenres: [],
-  sportsInterests: [],
-  cultureInterests: [],
-  foodPreferences: [],
-  nightlifePreferences: [],
-  naturePreferences: [],
-  entertainmentWeights: {
-    music: 5,
-    sports: 5,
-    culture: 5,
-    food: 5,
-    nightlife: 5,
-    nature: 5
-  },
-  accommodationType: 'any',
-  accommodationRating: 3,
-  transportPreference: 'any',
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
-  version: '1.0.0'
+  version: '2.0.0'
 };
 
 // Storage key for mobile localStorage
-const STORAGE_KEY = 'tripbundle_user_preferences';
+const STORAGE_KEY = 'tripbundle_user_data';
 
 // Mobile storage functions
-export class UserPreferencesStorage {
+export class UserDataStorage {
   
   /**
-   * Get user preferences from mobile storage
+   * Get user data from mobile storage
    */
-  static async getUserPreferences(): Promise<UserPreferences> {
+  static async getUserData(): Promise<UserData> {
     try {
       // Try to get from localStorage (works in PWA/mobile)
       const stored = localStorage.getItem(STORAGE_KEY);
       
       if (stored) {
-        const parsed = JSON.parse(stored) as UserPreferences;
+        const parsed = JSON.parse(stored) as UserData;
         
         // Merge with defaults to ensure all fields exist
         return {
-          ...defaultUserPreferences,
+          ...defaultUserData,
           ...parsed,
+          userPreferences: {
+            ...defaultUserData.userPreferences,
+            ...parsed.userPreferences,
+            interestTypes: {
+              ...defaultUserData.userPreferences.interestTypes,
+              ...parsed.userPreferences?.interestTypes
+            }
+          },
           updatedAt: parsed.updatedAt || new Date().toISOString()
         };
       }
       
-      // Return default preferences if nothing stored
-      return { ...defaultUserPreferences };
+      // Return default data if nothing stored
+      return { ...defaultUserData };
       
     } catch (error) {
-      console.error('Error getting user preferences from storage:', error);
-      return { ...defaultUserPreferences };
+      console.error('Error getting user data from storage:', error);
+      return { ...defaultUserData };
     }
   }
   
   /**
-   * Set user preferences in mobile storage
+   * Set user data in mobile storage
    */
-  static async setUserPreferences(preferences: Partial<UserPreferences>): Promise<boolean> {
+  static async setUserData(userData: Partial<UserData>): Promise<boolean> {
     try {
-      // Get current preferences
-      const current = await this.getUserPreferences();
+      // Get current data
+      const current = await this.getUserData();
       
-      // Merge with new preferences
-      const updated: UserPreferences = {
+      // Merge with new data
+      const updated: UserData = {
         ...current,
-        ...preferences,
+        ...userData,
+        userPreferences: {
+          ...current.userPreferences,
+          ...userData.userPreferences,
+          interestTypes: {
+            ...current.userPreferences.interestTypes,
+            ...userData.userPreferences?.interestTypes
+          }
+        },
         updatedAt: new Date().toISOString()
       };
       
@@ -171,50 +109,39 @@ export class UserPreferencesStorage {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       
       // Dispatch custom event for reactive updates
-      window.dispatchEvent(new CustomEvent('userPreferencesUpdated', {
+      window.dispatchEvent(new CustomEvent('userDataUpdated', {
         detail: updated
       }));
       
       return true;
       
     } catch (error) {
-      console.error('Error setting user preferences in storage:', error);
+      console.error('Error setting user data in storage:', error);
       return false;
     }
   }
   
   /**
-   * Update specific preference field
+   * Clear all user data
    */
-  static async updatePreference<K extends keyof UserPreferences>(
-    key: K, 
-    value: UserPreferences[K]
-  ): Promise<boolean> {
-    const updates = { [key]: value } as Partial<UserPreferences>;
-    return this.setUserPreferences(updates);
-  }
-  
-  /**
-   * Clear all user preferences
-   */
-  static async clearUserPreferences(): Promise<boolean> {
+  static async clearUserData(): Promise<boolean> {
     try {
       localStorage.removeItem(STORAGE_KEY);
       
       // Dispatch clear event
-      window.dispatchEvent(new CustomEvent('userPreferencesCleared'));
+      window.dispatchEvent(new CustomEvent('userDataCleared'));
       
       return true;
     } catch (error) {
-      console.error('Error clearing user preferences:', error);
+      console.error('Error clearing user data:', error);
       return false;
     }
   }
   
   /**
-   * Check if user has set preferences (not just defaults)
+   * Check if user has set data (not just defaults)
    */
-  static async hasUserPreferences(): Promise<boolean> {
+  static async hasUserData(): Promise<boolean> {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       return stored !== null;
@@ -224,64 +151,184 @@ export class UserPreferencesStorage {
   }
   
   /**
-   * Export preferences as JSON (for backup/sharing)
+   * Export data as JSON (for backup/sharing)
    */
-  static async exportPreferences(): Promise<string | null> {
+  static async exportUserData(): Promise<string | null> {
     try {
-      const preferences = await this.getUserPreferences();
-      return JSON.stringify(preferences, null, 2);
+      const userData = await this.getUserData();
+      return JSON.stringify(userData, null, 2);
     } catch (error) {
-      console.error('Error exporting preferences:', error);
+      console.error('Error exporting user data:', error);
       return null;
     }
   }
   
   /**
-   * Import preferences from JSON
+   * Import data from JSON
    */
-  static async importPreferences(jsonData: string): Promise<boolean> {
+  static async importUserData(jsonData: string): Promise<boolean> {
     try {
-      const preferences = JSON.parse(jsonData) as UserPreferences;
-      return this.setUserPreferences(preferences);
+      const userData = JSON.parse(jsonData) as UserData;
+      return this.setUserData(userData);
     } catch (error) {
-      console.error('Error importing preferences:', error);
+      console.error('Error importing user data:', error);
       return false;
     }
   }
 }
 
-// Helper functions for specific preference types
-export class UserPreferencesHelpers {
-  
+// Backward compatibility alias
+export const UserPreferencesStorage = UserDataStorage;
 
+// Helper functions for user data
+export class UserDataHelpers {
   
   /**
-   * Get preference completion percentage
+   * Get data completion percentage
    */
   static async getCompletionPercentage(): Promise<number> {
-    const prefs = await UserPreferencesStorage.getUserPreferences();
+    const userData = await UserDataStorage.getUserData();
     
     let completed = 0;
     let total = 0;
     
-    // Required fields
-    total += 3; // budget, duration, group size (always have defaults)
-    completed += 3;
+    // Interest types (5 total)
+    total += 5;
+    const enabledInterests = Object.values(userData.userPreferences.interestTypes).filter(interest => interest.isEnabled);
+    completed += enabledInterests.length;
     
-    // Optional but important fields
-    const optionalFields = [
-      prefs.preferredCountries.length > 0,
-      prefs.musicGenres.length > 0 || prefs.sportsInterests.length > 0 || prefs.cultureInterests.length > 0,
-      prefs.accommodationType !== 'any',
-      prefs.transportPreference !== 'any',
-      prefs.name !== undefined,
-      prefs.searchDateRange.startDate !== undefined
-    ];
+    // Music profile
+    total += 1;
+    if (userData.userPreferences.musicProfile.trim()) completed += 1;
     
-    total += optionalFields.length;
-    completed += optionalFields.filter(Boolean).length;
+    // Free text interests
+    total += 1;
+    if (userData.userPreferences.freeTextInterests.trim()) completed += 1;
+    
+    // Date range (always has defaults)
+    total += 1;
+    completed += 1;
     
     return Math.round((completed / total) * 100);
+  }
+  
+  /**
+   * Check if user has meaningful preferences set
+   */
+  static async hasPreferences(): Promise<boolean> {
+    const userData = await UserDataStorage.getUserData();
+    
+    // Check if any interests are enabled
+    const hasInterests = Object.values(userData.userPreferences.interestTypes).some(interest => interest.isEnabled);
+    
+    // Check if music profile or free text interests are set
+    const hasTextPreferences = Boolean(userData.userPreferences.musicProfile.trim() || userData.userPreferences.freeTextInterests.trim());
+    
+    return hasInterests || hasTextPreferences;
+  }
+}
+
+// Backward compatibility alias
+export const UserPreferencesHelpers = UserDataHelpers;
+
+// Prompts token storage for API call limiting
+export class PromptsTokenStorage {
+  private static readonly STORAGE_KEY = 'tripbundle_prompts_token';
+  private static readonly MAX_CALLS_PER_DAY = 10;
+
+  /**
+   * Get current prompts token data
+   */
+  static async getPromptsToken(): Promise<{ calls: number; lastReset: string; remaining: number }> {
+    try {
+      const stored = localStorage.getItem(this.STORAGE_KEY);
+      
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const today = new Date().toDateString();
+        
+        // Reset if it's a new day
+        if (parsed.lastReset !== today) {
+          const resetData = {
+            calls: 0,
+            lastReset: today,
+            remaining: this.MAX_CALLS_PER_DAY
+          };
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(resetData));
+          return resetData;
+        }
+        
+        return {
+          calls: parsed.calls || 0,
+          lastReset: parsed.lastReset,
+          remaining: Math.max(0, this.MAX_CALLS_PER_DAY - (parsed.calls || 0))
+        };
+      }
+      
+      // Initialize for first time
+      const initData = {
+        calls: 0,
+        lastReset: new Date().toDateString(),
+        remaining: this.MAX_CALLS_PER_DAY
+      };
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(initData));
+      return initData;
+      
+    } catch (error) {
+      console.error('Error getting prompts token:', error);
+      return {
+        calls: 0,
+        lastReset: new Date().toDateString(),
+        remaining: this.MAX_CALLS_PER_DAY
+      };
+    }
+  }
+
+  /**
+   * Increment call count and return if call is allowed
+   */
+  static async incrementCall(): Promise<{ allowed: boolean; remaining: number }> {
+    try {
+      const current = await this.getPromptsToken();
+      
+      if (current.remaining <= 0) {
+        return { allowed: false, remaining: 0 };
+      }
+      
+      const updated = {
+        calls: current.calls + 1,
+        lastReset: current.lastReset,
+        remaining: current.remaining - 1
+      };
+      
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(updated));
+      
+      return { allowed: true, remaining: updated.remaining };
+      
+    } catch (error) {
+      console.error('Error incrementing prompts call:', error);
+      return { allowed: false, remaining: 0 };
+    }
+  }
+
+  /**
+   * Check if calls are available without incrementing
+   */
+  static async canMakeCall(): Promise<boolean> {
+    const token = await this.getPromptsToken();
+    return token.remaining > 0;
+  }
+
+  /**
+   * Reset call count (for testing purposes)
+   */
+  static async resetCalls(): Promise<void> {
+    const resetData = {
+      calls: 0,
+      lastReset: new Date().toDateString(),
+      remaining: this.MAX_CALLS_PER_DAY
+    };
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(resetData));
   }
 }
 

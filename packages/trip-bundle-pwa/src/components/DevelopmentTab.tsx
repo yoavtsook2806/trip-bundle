@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { convertStoreDataToUserData } from '../services/tripBundleServiceFactory';
+
 import type { UserData } from 'trip-bundle-prompts-service';
 import UserPreferencesStore from '../store/userPreferences';
 import IntegrationsStore from '../store/integrations';
@@ -21,7 +21,7 @@ export const DevelopmentTab: React.FC<DevelopmentTabProps> = ({ onClose, userPre
     setIsLoading(true);
     setActiveView('userData');
     try {
-      const userData: UserData = convertStoreDataToUserData(userPreferencesStore, integrationsStore);
+      const userData: UserData = userPreferencesStore.userData;
       setViewContent(JSON.stringify(userData, null, 2));
     } catch (error) {
       setViewContent(`Error loading user data: ${error}`);
@@ -66,7 +66,7 @@ export const DevelopmentTab: React.FC<DevelopmentTabProps> = ({ onClose, userPre
       const { IntegrationsStorage } = await import('../storage');
       
       // Clear specific storage keys first
-      await UserPreferencesStorage.clearUserPreferences();
+      await UserPreferencesStorage.clearUserData();
       await IntegrationsStorage.clearAllIntegrations();
       
       // Clear localStorage completely (in case there are other keys)

@@ -4,9 +4,9 @@ import './App.css';
 
 // Import our stores, services, and actions
 import { UserPreferencesStore, BundleSuggestionsStore, IntegrationsStore, FirstTimeExperienceStore } from './store';
-import { SpotifyService } from './services';
-import { TripActions, IntegrationActions, initIntegrationsData, initUserPreferencesData, FirstTimeExperienceActions, initFirstTimeExperienceData } from './actions';
-import { IntegrationsStorage, UserPreferencesStorage, FirstTimeExperienceStorage } from './storage';
+
+import { TripActions, IntegrationActions, FirstTimeExperienceActions, initFirstTimeExperienceData } from './actions';
+import { FirstTimeExperienceStorage } from './storage';
 import { BundleFeed, BundlePage, UserPreferencesForm, DevelopmentTab, FirstTimeExperience } from './components';
 import type { TripBundle } from './types';
 import { usePWA } from './hooks/usePWA';
@@ -17,21 +17,17 @@ const bundleSuggestionsStore = new BundleSuggestionsStore();
 const integrationsStore = new IntegrationsStore();
 const fteStore = new FirstTimeExperienceStore();
 // gptService removed - now using TripBundlePromptService via factory in TripActions
-const spotifyService = new SpotifyService();
+
 
 // Create actions instances with dependencies
 const tripActions = new TripActions(
   bundleSuggestionsStore,
-  userPreferencesStore,
-  integrationsStore
+  userPreferencesStore
 );
 
 const integrationActions = new IntegrationActions(
   userPreferencesStore,
-  integrationsStore,
-  spotifyService,
-  IntegrationsStorage,
-  UserPreferencesStorage
+  integrationsStore
 );
 
 const fteActions = new FirstTimeExperienceActions(
@@ -58,8 +54,7 @@ const App: React.FC = observer(() => {
       
       // Initialize user preferences, integrations, and FTE data from storage
       await Promise.all([
-        initUserPreferencesData(userPreferencesStore, UserPreferencesStorage),
-        initIntegrationsData(userPreferencesStore, integrationsStore, IntegrationsStorage),
+        // Removed initUserPreferencesData and initIntegrationsData - no longer needed
         initFirstTimeExperienceData(fteStore, FirstTimeExperienceStorage)
       ]);
       
@@ -188,15 +183,7 @@ const App: React.FC = observer(() => {
     await loadBundles();
   };
 
-  const handleDateRangeChange = async (startDate: string, endDate: string) => {
-    console.log('📅 [APP] Date range changed, updating store and reloading bundles:', { startDate, endDate });
-    
-    // Update the store with new date range
-    userPreferencesStore.setSearchDateRange(startDate, endDate);
-    
-    // Reload bundles with new date range
-    await loadBundles();
-  };
+
 
   const handleDevelopmentTab = () => {
     console.log('🔧 [APP] Development tab');
@@ -215,7 +202,14 @@ const App: React.FC = observer(() => {
   if (showFTE) {
     return (
       <div className={`App ${pwaInfo.isStandalone ? 'standalone' : 'browser'}`}>
-        <FirstTimeExperience onComplete={handleFTEComplete} integrationActions={integrationActions} />
+        <FirstTimeExperience 
+          onComplete={handleFTEComplete} 
+          onGoPressed={async () => {
+            console.log('🚀 [APP] GO pressed in FTE, generating bundles');
+            await loadBundles();
+          }}
+          integrationActions={integrationActions} 
+        />
       </div>
     );
   }
@@ -244,8 +238,10 @@ const App: React.FC = observer(() => {
       ) : currentView === 'preferences' ? (
         <div className="preferences-view">
           <UserPreferencesForm
-            onPreferencesUpdate={() => {
-              console.log('🎯 [APP] Preferences updated');
+            onUserDataUpdate={async () => {
+              console.log('💾 [APP] Preferences saved, generating bundles');
+              await loadBundles();
+              setCurrentView('feed');
             }}
             onClose={handlePreferencesComplete}
             integrationActions={integrationActions}
@@ -264,7 +260,6 @@ const App: React.FC = observer(() => {
           onBundleClick={handleBundleClick}
           onEditPreferences={handleEditPreferences}
           onDevelopmentTab={isMockMode ? handleDevelopmentTab : undefined}
-          onDateRangeChange={handleDateRangeChange}
           onLoadMore={() => tripActions.loadMoreBundles()}
           isLoading={isLoadingBundles}
           isLoadingMore={bundleSuggestionsStore.pagination.isLoadingMore}

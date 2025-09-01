@@ -9,11 +9,11 @@ export { TripBundlePromptService } from './TripBundlePromptService';
 export type {
   UserData,
   UserPreferences,
-  IntegrationSummary,
+  DateRange,
+  InterestType,
   ServiceConfig,
   GenerationOptions,
   GPTResponse,
-  EventsResponse,
   TripBundle,
   Event,
   Entertainment,

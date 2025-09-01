@@ -93,6 +93,53 @@
   font-weight: 400;
 }
 
+/* API Usage Indicator */
+.api-usage-indicator {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.usage-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.usage-text {
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  min-width: 120px;
+}
+
+.usage-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.usage-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ade80 0%, #f59e0b 70%, #ef4444 100%);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.usage-warning {
+  color: #fbbf24;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .date-range-selector {
   padding-top: 8px;
 }

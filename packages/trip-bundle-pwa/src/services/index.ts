@@ -4,7 +4,7 @@ export type { SpotifyTrack, SpotifyArtist, SpotifyUserProfile, SpotifyUserPrefer
 // Trip bundle services
 export { MockTripBundleService } from './mockTripBundleService';
 export { LoggingTripBundleService } from './loggingTripBundleService';
-export { createTripBundleService, convertStoreDataToUserData } from './tripBundleServiceFactory';
+export { createTripBundleService, convertToServiceUserData } from './tripBundleServiceFactory';
 export type { ITripBundleService } from 'trip-bundle-prompts-service';
 
 // Helper function to get service instance
@@ -16,23 +16,48 @@ export async function getTripBundleService() {
   // Try to get user data from localStorage or use defaults
   let userData;
   try {
-    const storedPrefs = localStorage.getItem('trip_bundle_user_preferences');
-    const storedIntegrations = localStorage.getItem('trip_bundle_integrations');
+    const storedData = localStorage.getItem('tripbundle_user_data');
     
-    if (storedPrefs) {
-      const prefs = JSON.parse(storedPrefs);
-      const integrations = storedIntegrations ? JSON.parse(storedIntegrations) : {};
-      
-      userData = {
-        userPreferences: prefs,
-        integrations: integrations
-      };
+    if (storedData) {
+      userData = JSON.parse(storedData);
     } else {
-      userData = { userPreferences: {}, integrations: {} };
+      userData = {
+        userPreferences: {
+          interestTypes: {
+            concerts: { isEnabled: false },
+            sports: { isEnabled: false },
+            artDesign: { isEnabled: false },
+            localCulture: { isEnabled: false },
+            culinary: { isEnabled: false }
+          },
+          musicProfile: '',
+          freeTextInterests: ''
+        },
+        dateRange: {
+          startDate: Date.now(),
+          endDate: Date.now() + (7 * 24 * 60 * 60 * 1000)
+        }
+      };
     }
   } catch (error) {
     console.warn('Error loading user data from storage:', error);
-    userData = { userPreferences: {}, integrations: {} };
+    userData = {
+      userPreferences: {
+        interestTypes: {
+          concerts: { isEnabled: false },
+          sports: { isEnabled: false },
+          artDesign: { isEnabled: false },
+          localCulture: { isEnabled: false },
+          culinary: { isEnabled: false }
+        },
+        musicProfile: '',
+        freeTextInterests: ''
+      },
+      dateRange: {
+        startDate: Date.now(),
+        endDate: Date.now() + (7 * 24 * 60 * 60 * 1000)
+      }
+    };
   }
   
   const cities = ['London', 'Paris', 'Berlin']; // Default cities

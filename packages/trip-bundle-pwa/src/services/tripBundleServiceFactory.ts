@@ -42,52 +42,24 @@ export function createTripBundleService(userData: UserData, cities: string[]): I
 }
 
 /**
- * Helper function to convert PWA store data to UserData format
+ * Helper function to convert PWA UserData to service UserData format
  */
-export function convertStoreDataToUserData(
-  userPreferencesStore: any,
-  integrationsStore: any
-): UserData {
-  const prefs = userPreferencesStore.preferences;
-  
+export function convertToServiceUserData(userData: any): UserData {
   return {
     userPreferences: {
-      budget: prefs.budget,
-      duration: prefs.duration,
-      preferredCountries: prefs.preferredCountries,
-      excludedCountries: prefs.excludedCountries,
-      musicGenres: prefs.musicGenres,
-      sportsInterests: prefs.sportsInterests,
-      cultureInterests: prefs.cultureInterests,
-      entertainmentPreferences: prefs.entertainmentPreferences,
-      groupSize: prefs.groupSize,
-      searchDateRange: prefs.searchDateRange,
-      name: prefs.name,
-      accommodationType: prefs.accommodationType,
-      transportPreference: prefs.transportPreference
+      interestTypes: userData.userPreferences?.interestTypes || {
+        concerts: { isEnabled: false },
+        sports: { isEnabled: false },
+        artDesign: { isEnabled: false },
+        localCulture: { isEnabled: false },
+        culinary: { isEnabled: false }
+      },
+      musicProfile: userData.userPreferences?.musicProfile || '',
+      freeTextInterests: userData.userPreferences?.freeTextInterests || ''
     },
-    integrations: generateIntegrationsData(integrationsStore)
+    dateRange: userData.dateRange || {
+      startDate: Date.now(),
+      endDate: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 days from now
+    }
   };
-}
-
-/**
- * Helper function to generate integrations data from store
- */
-function generateIntegrationsData(integrationsStore: any): { [key: string]: { summary: string } } {
-  const integrations: { [key: string]: { summary: string } } = {};
-
-  if (integrationsStore.isSpotifyConnected && integrationsStore.spotifyPreferences) {
-    const prefs = integrationsStore.spotifyPreferences;
-    
-    const summary = `Top genres: ${prefs.topGenres.join(', ')}. ` +
-      `Top artists: ${prefs.topArtists.slice(0, 5).map((a: any) => a.name).join(', ')}. ` +
-      `Music profile: ${prefs.musicProfile.energy > 0.7 ? 'High Energy' : prefs.musicProfile.energy > 0.4 ? 'Moderate Energy' : 'Low Energy'}, ` +
-      `${prefs.musicProfile.danceability > 0.7 ? 'Danceable' : 'Non-Danceable'}, ` +
-      `${prefs.musicProfile.valence > 0.7 ? 'Positive/Happy' : prefs.musicProfile.valence > 0.4 ? 'Neutral' : 'Melancholic'}. ` +
-      `Preferred music events: Concerts and festivals featuring ${prefs.topGenres.slice(0, 3).join(', ')} music.`;
-    
-    integrations.spotify = { summary };
-  }
-
-  return integrations;
 }

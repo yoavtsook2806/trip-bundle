@@ -5,7 +5,6 @@
 import { 
   type UserData,
   type GPTResponse,
-  type EventsResponse,
   type GenerationOptions,
   type TripBundle,
   type Entertainment
@@ -38,151 +37,13 @@ export class MockTripBundleService {
 
     console.log(`🎭 Using mock data (VITE_MOCK=true) - Page ${page}, Limit ${limit}`);
     
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Simulate API delay (5 seconds for thinking screen)
+    await new Promise(resolve => setTimeout(resolve, 5000));
     
     return this.getMockResponse(Date.now() - startTime, page, limit);
   }
 
-  /**
-   * Get events for a specific city and date range using mock data
-   */
-  async getEvents(city: string, startDate: string, endDate: string, options: { page?: number; limit?: number } = {}): Promise<EventsResponse> {
-    const processingTime = Math.random() * 1000 + 500; // Simulate processing time
 
-    // Create more mock events based on the city for better pagination testing
-    const mockEvents = [
-      {
-        entertainment: this.createMockEntertainment('concert-hall-event', `${city} Symphony Orchestra`, 'music', 'Classical music performance by local orchestra'),
-        date: startDate,
-        time: '19:30',
-        venue: `${city} Concert Hall`,
-        cost: 45,
-        currency: 'EUR',
-        bookingUrl: 'https://example.com/book-symphony'
-      },
-      {
-        entertainment: this.createMockEntertainment('art-gallery-opening', `Modern Art Exhibition`, 'culture', 'Contemporary art exhibition featuring local and international artists'),
-        date: this.addDays(startDate, 1),
-        time: '18:00',
-        venue: `${city} Modern Art Gallery`,
-        cost: 15,
-        currency: 'EUR',
-        bookingUrl: 'https://example.com/book-art'
-      },
-      {
-        entertainment: this.createMockEntertainment('food-festival', `${city} Food Festival`, 'food', 'Local cuisine festival with traditional and modern dishes'),
-        date: this.addDays(startDate, 2),
-        time: '12:00',
-        venue: `${city} Central Square`,
-        cost: 25,
-        currency: 'EUR'
-      },
-      {
-        entertainment: this.createMockEntertainment('jazz-club', `Jazz Night`, 'music', 'Live jazz performance by local musicians'),
-        date: this.addDays(startDate, 2),
-        time: '21:00',
-        venue: `Blue Note ${city}`,
-        cost: 30,
-        currency: 'EUR',
-        bookingUrl: 'https://example.com/book-jazz'
-      },
-      {
-        entertainment: this.createMockEntertainment('walking-tour', `Historical Walking Tour`, 'culture', 'Guided tour through the historic districts'),
-        date: this.addDays(startDate, 3),
-        time: '10:00',
-        venue: `${city} Old Town`,
-        cost: 20,
-        currency: 'EUR',
-        bookingUrl: 'https://example.com/book-tour'
-      },
-      // Add more events for pagination testing
-      {
-        entertainment: this.createMockEntertainment('rock-concert', `${city} Rock Festival`, 'music', 'Multi-day rock festival featuring international bands'),
-        date: this.addDays(startDate, 4),
-        time: '20:00',
-        venue: `${city} Stadium`,
-        cost: 85,
-        currency: 'EUR',
-        bookingUrl: 'https://example.com/book-rock'
-      },
-      {
-        entertainment: this.createMockEntertainment('theater-show', `Shakespeare in the Park`, 'culture', 'Outdoor theater performance of classic Shakespeare'),
-        date: this.addDays(startDate, 5),
-        time: '19:00',
-        venue: `${city} Central Park`,
-        cost: 35,
-        currency: 'EUR',
-        bookingUrl: 'https://example.com/book-theater'
-      },
-      {
-        entertainment: this.createMockEntertainment('wine-tasting', `${city} Wine Experience`, 'food', 'Wine tasting with local vintners and cheese pairings'),
-        date: this.addDays(startDate, 6),
-        time: '17:00',
-        venue: `${city} Wine Bar`,
-        cost: 55,
-        currency: 'EUR',
-        bookingUrl: 'https://example.com/book-wine'
-      },
-      {
-        entertainment: this.createMockEntertainment('night-market', `${city} Night Market`, 'nightlife', 'Bustling night market with street food and crafts'),
-        date: this.addDays(startDate, 7),
-        time: '18:00',
-        venue: `${city} Market Square`,
-        cost: 10,
-        currency: 'EUR'
-      },
-      {
-        entertainment: this.createMockEntertainment('hiking-tour', `${city} Nature Hike`, 'nature', 'Guided hiking tour through scenic natural areas'),
-        date: this.addDays(startDate, 8),
-        time: '08:00',
-        venue: `${city} Nature Reserve`,
-        cost: 40,
-        currency: 'EUR',
-        bookingUrl: 'https://example.com/book-hike'
-      },
-      {
-        entertainment: this.createMockEntertainment('cooking-class', `Traditional ${city} Cooking`, 'food', 'Learn to cook traditional local dishes with expert chefs'),
-        date: this.addDays(startDate, 9),
-        time: '14:00',
-        venue: `${city} Culinary School`,
-        cost: 75,
-        currency: 'EUR',
-        bookingUrl: 'https://example.com/book-cooking'
-      },
-      {
-        entertainment: this.createMockEntertainment('sports-match', `${city} Football Match`, 'sports', 'Local football team championship match'),
-        date: this.addDays(startDate, 10),
-        time: '15:00',
-        venue: `${city} Sports Stadium`,
-        cost: 50,
-        currency: 'EUR',
-        bookingUrl: 'https://example.com/book-football'
-      }
-    ].filter(event => event.date <= endDate); // Only include events within date range
-
-    // Add pagination logic
-    const { page = 1, limit = 10 } = options;
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const paginatedEvents = mockEvents.slice(startIndex, endIndex);
-    const totalEvents = mockEvents.length;
-    const hasMore = endIndex < totalEvents;
-
-
-
-    return {
-      events: paginatedEvents,
-      reasoning: `Found ${paginatedEvents.length} diverse entertainment events in ${city} between ${startDate} and ${endDate} (page ${page} of ${Math.ceil(totalEvents / limit)}), including music, culture, and food experiences.`,
-      processingTime,
-      pagination: {
-        page,
-        limit,
-        total: totalEvents,
-        hasMore
-      }
-    };
-  }
 
   /**
    * Check if the service is configured (always true for mock)
@@ -274,6 +135,48 @@ export class MockTripBundleService {
             currency: 'EUR'
           }
         ],
+        subEvents: [
+          {
+            entertainment: this.createMockEntertainment('london-food-tour', 'Borough Market Food Tour', 'food', 'Guided food tasting experience'),
+            date: '2024-09-15',
+            time: '14:00',
+            venue: 'Borough Market',
+            cost: 45,
+            currency: 'EUR'
+          },
+          {
+            entertainment: this.createMockEntertainment('london-pub-crawl', 'Traditional Pub Crawl', 'nightlife', 'Historic London pubs tour'),
+            date: '2024-09-16',
+            time: '19:00',
+            venue: 'Covent Garden',
+            cost: 35,
+            currency: 'EUR'
+          },
+          {
+            entertainment: this.createMockEntertainment('london-art-gallery', 'Tate Modern Special Exhibition', 'culture', 'Contemporary art exhibition'),
+            date: '2024-09-17',
+            time: '11:00',
+            venue: 'Tate Modern',
+            cost: 25,
+            currency: 'EUR'
+          },
+          {
+            entertainment: this.createMockEntertainment('london-theater', 'West End Show', 'culture', 'Musical theater performance'),
+            date: '2024-09-18',
+            time: '19:30',
+            venue: 'Theatre District',
+            cost: 85,
+            currency: 'EUR'
+          },
+          {
+            entertainment: this.createMockEntertainment('london-river-cruise', 'Thames River Cruise', 'nature', 'Sightseeing boat tour'),
+            date: '2024-09-18',
+            time: '15:00',
+            venue: 'Thames River',
+            cost: 30,
+            currency: 'EUR'
+          }
+        ],
         accommodation: {
           name: 'The Z Hotel Piccadilly',
           type: 'hotel',
@@ -350,6 +253,48 @@ export class MockTripBundleService {
             time: '21:00',
             venue: 'AccorHotels Arena',
             cost: 380,
+            currency: 'EUR'
+          }
+        ],
+        subEvents: [
+          {
+            entertainment: this.createMockEntertainment('paris-louvre', 'Louvre Museum Tour', 'culture', 'World famous art museum'),
+            date: '2024-09-20',
+            time: '10:00',
+            venue: 'Louvre Museum',
+            cost: 35,
+            currency: 'EUR'
+          },
+          {
+            entertainment: this.createMockEntertainment('paris-seine-cruise', 'Seine River Dinner Cruise', 'nature', 'Romantic river cruise with dinner'),
+            date: '2024-09-21',
+            time: '19:00',
+            venue: 'Seine River',
+            cost: 75,
+            currency: 'EUR'
+          },
+          {
+            entertainment: this.createMockEntertainment('paris-wine-tasting', 'French Wine Tasting', 'food', 'Professional wine tasting experience'),
+            date: '2024-09-23',
+            time: '16:00',
+            venue: 'Montmartre',
+            cost: 55,
+            currency: 'EUR'
+          },
+          {
+            entertainment: this.createMockEntertainment('paris-macaron-class', 'Macaron Making Class', 'food', 'Learn to make French macarons'),
+            date: '2024-09-24',
+            time: '14:00',
+            venue: 'Le Marais',
+            cost: 65,
+            currency: 'EUR'
+          },
+          {
+            entertainment: this.createMockEntertainment('paris-night-tour', 'Paris by Night Tour', 'culture', 'Illuminated landmarks tour'),
+            date: '2024-09-24',
+            time: '20:00',
+            venue: 'Various Locations',
+            cost: 40,
             currency: 'EUR'
           }
         ],
@@ -432,6 +377,7 @@ export class MockTripBundleService {
             currency: 'EUR'
           }
         ],
+        subEvents: this.generateDefaultSubEvents('Rome', '2024-09-25'),
         accommodation: {
           name: 'Hotel Artemide',
           type: 'hotel',
@@ -511,6 +457,7 @@ export class MockTripBundleService {
             currency: 'EUR'
           }
         ],
+        subEvents: this.generateDefaultSubEvents('Barcelona', '2024-10-01'),
         accommodation: {
           name: 'Hotel Barcelona Center',
           type: 'hotel',
@@ -590,6 +537,7 @@ export class MockTripBundleService {
             currency: 'EUR'
           }
         ],
+        subEvents: this.generateDefaultSubEvents('Amsterdam', '2024-10-05'),
         accommodation: {
           name: 'Lloyd Hotel',
           type: 'hotel',
@@ -669,6 +617,7 @@ export class MockTripBundleService {
             currency: 'EUR'
           }
         ],
+        subEvents: this.generateDefaultSubEvents('Vienna', '2024-10-10'),
         accommodation: {
           name: 'Hotel Sacher',
           type: 'hotel',
@@ -748,6 +697,7 @@ export class MockTripBundleService {
             currency: 'EUR'
           }
         ],
+        subEvents: this.generateDefaultSubEvents('Prague', '2024-10-15'),
         accommodation: {
           name: 'Golden Well Hotel',
           type: 'hotel',
@@ -807,6 +757,7 @@ export class MockTripBundleService {
             currency: 'EUR'
           }
         ],
+        subEvents: this.generateDefaultSubEvents('Tokyo', '2024-10-10'),
         accommodation: {
           name: 'Tokyo Grand Hotel',
           type: 'hotel',
@@ -866,6 +817,7 @@ export class MockTripBundleService {
             currency: 'EUR'
           }
         ],
+        subEvents: this.generateDefaultSubEvents('New York', '2024-11-20'),
         accommodation: {
           name: 'Times Square Hotel',
           type: 'hotel',
@@ -925,6 +877,7 @@ export class MockTripBundleService {
             currency: 'EUR'
           }
         ],
+        subEvents: this.generateDefaultSubEvents('Sydney', '2024-12-01'),
         accommodation: {
           name: 'Sydney Harbour Hotel',
           type: 'hotel',
@@ -976,6 +929,7 @@ export class MockTripBundleService {
             currency: 'EUR'
           }
         ],
+        subEvents: this.generateDefaultSubEvents('Berlin', '2024-09-25'),
         accommodation: {
           name: 'Berlin Central Hostel',
           type: 'hostel',
@@ -1027,6 +981,7 @@ export class MockTripBundleService {
             currency: 'EUR'
           }
         ],
+        subEvents: this.generateDefaultSubEvents('Istanbul', '2024-10-05'),
         accommodation: {
           name: 'Sultanahmet Hotel',
           type: 'hotel',
@@ -1078,6 +1033,7 @@ export class MockTripBundleService {
             currency: 'EUR'
           }
         ],
+        subEvents: this.generateDefaultSubEvents('Reykjavik', '2024-11-15'),
         accommodation: {
           name: 'Reykjavik Marina Hotel',
           type: 'hotel',
@@ -1111,6 +1067,7 @@ export class MockTripBundleService {
         endDate: '2024-10-22',
         totalCost: { amount: 900, currency: 'EUR', breakdown: { accommodation: 240, entertainment: 200, food: 180, transport: 280 } },
         events: [{ entertainment: this.createMockEntertainment('irish-music', 'Traditional Irish Music Night', 'music', 'Authentic Irish folk music'), date: '2024-10-21', time: '20:00', venue: 'Temple Bar', cost: 30, currency: 'EUR' }],
+        subEvents: this.generateDefaultSubEvents('Dublin', '2024-10-20'),
         accommodation: { name: 'Dublin City Hotel', type: 'hotel', rating: 4.1, pricePerNight: 80, location: 'Temple Bar', amenities: ['Free WiFi', 'Pub', 'Breakfast'] },
         transportation: { type: 'flight', details: 'Round-trip to Dublin Airport', cost: 280, currency: 'EUR' },
         recommendations: { restaurants: ['The Brazen Head', 'Guinness Storehouse'], localTips: ['Say Sláinte when toasting', 'Tip in pubs'], weatherInfo: 'Rainy autumn weather', packingList: ['Raincoat', 'Umbrella'] },
@@ -1127,6 +1084,7 @@ export class MockTripBundleService {
         endDate: '2024-11-05',
         totalCost: { amount: 1100, currency: 'EUR', breakdown: { accommodation: 350, entertainment: 250, food: 300, transport: 200 } },
         events: [{ entertainment: this.createMockEntertainment('fado-night', 'Fado Performance', 'music', 'Traditional Portuguese music'), date: '2024-11-02', time: '21:00', venue: 'Alfama District', cost: 40, currency: 'EUR' }],
+        subEvents: this.generateDefaultSubEvents('Lisbon', '2024-11-01'),
         accommodation: { name: 'Lisbon Heritage Hotel', type: 'hotel', rating: 4.3, pricePerNight: 70, location: 'Alfama', amenities: ['Rooftop Terrace', 'Traditional Decor'] },
         transportation: { type: 'flight', details: 'Round-trip to Lisbon Airport', cost: 200, currency: 'EUR' },
         recommendations: { restaurants: ['Pastéis de Belém', 'Time Out Market'], localTips: ['Try pastéis de nata', 'Take Tram 28'], weatherInfo: 'Mild autumn weather', packingList: ['Light jacket', 'Sunglasses'] },
@@ -1143,6 +1101,7 @@ export class MockTripBundleService {
         endDate: '2024-10-03',
         totalCost: { amount: 1500, currency: 'EUR', breakdown: { accommodation: 480, entertainment: 300, food: 320, transport: 400 } },
         events: [{ entertainment: this.createMockEntertainment('design-museum', 'Design Museum Denmark', 'culture', 'Danish design exhibition'), date: '2024-10-01', time: '10:00', venue: 'Bredgade', cost: 25, currency: 'EUR' }],
+        subEvents: this.generateDefaultSubEvents('Copenhagen', '2024-09-30'),
         accommodation: { name: 'Copenhagen Design Hotel', type: 'hotel', rating: 4.5, pricePerNight: 120, location: 'Vesterbro', amenities: ['Modern Design', 'Bike Rental', 'Eco-Friendly'] },
         transportation: { type: 'flight', details: 'Round-trip to Copenhagen Airport', cost: 400, currency: 'EUR' },
         recommendations: { restaurants: ['Noma', 'Torvehallerne Market'], localTips: ['Rent a bike', 'Visit Tivoli Gardens'], weatherInfo: 'Cool autumn weather', packingList: ['Layers', 'Rain jacket'] },
@@ -1159,6 +1118,7 @@ export class MockTripBundleService {
         endDate: '2024-10-18',
         totalCost: { amount: 800, currency: 'EUR', breakdown: { accommodation: 240, entertainment: 180, food: 200, transport: 180 } },
         events: [{ entertainment: this.createMockEntertainment('wawel-castle', 'Wawel Castle Tour', 'culture', 'Medieval royal castle'), date: '2024-10-16', time: '11:00', venue: 'Wawel Hill', cost: 20, currency: 'EUR' }],
+        subEvents: this.generateDefaultSubEvents('Krakow', '2024-10-15'),
         accommodation: { name: 'Krakow Old Town Hotel', type: 'hotel', rating: 4.2, pricePerNight: 60, location: 'Old Town', amenities: ['Historic Building', 'Central Location'] },
         transportation: { type: 'flight', details: 'Round-trip to Krakow Airport', cost: 180, currency: 'EUR' },
         recommendations: { restaurants: ['Pierogi Heaven', 'Pod Aniołami'], localTips: ['Try different pierogi types', 'Visit Main Market Square'], weatherInfo: 'Cool autumn weather', packingList: ['Comfortable walking shoes', 'Warm jacket'] },
@@ -1175,6 +1135,7 @@ export class MockTripBundleService {
         endDate: '2024-11-13',
         totalCost: { amount: 1000, currency: 'EUR', breakdown: { accommodation: 280, entertainment: 220, food: 200, transport: 300 } },
         events: [{ entertainment: this.createMockEntertainment('szechenyi-baths', 'Széchenyi Thermal Baths', 'nature', 'Historic thermal spa complex'), date: '2024-11-11', time: '14:00', venue: 'City Park', cost: 25, currency: 'EUR' }],
+        subEvents: this.generateDefaultSubEvents('Budapest', '2024-11-10'),
         accommodation: { name: 'Budapest River Hotel', type: 'hotel', rating: 4.4, pricePerNight: 70, location: 'Pest Side', amenities: ['River View', 'Spa Access'] },
         transportation: { type: 'flight', details: 'Round-trip to Budapest Airport', cost: 300, currency: 'EUR' },
         recommendations: { restaurants: ['Central Market Hall', 'Frici Papa'], localTips: ['Bring swimwear to baths', 'Try goulash'], weatherInfo: 'Cool November weather', packingList: ['Swimwear', 'Flip-flops', 'Warm clothes'] },
@@ -1191,6 +1152,7 @@ export class MockTripBundleService {
         endDate: '2024-12-14',
         totalCost: { amount: 1600, currency: 'EUR', breakdown: { accommodation: 500, entertainment: 350, food: 400, transport: 350 } },
         events: [{ entertainment: this.createMockEntertainment('abba-museum', 'ABBA The Museum', 'music', 'Interactive ABBA experience'), date: '2024-12-11', time: '13:00', venue: 'Djurgården', cost: 30, currency: 'EUR' }],
+        subEvents: this.generateDefaultSubEvents('Stockholm', '2024-12-10'),
         accommodation: { name: 'Stockholm Waterfront Hotel', type: 'hotel', rating: 4.6, pricePerNight: 100, location: 'Gamla Stan', amenities: ['Harbor View', 'Sauna', 'Fine Dining'] },
         transportation: { type: 'flight', details: 'Round-trip to Stockholm Arlanda', cost: 350, currency: 'EUR' },
         recommendations: { restaurants: ['Oaxen Krog', 'Meatballs for the People'], localTips: ['Buy Stockholm Pass', 'Try Swedish meatballs'], weatherInfo: 'Cold December weather, possible snow', packingList: ['Very warm clothes', 'Winter boots', 'Gloves'] },
@@ -1207,6 +1169,7 @@ export class MockTripBundleService {
         endDate: '2024-12-23',
         totalCost: { amount: 2000, currency: 'EUR', breakdown: { accommodation: 600, entertainment: 400, food: 500, transport: 500 } },
         events: [{ entertainment: this.createMockEntertainment('lindt-factory', 'Lindt Chocolate Factory Tour', 'food', 'Swiss chocolate making experience'), date: '2024-12-21', time: '10:00', venue: 'Kilchberg', cost: 45, currency: 'EUR' }],
+        subEvents: this.generateDefaultSubEvents('Zurich', '2024-12-20'),
         accommodation: { name: 'Zurich Luxury Hotel', type: 'hotel', rating: 4.8, pricePerNight: 150, location: 'City Center', amenities: ['Alpine View', 'Michelin Restaurant', 'Spa'] },
         transportation: { type: 'flight', details: 'Round-trip to Zurich Airport', cost: 500, currency: 'EUR' },
         recommendations: { restaurants: ['Kronenhalle', 'Zeughauskeller'], localTips: ['Everything is expensive', 'Try fondue', 'Take train to Alps'], weatherInfo: 'Cold winter weather, snow likely', packingList: ['Warm winter gear', 'Snow boots', 'Expensive wallet'] },
@@ -1242,5 +1205,37 @@ export class MockTripBundleService {
     const date = new Date(dateString);
     date.setDate(date.getDate() + days);
     return date.toISOString().split('T')[0];
+  }
+
+  /**
+   * Generate default subEvents for bundles that don't have them yet
+   */
+  private generateDefaultSubEvents(cityName: string, startDate: string): any[] {
+    return [
+      {
+        entertainment: this.createMockEntertainment(`${cityName.toLowerCase()}-walking-tour`, `${cityName} Walking Tour`, 'culture', `Guided walking tour of ${cityName}`),
+        date: startDate,
+        time: '10:00',
+        venue: `${cityName} City Center`,
+        cost: 25,
+        currency: 'EUR'
+      },
+      {
+        entertainment: this.createMockEntertainment(`${cityName.toLowerCase()}-food-tour`, `${cityName} Food Experience`, 'food', `Local cuisine tasting in ${cityName}`),
+        date: this.addDays(startDate, 1),
+        time: '18:00',
+        venue: `${cityName} Food District`,
+        cost: 45,
+        currency: 'EUR'
+      },
+      {
+        entertainment: this.createMockEntertainment(`${cityName.toLowerCase()}-museum`, `${cityName} Local Museum`, 'culture', `Cultural museum visit in ${cityName}`),
+        date: this.addDays(startDate, 2),
+        time: '14:00',
+        venue: `${cityName} Museum District`,
+        cost: 20,
+        currency: 'EUR'
+      }
+    ];
   }
 }

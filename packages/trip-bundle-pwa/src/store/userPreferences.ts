@@ -1,34 +1,22 @@
 import { makeAutoObservable } from 'mobx';
-import type { UserPreferences } from 'trip-bundle-prompts-service';
-
-export interface UserPreference {
-  id: string;
-  type: 'music' | 'sports' | 'culture' | 'food' | 'nature' | 'nightlife';
-  value: string;
-  weight: number; // 1-10 importance scale
-}
+import type { UserData, UserPreferences } from 'trip-bundle-prompts-service';
 
 class UserPreferencesStore {
-  preferences: UserPreferences = {
-    budget: {
-      min: 500,
-      max: 3000,
-      currency: 'USD'
+  userData: UserData = {
+    userPreferences: {
+      interestTypes: {
+        concerts: { isEnabled: false },
+        sports: { isEnabled: false },
+        artDesign: { isEnabled: false },
+        localCulture: { isEnabled: false },
+        culinary: { isEnabled: false }
+      },
+      musicProfile: '',
+      freeTextInterests: ''
     },
-    duration: {
-      min: 3,
-      max: 7
-    },
-    groupSize: 1,
-    preferredCountries: [],
-    excludedCountries: [],
-    entertainmentPreferences: [],
-    musicGenres: [],
-    sportsInterests: [],
-    cultureInterests: [],
-    searchDateRange: {
-      startDate: new Date().toISOString().split('T')[0],
-      endDate: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 4 months from now
+    dateRange: {
+      startDate: Date.now(),
+      endDate: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 days from now
     }
   };
 
@@ -46,146 +34,44 @@ class UserPreferencesStore {
     makeAutoObservable(this);
   }
 
-  // Budget actions
-  setBudgetRange(min: number, max: number, currency = 'USD') {
-    this.preferences.budget = { min, max, currency };
+  // Interest types actions
+  setInterestEnabled(interestType: keyof UserPreferences['interestTypes'], enabled: boolean) {
+    this.userData.userPreferences.interestTypes[interestType].isEnabled = enabled;
     this.updateTimestamp();
   }
 
-  // Duration actions
-  setDurationRange(min: number, max: number) {
-    this.preferences.duration = { min, max };
+  // Music profile actions
+  setMusicProfile(profile: string) {
+    this.userData.userPreferences.musicProfile = profile;
     this.updateTimestamp();
   }
 
-
-
-  // Countries actions
-  addPreferredCountry(country: string) {
-    if (!this.preferences.preferredCountries) {
-      this.preferences.preferredCountries = [];
-    }
-    if (!this.preferences.preferredCountries.includes(country)) {
-      this.preferences.preferredCountries.push(country);
-      this.updateTimestamp();
-    }
-  }
-
-  removePreferredCountry(country: string) {
-    if (this.preferences.preferredCountries) {
-      this.preferences.preferredCountries = this.preferences.preferredCountries.filter(c => c !== country);
-      this.updateTimestamp();
-    }
-  }
-
-  addExcludedCountry(country: string) {
-    if (!this.preferences.excludedCountries) {
-      this.preferences.excludedCountries = [];
-    }
-    if (!this.preferences.excludedCountries.includes(country)) {
-      this.preferences.excludedCountries.push(country);
-      this.updateTimestamp();
-    }
-  }
-
-  removeExcludedCountry(country: string) {
-    if (this.preferences.excludedCountries) {
-      this.preferences.excludedCountries = this.preferences.excludedCountries.filter(c => c !== country);
-      this.updateTimestamp();
-    }
-  }
-
-  // Entertainment preferences actions
-  addEntertainmentPreference(preference: UserPreference) {
-    if (!this.preferences.entertainmentPreferences) {
-      this.preferences.entertainmentPreferences = [];
-    }
-    // Convert UserPreference to the format expected by prompts service
-    const servicePreference = {
-      value: preference.value,
-      type: preference.type,
-      weight: preference.weight
-    };
-    const existingIndex = this.preferences.entertainmentPreferences.findIndex(p => p.value === preference.value && p.type === preference.type);
-    if (existingIndex >= 0) {
-      this.preferences.entertainmentPreferences[existingIndex] = servicePreference;
-    } else {
-      this.preferences.entertainmentPreferences.push(servicePreference);
-    }
+  // Free text interests actions
+  setFreeTextInterests(interests: string) {
+    this.userData.userPreferences.freeTextInterests = interests;
     this.updateTimestamp();
   }
 
-  removeEntertainmentPreference(id: string) {
-    if (this.preferences.entertainmentPreferences) {
-      // Since the service interface doesn't have id, we'll match by value
-      this.preferences.entertainmentPreferences = this.preferences.entertainmentPreferences.filter(p => p.value !== id);
-      this.updateTimestamp();
-    }
-  }
-
-  // Music preferences actions
-  setMusicGenres(genres: string[]) {
-    this.preferences.musicGenres = genres;
-    this.updateTimestamp();
-  }
-
-  addMusicGenre(genre: string) {
-    if (!this.preferences.musicGenres) {
-      this.preferences.musicGenres = [];
-    }
-    if (!this.preferences.musicGenres.includes(genre)) {
-      this.preferences.musicGenres.push(genre);
-      this.updateTimestamp();
-    }
-  }
-
-  // Sports preferences actions
-  setSportsInterests(sports: string[]) {
-    this.preferences.sportsInterests = sports;
-    this.updateTimestamp();
-  }
-
-  addSportsInterest(sport: string) {
-    if (!this.preferences.sportsInterests) {
-      this.preferences.sportsInterests = [];
-    }
-    if (!this.preferences.sportsInterests.includes(sport)) {
-      this.preferences.sportsInterests.push(sport);
-      this.updateTimestamp();
-    }
-  }
-
-  // Group size action
-  setGroupSize(size: number) {
-    this.preferences.groupSize = Math.max(1, size);
-    this.updateTimestamp();
-  }
-
-
-
-  // Search date range actions
-  setSearchDateRange(startDate: string, endDate: string) {
-    if (!this.preferences.searchDateRange) {
-      this.preferences.searchDateRange = { startDate, endDate };
-    } else {
-      this.preferences.searchDateRange.startDate = startDate;
-      this.preferences.searchDateRange.endDate = endDate;
-    }
+  // Date range actions
+  setDateRange(startDate: number, endDate: number) {
+    this.userData.dateRange.startDate = startDate;
+    this.userData.dateRange.endDate = endDate;
     this.updateTimestamp();
   }
 
   // Spotify integration actions
   setSpotifyConnection(connected: boolean, profile?: UserPreferencesStore['spotifyProfile']) {
     console.log('🎵 [STORE] setSpotifyConnection called:', { connected, profile: !!profile });
-    console.log('🎵 [STORE] Previous state:', { spotifyConnected: this.spotifyConnected });
     this.spotifyConnected = connected;
     this.spotifyProfile = profile;
-    console.log('🎵 [STORE] New state:', { spotifyConnected: this.spotifyConnected });
-    if (profile?.topGenres) {
-      this.setMusicGenres(profile.topGenres);
+    
+    if (profile?.topGenres && profile.topGenres.length > 0) {
+      // Update music profile with Spotify data
+      const genreText = `I enjoy ${profile.topGenres.slice(0, 3).join(', ')} music`;
+      this.setMusicProfile(genreText);
     }
+    
     this.updateTimestamp();
-    console.log('🎵 [STORE] setSpotifyConnection completed');
   }
 
   // Loading state actions
@@ -199,19 +85,21 @@ class UserPreferencesStore {
   }
 
   reset() {
-    this.preferences = {
-      budget: { min: 500, max: 3000, currency: 'USD' },
-      duration: { min: 3, max: 7 },
-      groupSize: 1,
-      preferredCountries: [],
-      excludedCountries: [],
-      entertainmentPreferences: [],
-      musicGenres: [],
-      sportsInterests: [],
-      cultureInterests: [],
-      searchDateRange: {
-        startDate: new Date().toISOString().split('T')[0],
-        endDate: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    this.userData = {
+      userPreferences: {
+        interestTypes: {
+          concerts: { isEnabled: false },
+          sports: { isEnabled: false },
+          artDesign: { isEnabled: false },
+          localCulture: { isEnabled: false },
+          culinary: { isEnabled: false }
+        },
+        musicProfile: '',
+        freeTextInterests: ''
+      },
+      dateRange: {
+        startDate: Date.now(),
+        endDate: Date.now() + (7 * 24 * 60 * 60 * 1000)
       }
     };
     this.spotifyConnected = false;
@@ -221,24 +109,31 @@ class UserPreferencesStore {
 
   // Computed values
   get hasPreferences() {
-    return (this.preferences.preferredCountries?.length || 0) > 0 || 
-           (this.preferences.entertainmentPreferences?.length || 0) > 0 ||
-           (this.preferences.musicGenres?.length || 0) > 0 ||
-           (this.preferences.sportsInterests?.length || 0) > 0;
+    const interests = Object.values(this.userData.userPreferences.interestTypes);
+    const hasEnabledInterests = interests.some(interest => interest.isEnabled);
+    const hasMusicProfile = this.userData.userPreferences.musicProfile.trim().length > 0;
+    const hasFreeTextInterests = this.userData.userPreferences.freeTextInterests.trim().length > 0;
+    
+    return hasEnabledInterests || hasMusicProfile || hasFreeTextInterests;
   }
 
   get preferenceSummary() {
+    const enabledInterests = Object.entries(this.userData.userPreferences.interestTypes)
+      .filter(([_, interest]) => interest.isEnabled)
+      .map(([key, _]) => key);
+    
     return {
-      countries: this.preferences.preferredCountries?.length || 0,
-      entertainments: this.preferences.entertainmentPreferences?.length || 0,
-      musicGenres: this.preferences.musicGenres?.length || 0,
-      sportsInterests: this.preferences.sportsInterests?.length || 0,
-      budgetRange: this.preferences.budget ? `${this.preferences.budget.currency} ${this.preferences.budget.min}-${this.preferences.budget.max}` : 'Not set',
-      duration: this.preferences.duration ? `${this.preferences.duration.min}-${this.preferences.duration.max} days` : 'Not set'
+      interests: enabledInterests.length,
+      musicProfile: this.userData.userPreferences.musicProfile ? 'Set' : 'Not set',
+      freeTextInterests: this.userData.userPreferences.freeTextInterests ? 'Set' : 'Not set',
+      dateRange: `${new Date(this.userData.dateRange.startDate).toLocaleDateString()} - ${new Date(this.userData.dateRange.endDate).toLocaleDateString()}`
     };
   }
 
-
+  // Backward compatibility getter
+  get preferences() {
+    return this.userData.userPreferences;
+  }
 }
 
 export default UserPreferencesStore;

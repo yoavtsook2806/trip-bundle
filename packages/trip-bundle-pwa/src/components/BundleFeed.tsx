@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { TripBundle } from '../types';
 import BundleOffer from './BundleOffer';
-import { UserPreferencesStorage } from '../storage';
+import { PromptsTokenStorage } from '../storage';
 import './BundleFeed.css';
 
 interface BundleFeedProps {
@@ -10,7 +10,6 @@ interface BundleFeedProps {
   onBundleClick: (bundle: TripBundle) => void;
   onEditPreferences: () => void;
   onDevelopmentTab?: () => void;
-  onDateRangeChange?: (startDate: string, endDate: string) => void;
   onLoadMore?: () => void;
   isLoading?: boolean;
   isLoadingMore?: boolean;
@@ -23,47 +22,24 @@ const BundleFeed: React.FC<BundleFeedProps> = observer(({
   onBundleClick,
   onEditPreferences,
   onDevelopmentTab,
-  onDateRangeChange,
   onLoadMore,
   isLoading = false,
   isLoadingMore = false,
   hasMore = false,
   isMockMode = false
 }) => {
-  const [searchDateRange, setSearchDateRange] = useState({
-    startDate: new Date().toISOString().split('T')[0],
-    endDate: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 4 months from now
-  });
+  const [promptsToken, setPromptsToken] = useState({ calls: 0, remaining: 10 });
 
   useEffect(() => {
-    loadDateRange();
+    loadPromptsToken();
   }, []);
 
-  const loadDateRange = async () => {
+  const loadPromptsToken = async () => {
     try {
-      const preferences = await UserPreferencesStorage.getUserPreferences();
-      if (preferences.searchDateRange) {
-        setSearchDateRange(preferences.searchDateRange);
-      }
+      const token = await PromptsTokenStorage.getPromptsToken();
+      setPromptsToken({ calls: token.calls, remaining: token.remaining });
     } catch (error) {
-      console.error('Error loading date range:', error);
-    }
-  };
-
-  const handleDateRangeChange = async (startDate: string, endDate: string) => {
-    setSearchDateRange({ startDate, endDate });
-    
-    // Save to storage
-    try {
-      await UserPreferencesStorage.updatePreference('searchDateRange', { startDate, endDate });
-      
-      // Call callback to refresh bundles with new date range
-      if (onDateRangeChange) {
-        console.log('🔄 [BUNDLE_FEED] Date range changed, refreshing bundles:', { startDate, endDate });
-        onDateRangeChange(startDate, endDate);
-      }
-    } catch (error) {
-      console.error('Error saving date range:', error);
+      console.error('Error loading prompts token:', error);
     }
   };
 
@@ -103,28 +79,24 @@ const BundleFeed: React.FC<BundleFeedProps> = observer(({
           <p>Your Journey, Personalized</p>
         </div>
 
-        {/* Date Range Selector */}
-        <div className="date-range-selector">
-          <div className="date-inputs">
-            <div className="date-input-group">
-              <label>From</label>
-              <input
-                type="date"
-                value={searchDateRange.startDate}
-                onChange={(e) => handleDateRangeChange(e.target.value, searchDateRange.endDate)}
-                min={new Date().toISOString().split('T')[0]}
-              />
-            </div>
-            <div className="date-input-group">
-              <label>To</label>
-              <input
-                type="date"
-                value={searchDateRange.endDate}
-                onChange={(e) => handleDateRangeChange(searchDateRange.startDate, e.target.value)}
-                min={searchDateRange.startDate}
-              />
+        {/* API Usage Indicator */}
+        <div className="api-usage-indicator">
+          <div className="usage-info">
+            <span className="usage-text">
+              Daily searches: {promptsToken.calls}/10
+            </span>
+            <div className="usage-bar">
+              <div 
+                className="usage-fill" 
+                style={{ width: `${(promptsToken.calls / 10) * 100}%` }}
+              ></div>
             </div>
           </div>
+          {promptsToken.remaining === 0 && (
+            <div className="usage-warning">
+              ⚠️ Daily limit reached. Resets tomorrow.
+            </div>
+          )}
         </div>
       </div>
 

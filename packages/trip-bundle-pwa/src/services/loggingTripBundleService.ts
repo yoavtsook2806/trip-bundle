@@ -1,7 +1,6 @@
 import { 
   ITripBundleService, 
   GPTResponse, 
-  EventsResponse, 
   UserData,
   GenerationOptions 
 } from 'trip-bundle-prompts-service';
@@ -39,23 +38,7 @@ export class LoggingTripBundleService implements ITripBundleService {
     }
   }
 
-  async getEvents(city: string, startDate: string, endDate: string, options?: { page?: number; limit?: number }): Promise<EventsResponse> {
-    console.log('🎪 [PROMPT_SERVICE] getEvents called with params:', { city, startDate, endDate, options });
-    console.time('🎪 [PROMPT_SERVICE] getEvents duration');
-    
-    try {
-      const result = await this.wrappedService.getEvents(city, startDate, endDate, options);
-      console.log('✅ [PROMPT_SERVICE] getEvents completed successfully');
-      console.log('📊 [PROMPT_SERVICE] Events count:', result.events.length);
-      console.log('📊 [PROMPT_SERVICE] Pagination info:', result.pagination);
-      console.timeEnd('🎪 [PROMPT_SERVICE] getEvents duration');
-      return result;
-    } catch (error) {
-      console.error('❌ [PROMPT_SERVICE] getEvents failed:', error);
-      console.timeEnd('🎪 [PROMPT_SERVICE] getEvents duration');
-      throw error;
-    }
-  }
+
 
   // Proxy methods for accessing prompts (if the wrapped service supports them)
   getSystemPrompt?(): string {

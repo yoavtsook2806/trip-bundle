@@ -1,27 +1,25 @@
 import BundleSuggestionsStore from '../store/bundleSuggestions';
 import UserPreferencesStore from '../store/userPreferences';
-import IntegrationsStore from '../store/integrations';
-import { createTripBundleService, convertStoreDataToUserData } from '../services/tripBundleServiceFactory';
+
+import { createTripBundleService } from '../services/tripBundleServiceFactory';
 import { CITIES } from '../constants/cities';
 import type { TripBundle, ITripBundleService } from 'trip-bundle-prompts-service';
 
 export class TripActions {
   private bundleSuggestionsStore: BundleSuggestionsStore;
   private userPreferencesStore: UserPreferencesStore;
-  private integrationsStore: IntegrationsStore;
+
   private tripBundleService: ITripBundleService;
 
   constructor(
     bundleSuggestionsStore: BundleSuggestionsStore,
-    userPreferencesStore: UserPreferencesStore,
-    integrationsStore: IntegrationsStore
+    userPreferencesStore: UserPreferencesStore
   ) {
     this.bundleSuggestionsStore = bundleSuggestionsStore;
     this.userPreferencesStore = userPreferencesStore;
-    this.integrationsStore = integrationsStore;
     
     // Create the appropriate service based on environment
-    const userData = convertStoreDataToUserData(userPreferencesStore, integrationsStore);
+    const userData = userPreferencesStore.userData;
     const cities = CITIES.map(city => city.name);
     this.tripBundleService = createTripBundleService(userData, cities);
   }
@@ -42,7 +40,7 @@ export class TripActions {
       }
 
       // Update service with latest user data
-      const userData = convertStoreDataToUserData(this.userPreferencesStore, this.integrationsStore);
+      const userData = this.userPreferencesStore.userData;
       this.tripBundleService.updateUserData(userData);
       
       // Determine page to load

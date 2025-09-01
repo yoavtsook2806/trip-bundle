@@ -1,147 +1,114 @@
 import React, { useState, useEffect } from 'react';
-import { UserPreferences, UserPreferencesStorage } from '../storage';
+import { UserDataStorage, UserData } from '../storage';
 import type { IntegrationActions } from '../actions/integrationActions';
 import './UserPreferencesForm.css';
 
 interface UserPreferencesFormProps {
-  onPreferencesUpdate?: (preferences: UserPreferences) => void;
+  onUserDataUpdate?: (userData: UserData) => void;
   onClose?: () => void;
+  onGoPressed?: (userData: UserData) => void; // New prop for GO button
   integrationActions?: IntegrationActions;
-  isFirstTimeExperience?: boolean; // New prop to indicate if this is part of FTE
+  isFirstTimeExperience?: boolean;
+  showGoButton?: boolean; // Whether to show GO button instead of save
+  hasChanges?: boolean; // Whether there are unsaved changes
+  onChangesDetected?: (hasChanges: boolean) => void; // Callback when changes are detected
 }
 
 export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
-  onPreferencesUpdate,
+  onUserDataUpdate,
   onClose,
+  onGoPressed,
   integrationActions,
-  isFirstTimeExperience = false
+  isFirstTimeExperience = false,
+  showGoButton = false,
+  hasChanges = false,
+  onChangesDetected
 }) => {
-  const [preferences, setPreferences] = useState<UserPreferences | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [originalUserData, setOriginalUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [currentSection, setCurrentSection] = useState(0);
-
-  const sections = [
-    { id: 'personal', title: 'Personal', icon: '👤' },
-    { id: 'travel', title: 'Travel', icon: '✈️' },
-    { id: 'entertainment', title: 'Entertainment', icon: '🎭' },
-    { id: 'accommodation', title: 'Stay & Transport', icon: '🏨' },
-    { id: 'integrations', title: 'Integrations', icon: '🔗' }
-  ];
 
   useEffect(() => {
-    loadPreferences();
-    
-    // Check if we should navigate to a specific tab (e.g., after integration)
-    const activeTab = localStorage.getItem('preferences_active_tab');
-    if (activeTab) {
-      console.log('🔄 [USER_PREFS_FORM] Restoring active tab:', activeTab);
-      const tabIndex = sections.findIndex(section => section.id === activeTab);
-      if (tabIndex !== -1) {
-        setCurrentSection(tabIndex);
-      }
-      // Clear the flag after using it
-      localStorage.removeItem('preferences_active_tab');
+    loadUserData();
+  }, []);
+
+  useEffect(() => {
+    // Check for changes whenever userData updates
+    if (userData && originalUserData && onChangesDetected) {
+      const hasChanges = JSON.stringify(userData) !== JSON.stringify(originalUserData);
+      onChangesDetected(hasChanges);
     }
-  }, []);
+  }, [userData, originalUserData, onChangesDetected]);
 
-  // Add effect to reload preferences when returning from integration
-  useEffect(() => {
-    const handleStorageChange = () => {
-      console.log('🔄 [USER_PREFS_FORM] Storage changed, reloading preferences...');
-      loadPreferences();
-    };
-
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        console.log('🔄 [USER_PREFS_FORM] Page became visible, reloading preferences...');
-        loadPreferences();
-      }
-    };
-
-    const handleIntegrationUpdate = (event: CustomEvent) => {
-      console.log('🔄 [USER_PREFS_FORM] Integration updated, reloading preferences...', event.detail);
-      loadPreferences();
-    };
-
-    // Listen for storage changes (when integration completes)
-    window.addEventListener('storage', handleStorageChange);
-    
-    // Also listen for focus events (when returning from auth)
-    window.addEventListener('focus', handleStorageChange);
-    
-    // Listen for visibility changes (better for mobile/PWA)
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    // Listen for custom integration events
-    window.addEventListener('spotify-integration-updated', handleIntegrationUpdate as EventListener);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('focus', handleStorageChange);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('spotify-integration-updated', handleIntegrationUpdate as EventListener);
-    };
-  }, []);
-
-  const loadPreferences = async () => {
+  const loadUserData = async () => {
     try {
-      const userPrefs = await UserPreferencesStorage.getUserPreferences();
-      setPreferences(userPrefs);
+      const data = await UserDataStorage.getUserData();
+      setUserData(data);
+      setOriginalUserData(JSON.parse(JSON.stringify(data))); // Deep copy for comparison
     } catch (error) {
-      console.error('Error loading preferences:', error);
+      console.error('Error loading user data:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const updatePreference = async <K extends keyof UserPreferences>(
-    key: K,
-    value: UserPreferences[K]
-  ) => {
-    if (!preferences) return;
+  const updateUserData = async (updates: Partial<UserData>) => {
+    if (!userData) return;
     
-    const updatedPreferences = {
-      ...preferences,
-      [key]: value
+    const updatedData = {
+      ...userData,
+      ...updates,
+      userPreferences: {
+        ...userData.userPreferences,
+        ...updates.userPreferences
+      },
+      dateRange: {
+        ...userData.dateRange,
+        ...updates.dateRange
+      }
     };
     
-    setPreferences(updatedPreferences);
+    setUserData(updatedData);
     
-    // Auto-save the changes
+    // Auto-save only in FTE or when not showing save button
+    if (isFirstTimeExperience || !showGoButton) {
+      try {
+        await UserDataStorage.setUserData(updates);
+        onUserDataUpdate?.(updatedData);
+      } catch (error) {
+        console.error('Error auto-saving user data:', error);
+      }
+    }
+  };
+
+  const handleSave = async () => {
+    if (!userData) return;
+    
     try {
-      await UserPreferencesStorage.setUserPreferences({ [key]: value });
-      onPreferencesUpdate?.(updatedPreferences);
+      await UserDataStorage.setUserData(userData);
+      setOriginalUserData(JSON.parse(JSON.stringify(userData))); // Update baseline
+      onUserDataUpdate?.(userData);
+      onClose?.();
     } catch (error) {
-      console.error('Error auto-saving preference:', error);
+      console.error('Error saving user data:', error);
     }
   };
 
-
-
-  const addToArray = async <K extends keyof UserPreferences>(
-    key: K,
-    value: string
-  ) => {
-    if (!preferences) return;
-    
-    const currentArray = preferences[key] as string[];
-    if (!currentArray.includes(value)) {
-      await updatePreference(key, [...currentArray, value] as UserPreferences[K]);
+  const handleGo = () => {
+    if (userData && onGoPressed) {
+      onGoPressed(userData);
     }
   };
 
-  const removeFromArray = async <K extends keyof UserPreferences>(
-    key: K,
-    value: string
-  ) => {
-    if (!preferences) return;
-    
-    const currentArray = preferences[key] as string[];
-    await updatePreference(key, currentArray.filter(item => item !== value) as UserPreferences[K]);
+  const handleCancel = () => {
+    if (hasChanges) {
+      const confirmCancel = window.confirm('You have unsaved changes. Are you sure you want to discard them?');
+      if (!confirmCancel) return;
+    }
+    onClose?.();
   };
 
   if (loading) {
-    console.log('🔄 [USER_PREFS_FORM] Loading preferences...');
     return (
       <div className="preferences-form">
         <div className="loading-spinner">
@@ -152,8 +119,7 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
     );
   }
 
-  if (!preferences) {
-    console.log('❌ [USER_PREFS_FORM] No preferences loaded');
+  if (!userData) {
     return (
       <div className="preferences-form">
         <div className="error-message">
@@ -163,390 +129,252 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
     );
   }
 
-  console.log('✅ [USER_PREFS_FORM] Rendering form with preferences:', preferences);
-
-  const renderPersonalSection = () => (
-    <div className="form-section">
-      <h3>👤 Personal Information</h3>
-      
-      <div className="form-group">
-        <label>Name (Optional)</label>
-        <input
-          type="text"
-          value={preferences.name || ''}
-          onChange={(e) => updatePreference('name', e.target.value)}
-          placeholder="Your name"
-        />
-      </div>
-
-      <div className="form-group">
-        <label>Age (Optional)</label>
-        <input
-          type="number"
-          value={preferences.age || ''}
-          onChange={(e) => updatePreference('age', parseInt(e.target.value) || undefined)}
-          placeholder="Your age"
-          min="1"
-          max="120"
-        />
-      </div>
-
-      <div className="form-group">
-        <label>Email (Optional)</label>
-        <input
-          type="email"
-          value={preferences.email || ''}
-          onChange={(e) => updatePreference('email', e.target.value)}
-          placeholder="your@email.com"
-        />
-      </div>
-    </div>
-  );
-
-  const renderTravelSection = () => (
-    <div className="form-section">
-      <h3>✈️ Travel Preferences</h3>
-      
-      <div className="form-group">
-        <label>Budget Range ({preferences.budgetRange.currency})</label>
-        <div className="range-inputs">
-          <input
-            type="number"
-            value={preferences.budgetRange.min}
-            onChange={(e) => updatePreference('budgetRange', {
-              ...preferences.budgetRange,
-              min: parseInt(e.target.value) || 0
-            })}
-            placeholder="Min budget"
-          />
-          <span>to</span>
-          <input
-            type="number"
-            value={preferences.budgetRange.max}
-            onChange={(e) => updatePreference('budgetRange', {
-              ...preferences.budgetRange,
-              max: parseInt(e.target.value) || 0
-            })}
-            placeholder="Max budget"
-          />
-        </div>
-      </div>
-
-      <div className="form-group">
-        <label>Trip Duration (days)</label>
-        <div className="range-inputs">
-          <input
-            type="number"
-            value={preferences.durationRange.min}
-            onChange={(e) => updatePreference('durationRange', {
-              ...preferences.durationRange,
-              min: parseInt(e.target.value) || 1
-            })}
-            min="1"
-            placeholder="Min days"
-          />
-          <span>to</span>
-          <input
-            type="number"
-            value={preferences.durationRange.max}
-            onChange={(e) => updatePreference('durationRange', {
-              ...preferences.durationRange,
-              max: parseInt(e.target.value) || 1
-            })}
-            min="1"
-            placeholder="Max days"
-          />
-        </div>
-      </div>
-
-      <div className="form-group">
-        <label>Group Size</label>
-        <input
-          type="number"
-          value={preferences.groupSize}
-          onChange={(e) => updatePreference('groupSize', parseInt(e.target.value) || 1)}
-          min="1"
-          max="20"
-        />
-      </div>
-
-      <div className="form-group">
-        <label>Preferred Countries</label>
-        <div className="tags-input">
-          {preferences.preferredCountries.map((country, index) => (
-            <span key={index} className="tag">
-              {country}
-              <button onClick={() => removeFromArray('preferredCountries', country)}>×</button>
-            </span>
-          ))}
-          <input
-            type="text"
-            placeholder="Add country..."
-            onKeyPress={(e) => {
-              if (e.key === 'Enter' && e.currentTarget.value.trim()) {
-                addToArray('preferredCountries', e.currentTarget.value.trim());
-                e.currentTarget.value = '';
-              }
-            }}
-          />
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderEntertainmentSection = () => (
-    <div className="form-section">
-      <h3>🎭 Entertainment Preferences</h3>
-      
-      <div className="form-group">
-        <label>Entertainment Priorities</label>
-        <div className="priority-sliders">
-          {Object.entries(preferences.entertainmentWeights).map(([type, weight]) => (
-            <div key={type} className="priority-item">
-              <label>{type.charAt(0).toUpperCase() + type.slice(1)}</label>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value={weight}
-                onChange={(e) => updatePreference('entertainmentWeights', {
-                  ...preferences.entertainmentWeights,
-                  [type]: parseInt(e.target.value)
-                })}
-              />
-              <span>{weight}/10</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="form-group">
-        <label>Music Genres</label>
-        <div className="tags-input">
-          {preferences.musicGenres.map((genre, index) => (
-            <span key={index} className="tag">
-              {genre}
-              <button onClick={() => removeFromArray('musicGenres', genre)}>×</button>
-            </span>
-          ))}
-          <input
-            type="text"
-            placeholder="Add music genre..."
-            onKeyPress={(e) => {
-              if (e.key === 'Enter' && e.currentTarget.value.trim()) {
-                addToArray('musicGenres', e.currentTarget.value.trim());
-                e.currentTarget.value = '';
-              }
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="form-group">
-        <label>Sports Interests</label>
-        <div className="tags-input">
-          {preferences.sportsInterests.map((sport, index) => (
-            <span key={index} className="tag">
-              {sport}
-              <button onClick={() => removeFromArray('sportsInterests', sport)}>×</button>
-            </span>
-          ))}
-          <input
-            type="text"
-            placeholder="Add sport..."
-            onKeyPress={(e) => {
-              if (e.key === 'Enter' && e.currentTarget.value.trim()) {
-                addToArray('sportsInterests', e.currentTarget.value.trim());
-                e.currentTarget.value = '';
-              }
-            }}
-          />
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderAccommodationSection = () => (
-    <div className="form-section">
-      <h3>🏨 Accommodation & Transport</h3>
-      
-      <div className="form-group">
-        <label>Accommodation Type</label>
-        <select
-          value={preferences.accommodationType}
-          onChange={(e) => updatePreference('accommodationType', e.target.value as any)}
-        >
-          <option value="any">Any</option>
-          <option value="hotel">Hotel</option>
-          <option value="hostel">Hostel</option>
-          <option value="apartment">Apartment</option>
-          <option value="resort">Resort</option>
-        </select>
-      </div>
-
-      <div className="form-group">
-        <label>Minimum Rating</label>
-        <input
-          type="range"
-          min="1"
-          max="5"
-          value={preferences.accommodationRating}
-          onChange={(e) => updatePreference('accommodationRating', parseInt(e.target.value))}
-        />
-        <span>{preferences.accommodationRating} stars</span>
-      </div>
-
-      <div className="form-group">
-        <label>Transport Preference</label>
-        <select
-          value={preferences.transportPreference}
-          onChange={(e) => updatePreference('transportPreference', e.target.value as any)}
-        >
-          <option value="any">Any</option>
-          <option value="flight">Flight</option>
-          <option value="train">Train</option>
-          <option value="bus">Bus</option>
-          <option value="car">Car</option>
-        </select>
-      </div>
-    </div>
-  );
-
-  const renderIntegrationsSection = () => (
-    <div className="form-section">
-      <h3>🔗 Integrations</h3>
-      
-      <div className="form-group">
-        <label>Spotify Integration</label>
-        <div className="integration-item">
-          <div className="integration-info">
-            <span className="integration-icon">🎵</span>
-            <div>
-              <h4>Spotify</h4>
-              <p>Connect your Spotify to get personalized music recommendations</p>
-            </div>
-          </div>
-          <button 
-            className={`integration-btn ${preferences.spotify?.connected ? 'connected' : ''}`}
-            onClick={async () => {
-              if (integrationActions) {
-                console.log('🎵 [USER_PREFS_FORM] Connecting to Spotify...');
-                // Store current tab so we can return to it after auth
-                localStorage.setItem('preferences_active_tab', 'integrations');
-                await integrationActions.connectSpotify();
-              } else {
-                console.warn('⚠️ [USER_PREFS_FORM] Integration actions not available');
-              }
-            }}
-            disabled={!integrationActions}
-          >
-            {preferences.spotify?.connected ? 'Connected' : 'Connect'}
-          </button>
-        </div>
-      </div>
-
-      <div className="form-group">
-        <label>Calendar Integration</label>
-        <div className="integration-item">
-          <div className="integration-info">
-            <span className="integration-icon">📅</span>
-            <div>
-              <h4>Calendar</h4>
-              <p>Sync your calendar to find the best travel dates</p>
-            </div>
-          </div>
-          <button className="integration-btn" disabled>
-            Coming Soon
-          </button>
-        </div>
-      </div>
-
-      <div className="form-group">
-        <label>Google Maps Integration</label>
-        <div className="integration-item">
-          <div className="integration-info">
-            <span className="integration-icon">🗺️</span>
-            <div>
-              <h4>Google Maps</h4>
-              <p>Get location-based recommendations and directions</p>
-            </div>
-          </div>
-          <button className="integration-btn" disabled>
-            Coming Soon
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <div className="preferences-form">
       <div className="form-header">
         <h2>🎯 Trip Preferences</h2>
-        <p>Customize your travel experience</p>
-      </div>
-
-      <div className="section-navigation">
-        {sections.map((section, index) => (
-          <button
-            key={section.id}
-            className={`section-btn ${currentSection === index ? 'active' : ''}`}
-            onClick={() => setCurrentSection(index)}
-          >
-            <span className="section-icon">{section.icon}</span>
-            <span className="section-title">{section.title}</span>
-          </button>
-        ))}
+        <p>Tell us what you're interested in</p>
       </div>
 
       <div className="form-content">
-        {currentSection === 0 && renderPersonalSection()}
-        {currentSection === 1 && renderTravelSection()}
-        {currentSection === 2 && renderEntertainmentSection()}
-        {currentSection === 3 && renderAccommodationSection()}
-        {currentSection === 4 && renderIntegrationsSection()}
+        {/* Interest Types */}
+        <div className="form-section">
+          <h3>🎭 What interests you?</h3>
+          <div className="interest-checkboxes">
+            <label className="checkbox-item">
+              <input
+                type="checkbox"
+                checked={userData.userPreferences.interestTypes.concerts.isEnabled}
+                onChange={(e) => updateUserData({
+                  userPreferences: {
+                    ...userData.userPreferences,
+                    interestTypes: {
+                      ...userData.userPreferences.interestTypes,
+                      concerts: { isEnabled: e.target.checked }
+                    }
+                  }
+                })}
+              />
+              <span className="checkmark"></span>
+              <div className="checkbox-content">
+                <span className="checkbox-icon">🎵</span>
+                <span className="checkbox-label">Concerts</span>
+              </div>
+            </label>
+
+            <label className="checkbox-item">
+              <input
+                type="checkbox"
+                checked={userData.userPreferences.interestTypes.sports.isEnabled}
+                onChange={(e) => updateUserData({
+                  userPreferences: {
+                    ...userData.userPreferences,
+                    interestTypes: {
+                      ...userData.userPreferences.interestTypes,
+                      sports: { isEnabled: e.target.checked }
+                    }
+                  }
+                })}
+              />
+              <span className="checkmark"></span>
+              <div className="checkbox-content">
+                <span className="checkbox-icon">⚽</span>
+                <span className="checkbox-label">Sports</span>
+              </div>
+            </label>
+
+            <label className="checkbox-item">
+              <input
+                type="checkbox"
+                checked={userData.userPreferences.interestTypes.artDesign.isEnabled}
+                onChange={(e) => updateUserData({
+                  userPreferences: {
+                    ...userData.userPreferences,
+                    interestTypes: {
+                      ...userData.userPreferences.interestTypes,
+                      artDesign: { isEnabled: e.target.checked }
+                    }
+                  }
+                })}
+              />
+              <span className="checkmark"></span>
+              <div className="checkbox-content">
+                <span className="checkbox-icon">🎨</span>
+                <span className="checkbox-label">Art & Design</span>
+              </div>
+            </label>
+
+            <label className="checkbox-item">
+              <input
+                type="checkbox"
+                checked={userData.userPreferences.interestTypes.localCulture.isEnabled}
+                onChange={(e) => updateUserData({
+                  userPreferences: {
+                    ...userData.userPreferences,
+                    interestTypes: {
+                      ...userData.userPreferences.interestTypes,
+                      localCulture: { isEnabled: e.target.checked }
+                    }
+                  }
+                })}
+              />
+              <span className="checkmark"></span>
+              <div className="checkbox-content">
+                <span className="checkbox-icon">🏛️</span>
+                <span className="checkbox-label">Local Culture</span>
+              </div>
+            </label>
+
+            <label className="checkbox-item">
+              <input
+                type="checkbox"
+                checked={userData.userPreferences.interestTypes.culinary.isEnabled}
+                onChange={(e) => updateUserData({
+                  userPreferences: {
+                    ...userData.userPreferences,
+                    interestTypes: {
+                      ...userData.userPreferences.interestTypes,
+                      culinary: { isEnabled: e.target.checked }
+                    }
+                  }
+                })}
+              />
+              <span className="checkmark"></span>
+              <div className="checkbox-content">
+                <span className="checkbox-icon">🍽️</span>
+                <span className="checkbox-label">Culinary</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        {/* Music Profile */}
+        <div className="form-section">
+          <h3>🎵 Music Taste</h3>
+          <div className="music-section">
+            {/* Spotify Integration */}
+            <div className="integration-item">
+              <div className="integration-info">
+                <span className="integration-icon">🎵</span>
+                <div>
+                  <h4>Connect Spotify</h4>
+                  <p>Get personalized music recommendations</p>
+                </div>
+              </div>
+              <button 
+                className={`integration-btn ${userData.spotify?.connected ? 'connected' : ''}`}
+                onClick={async () => {
+                  if (integrationActions) {
+                    console.log('🎵 [USER_PREFS_FORM] Connecting to Spotify...');
+                    await integrationActions.connectSpotify();
+                  }
+                }}
+                disabled={!integrationActions}
+              >
+                {userData.spotify?.connected ? 'Connected' : 'Connect'}
+              </button>
+            </div>
+
+            <div className="or-divider">
+              <span>OR</span>
+            </div>
+
+            {/* Free Text Music Profile */}
+            <div className="form-group">
+              <label>Describe your music taste</label>
+              <textarea
+                value={userData.userPreferences.musicProfile}
+                onChange={(e) => updateUserData({
+                  userPreferences: {
+                    ...userData.userPreferences,
+                    musicProfile: e.target.value
+                  }
+                })}
+                placeholder="e.g., I love indie rock, electronic music, and jazz..."
+                rows={3}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Date Range */}
+        <div className="form-section">
+          <h3>📅 Travel Dates</h3>
+          <div className="date-range-inputs">
+            <div className="form-group">
+              <label>Start Date</label>
+              <input
+                type="date"
+                value={new Date(userData.dateRange.startDate).toISOString().split('T')[0]}
+                onChange={(e) => updateUserData({
+                  dateRange: {
+                    ...userData.dateRange,
+                    startDate: new Date(e.target.value).getTime()
+                  }
+                })}
+              />
+            </div>
+            <div className="form-group">
+              <label>End Date</label>
+              <input
+                type="date"
+                value={new Date(userData.dateRange.endDate).toISOString().split('T')[0]}
+                onChange={(e) => updateUserData({
+                  dateRange: {
+                    ...userData.dateRange,
+                    endDate: new Date(e.target.value).getTime()
+                  }
+                })}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Free Text Interests */}
+        <div className="form-section">
+          <h3>✨ Additional Interests</h3>
+          <div className="form-group">
+            <label>Tell us more about what you like</label>
+            <textarea
+              value={userData.userPreferences.freeTextInterests}
+              onChange={(e) => updateUserData({
+                userPreferences: {
+                  ...userData.userPreferences,
+                  freeTextInterests: e.target.value
+                }
+              })}
+              placeholder="e.g., photography, hiking, nightlife, museums, local markets..."
+              rows={4}
+            />
+          </div>
+        </div>
       </div>
 
       <div className="form-actions">
-        {/* Show navigation buttons only in FTE */}
-        {isFirstTimeExperience && (
-          <div className="navigation-buttons">
-            {currentSection > 0 && (
-              <button
-                className="nav-button prev"
-                onClick={() => setCurrentSection(currentSection - 1)}
-              >
-                ← Previous
-              </button>
-            )}
-            {currentSection < sections.length - 1 && (
-              <button
-                className="nav-button next"
-                onClick={() => setCurrentSection(currentSection + 1)}
-              >
-                Next →
-              </button>
-            )}
+        {isFirstTimeExperience ? (
+          // FTE: Show GO button
+          <button 
+            className="go-btn"
+            onClick={handleGo}
+            disabled={!onGoPressed}
+          >
+            🚀 GO!
+          </button>
+        ) : (
+          // Regular preferences: Show save/cancel
+          <div className="preferences-actions">
+            <button className="cancel-btn" onClick={handleCancel}>
+              ✕ Cancel
+            </button>
+            <button 
+              className={`save-btn ${hasChanges ? 'enabled' : 'disabled'}`}
+              onClick={handleSave}
+              disabled={!hasChanges}
+            >
+              💾 Save
+            </button>
           </div>
         )}
-        
-        <div className="form-completion">
-          {isFirstTimeExperience ? (
-            // In FTE: Show Done button only on the last tab
-            currentSection === sections.length - 1 && onClose && (
-              <button className="close-preferences-btn" onClick={onClose}>
-                ✅ Done
-              </button>
-            )
-          ) : (
-            // In regular flow: Show back/close button at bottom
-            onClose && (
-              <button className="close-preferences-btn back-btn" onClick={onClose}>
-                ← Back
-              </button>
-            )
-          )}
-        </div>
       </div>
     </div>
   );

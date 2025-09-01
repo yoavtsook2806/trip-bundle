@@ -1,306 +1,129 @@
 import UserPreferencesStore from '../store/userPreferences';
-import { UserPreferencesStorage, UserPreferencesHelpers, type UserPreferences } from '../storage/userPreferences';
+import { UserDataStorage, UserDataHelpers } from '../storage/userPreferences';
+import type { UserData } from '../storage/userPreferences';
 
 export class UserPreferencesActions {
-  private userPreferencesStore: UserPreferencesStore;
-  private userPreferencesStorage: typeof UserPreferencesStorage;
-  private userPreferencesHelpers: typeof UserPreferencesHelpers;
-
   constructor(
-    userPreferencesStore: UserPreferencesStore,
-    userPreferencesStorage: typeof UserPreferencesStorage = UserPreferencesStorage,
-    userPreferencesHelpers: typeof UserPreferencesHelpers = UserPreferencesHelpers
-  ) {
-    this.userPreferencesStore = userPreferencesStore;
-    this.userPreferencesStorage = userPreferencesStorage;
-    this.userPreferencesHelpers = userPreferencesHelpers;
-  }
+    private userPreferencesStore: UserPreferencesStore,
+    private userPreferencesStorage = UserDataStorage
+  ) {}
 
-  // Storage-based User Preference Actions
-  async updateUserPreferences(preferences: Partial<UserPreferences>): Promise<boolean> {
-    const success = await this.userPreferencesStorage.setUserPreferences(preferences);
+  // =============================================================================
+  // STORAGE ACTIONS
+  // =============================================================================
+
+  /**
+   * Save user data to storage
+   */
+  async saveUserData(userData: UserData): Promise<boolean> {
+    console.log('💾 [USER_PREFS_ACTIONS] Saving user data:', userData);
+    const success = await this.userPreferencesStorage.setUserData(userData);
+    
     if (success) {
-      // Also update the old store for backward compatibility
-      this.syncWithLegacyStore(preferences);
+      // Update the store with the saved data
+      this.userPreferencesStore.userData = userData;
+      console.log('✅ [USER_PREFS_ACTIONS] User data saved successfully');
+    } else {
+      console.error('❌ [USER_PREFS_ACTIONS] Failed to save user data');
     }
+    
     return success;
   }
 
-  async getUserPreferences(): Promise<UserPreferences> {
-    return this.userPreferencesStorage.getUserPreferences();
+  /**
+   * Load user data from storage
+   */
+  async loadUserData(): Promise<UserData> {
+    return this.userPreferencesStorage.getUserData();
   }
 
-  async hasStoredPreferences(): Promise<boolean> {
-    return this.userPreferencesStorage.hasUserPreferences();
+  /**
+   * Check if user has preferences
+   */
+  async hasUserData(): Promise<boolean> {
+    return UserDataHelpers.hasPreferences();
   }
 
-  async getPreferencesCompletion(): Promise<number> {
-    return this.userPreferencesHelpers.getCompletionPercentage();
-  }
-
-  async clearStoredPreferences(): Promise<boolean> {
-    const success = await this.userPreferencesStorage.clearUserPreferences();
+  /**
+   * Clear all user preferences
+   */
+  async clearUserData(): Promise<boolean> {
+    console.log('🗑️ [USER_PREFS_ACTIONS] Clearing user data');
+    const success = await this.userPreferencesStorage.clearUserData();
+    
     if (success) {
       this.userPreferencesStore.reset();
+      console.log('✅ [USER_PREFS_ACTIONS] User data cleared successfully');
+    } else {
+      console.error('❌ [USER_PREFS_ACTIONS] Failed to clear user data');
     }
+    
     return success;
   }
 
-  // Legacy User Preference Actions (for backward compatibility)
-  updateBudget(min: number, max: number, currency = 'USD'): void {
-    this.userPreferencesStore.setBudgetRange(min, max, currency);
-    // Also update in new storage
-    this.updateUserPreferences({
-      budgetRange: { min, max, currency }
-    });
+  // =============================================================================
+  // STORE ACTIONS (for immediate UI updates)
+  // =============================================================================
+
+  /**
+   * Set interest enabled/disabled
+   */
+  setInterestEnabled(interestType: keyof UserData['userPreferences']['interestTypes'], enabled: boolean) {
+    console.log(`🎯 [USER_PREFS_ACTIONS] Setting ${interestType} to ${enabled}`);
+    this.userPreferencesStore.setInterestEnabled(interestType, enabled);
   }
 
-  updateDuration(min: number, max: number): void {
-    this.userPreferencesStore.setDurationRange(min, max);
-    // Also update in new storage
-    this.updateUserPreferences({
-      durationRange: { min, max }
-    });
+  /**
+   * Set music profile
+   */
+  setMusicProfile(profile: string) {
+    console.log('🎵 [USER_PREFS_ACTIONS] Setting music profile:', profile);
+    this.userPreferencesStore.setMusicProfile(profile);
   }
 
-  // updateTravelDates method removed - use searchDateRange instead
-
-  updateGroupSize(size: number): void {
-    this.userPreferencesStore.setGroupSize(size);
-    // Also update in new storage
-    this.updateUserPreferences({
-      groupSize: size
-    });
+  /**
+   * Set free text interests
+   */
+  setFreeTextInterests(interests: string) {
+    console.log('📝 [USER_PREFS_ACTIONS] Setting free text interests:', interests);
+    this.userPreferencesStore.setFreeTextInterests(interests);
   }
 
-  addPreferredCountry(country: string): void {
-    this.userPreferencesStore.addPreferredCountry(country);
-    // Sync with storage
-    this.syncPreferredCountriesWithStorage();
+  /**
+   * Set date range
+   */
+  setDateRange(startDate: number, endDate: number) {
+    console.log('📅 [USER_PREFS_ACTIONS] Setting date range:', { startDate, endDate });
+    this.userPreferencesStore.setDateRange(startDate, endDate);
   }
 
-  removePreferredCountry(country: string): void {
-    this.userPreferencesStore.removePreferredCountry(country);
-    // Sync with storage
-    this.syncPreferredCountriesWithStorage();
-  }
+  // =============================================================================
+  // INITIALIZATION
+  // =============================================================================
 
-  addExcludedCountry(country: string): void {
-    this.userPreferencesStore.addExcludedCountry(country);
-    // Sync with storage
-    this.syncExcludedCountriesWithStorage();
-  }
-
-  removeExcludedCountry(country: string): void {
-    this.userPreferencesStore.removeExcludedCountry(country);
-    // Sync with storage
-    this.syncExcludedCountriesWithStorage();
-  }
-
-  addMusicGenre(genre: string): void {
-    this.userPreferencesStore.addMusicGenre(genre);
-    // Sync with storage
-    this.syncMusicGenresWithStorage();
-  }
-
-  addSportsInterest(sport: string): void {
-    this.userPreferencesStore.addSportsInterest(sport);
-    // Sync with storage
-    this.syncSportsInterestsWithStorage();
-  }
-
-  addEntertainmentPreference(type: 'music' | 'sports' | 'culture' | 'food' | 'nature' | 'nightlife', value: string, weight: number): void {
-    this.userPreferencesStore.addEntertainmentPreference({
-      id: `${type}-${value}-${Date.now()}`,
-      type,
-      value,
-      weight
-    });
-  }
-
-  removeEntertainmentPreference(id: string): void {
-    this.userPreferencesStore.removeEntertainmentPreference(id);
-  }
-
-  resetPreferences(): void {
-    this.userPreferencesStore.reset();
-    // Also clear storage
-    this.clearStoredPreferences();
-  }
-
-  // Private helper methods
-  private syncWithLegacyStore(preferences: Partial<UserPreferences>): void {
-    // Sync new storage preferences with legacy MobX store for backward compatibility
-    if (preferences.budgetRange) {
-      this.userPreferencesStore.setBudgetRange(
-        preferences.budgetRange.min,
-        preferences.budgetRange.max,
-        preferences.budgetRange.currency
-      );
-    }
-
-    if (preferences.durationRange) {
-      this.userPreferencesStore.setDurationRange(
-        preferences.durationRange.min,
-        preferences.durationRange.max
-      );
-    }
-
-    if (preferences.groupSize !== undefined) {
-      this.userPreferencesStore.setGroupSize(preferences.groupSize);
-    }
-
-    // travelDates removed - using searchDateRange instead
-
-    if (preferences.preferredCountries) {
-      // Clear and re-add preferred countries
-      this.userPreferencesStore.preferences.preferredCountries = [];
-      preferences.preferredCountries.forEach(country => {
-        this.userPreferencesStore.addPreferredCountry(country);
-      });
-    }
-
-    if (preferences.excludedCountries) {
-      // Clear and re-add excluded countries
-      this.userPreferencesStore.preferences.excludedCountries = [];
-      preferences.excludedCountries.forEach(country => {
-        this.userPreferencesStore.addExcludedCountry(country);
-      });
-    }
-
-    if (preferences.musicGenres) {
-      this.userPreferencesStore.setMusicGenres(preferences.musicGenres);
-    }
-
-    if (preferences.sportsInterests) {
-      this.userPreferencesStore.setSportsInterests(preferences.sportsInterests);
-    }
-
-    if (preferences.spotify) {
-      this.userPreferencesStore.setSpotifyConnection(preferences.spotify.connected, {
-        id: preferences.spotify.userId || '',
-        displayName: preferences.spotify.displayName || '',
-        topGenres: preferences.spotify.topGenres || [],
-        topArtists: preferences.spotify.topArtists || []
-      });
-    }
-  }
-
-  private async syncPreferredCountriesWithStorage(): Promise<void> {
-    const countries = this.userPreferencesStore.preferences.preferredCountries;
-    await this.updateUserPreferences({ preferredCountries: countries });
-  }
-
-  private async syncExcludedCountriesWithStorage(): Promise<void> {
-    const countries = this.userPreferencesStore.preferences.excludedCountries;
-    await this.updateUserPreferences({ excludedCountries: countries });
-  }
-
-  private async syncMusicGenresWithStorage(): Promise<void> {
-    const genres = this.userPreferencesStore.preferences.musicGenres;
-    await this.updateUserPreferences({ musicGenres: genres });
-  }
-
-  private async syncSportsInterestsWithStorage(): Promise<void> {
-    const sports = this.userPreferencesStore.preferences.sportsInterests;
-    await this.updateUserPreferences({ sportsInterests: sports });
-  }
-
-  // Utility methods
-  getPreferenceSummary() {
-    return this.userPreferencesStore.preferenceSummary;
-  }
-
-  hasPreferences(): boolean {
-    return this.userPreferencesStore.hasPreferences;
-  }
-
-  isLoading(): boolean {
-    return this.userPreferencesStore.isLoading;
-  }
-}
-
-/**
- * Initialize user preferences data from storage and sync with stores
- */
-export async function initUserPreferencesData(
-  userPreferencesStore: UserPreferencesStore,
-  userPreferencesStorage: typeof UserPreferencesStorage = UserPreferencesStorage
-): Promise<void> {
-  try {
-    console.log('⚙️ [INIT_USER_PREFS] Loading user preferences from storage...');
+  /**
+   * Initialize preferences from storage
+   */
+  async initializeFromStorage(userPreferencesStore: UserPreferencesStore): Promise<void> {
+    console.log('🚀 [USER_PREFS_ACTIONS] Initializing preferences from storage');
     
-    // Check if user has stored preferences
-    const hasStoredPrefs = await userPreferencesStorage.hasUserPreferences();
-    
-    if (hasStoredPrefs) {
-      console.log('⚙️ [INIT_USER_PREFS] Found stored preferences, loading...');
+    try {
+      const hasStoredData = await UserDataHelpers.hasPreferences();
       
-      // Get user preferences from storage
-      const preferences = await userPreferencesStorage.getUserPreferences();
-      console.log('⚙️ [INIT_USER_PREFS] Loaded preferences:', {
-        budgetRange: preferences.budgetRange,
-        durationRange: preferences.durationRange,
-        groupSize: preferences.groupSize,
-        preferredCountries: preferences.preferredCountries?.length,
-        musicGenres: preferences.musicGenres?.length,
-        spotify: preferences.spotify?.connected
-      });
-
-      // Sync with legacy store
-      if (preferences.budgetRange) {
-        userPreferencesStore.setBudgetRange(
-          preferences.budgetRange.min,
-          preferences.budgetRange.max,
-          preferences.budgetRange.currency
-        );
+      if (hasStoredData) {
+        console.log('📦 [USER_PREFS_ACTIONS] Found stored user data, loading...');
+        const userData = await this.userPreferencesStorage.getUserData();
+        
+        // Update the store with loaded data
+        userPreferencesStore.userData = userData;
+        
+        console.log('✅ [USER_PREFS_ACTIONS] Preferences initialized from storage');
+      } else {
+        console.log('📝 [USER_PREFS_ACTIONS] No stored preferences found, using defaults');
       }
-
-      if (preferences.durationRange) {
-        userPreferencesStore.setDurationRange(
-          preferences.durationRange.min,
-          preferences.durationRange.max
-        );
-      }
-
-      if (preferences.groupSize !== undefined) {
-        userPreferencesStore.setGroupSize(preferences.groupSize);
-      }
-
-      // travelDates removed - using searchDateRange instead
-
-      if (preferences.preferredCountries) {
-        preferences.preferredCountries.forEach(country => {
-          userPreferencesStore.addPreferredCountry(country);
-        });
-      }
-
-      if (preferences.excludedCountries) {
-        preferences.excludedCountries.forEach(country => {
-          userPreferencesStore.addExcludedCountry(country);
-        });
-      }
-
-      if (preferences.musicGenres) {
-        userPreferencesStore.setMusicGenres(preferences.musicGenres);
-      }
-
-      if (preferences.sportsInterests) {
-        preferences.sportsInterests.forEach(sport => {
-          userPreferencesStore.addSportsInterest(sport);
-        });
-      }
-
-      // Note: Spotify preferences are handled by initIntegrationsData
-      
-      console.log('⚙️ [INIT_USER_PREFS] User preferences initialized successfully');
-    } else {
-      console.log('⚙️ [INIT_USER_PREFS] No stored preferences found, using defaults');
+    } catch (error) {
+      console.error('❌ [USER_PREFS_ACTIONS] Error initializing preferences:', error);
     }
-
-    console.log('⚙️ [INIT_USER_PREFS] User preferences initialization completed');
-  } catch (error) {
-    console.error('⚙️ [INIT_USER_PREFS] Error initializing user preferences:', error);
   }
 }
 

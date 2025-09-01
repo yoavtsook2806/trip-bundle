@@ -67,6 +67,7 @@ export interface TripBundle {
     };
   };
   events: Event[];
+  subEvents: Event[];
   accommodation: {
     name: string;
     type: 'hotel' | 'hostel' | 'apartment' | 'resort';
@@ -104,72 +105,40 @@ export interface GPTResponse {
   };
 }
 
-// Events Search Response Type
-export interface EventsResponse {
-  events: Event[];
-  reasoning: string;
-  processingTime: number;
-  pagination?: {
-    page: number;
-    limit: number;
-    total: number;
-    hasMore: boolean;
-  };
-}
+
 
 // =============================================================================
 // USER DATA TYPES (Input to the service)
 // =============================================================================
 
-// User Preferences (simplified for the service)
-export interface UserPreferences {
-  budget?: {
-    min: number;
-    max: number;
-    currency: string;
-  };
-  duration?: {
-    min: number;
-    max: number;
-  };
-  preferredCategories?: Entertainment['category'][];
-  preferredCountries?: string[];
-  travelStyle?: 'budget' | 'mid-range' | 'luxury';
-  groupSize?: number;
-  accessibility?: boolean | string[];
-  languages?: string[];
-  musicGenres?: string[];
-  sportsInterests?: string[];
-  cultureInterests?: string[];
-  excludedCountries?: string[];
-  entertainmentPreferences?: Array<{
-    value: string;
-    type: string;
-    weight: number;
-  }>;
-  searchDateRange?: {
-    startDate: string; // ISO date string (YYYY-MM-DD)
-    endDate: string; // ISO date string (YYYY-MM-DD)
-  };
-  
-  // PWA-specific fields
-  name?: string;
-  accommodationType?: string;
-  transportPreference?: string;
-  fteWasPresented?: boolean;
+// Interest Type Configuration
+export interface InterestType {
+  isEnabled: boolean;
 }
 
-// Integration Summary Type
-export interface IntegrationSummary {
-  summary: string;
+// User Preferences (simplified for the service)
+export interface UserPreferences {
+  interestTypes: {
+    concerts: InterestType;
+    sports: InterestType;
+    artDesign: InterestType;
+    localCulture: InterestType;
+    culinary: InterestType;
+  };
+  musicProfile: string;
+  freeTextInterests: string;
+}
+
+// Date Range Type
+export interface DateRange {
+  startDate: number;
+  endDate: number;
 }
 
 // User Data Input Type (what the service receives)
 export interface UserData {
   userPreferences: UserPreferences;
-  integrations: {
-    [integrationName: string]: IntegrationSummary;
-  };
+  dateRange: DateRange;
 }
 
 // =============================================================================
@@ -194,6 +163,5 @@ export interface GenerationOptions {
 export interface ITripBundleService {
   updateUserData(userData: UserData): void;
   generateTripBundles(options?: GenerationOptions): Promise<GPTResponse>;
-  getEvents(city: string, startDate: string, endDate: string, options?: { page?: number; limit?: number }): Promise<EventsResponse>;
   isConfigured(): boolean;
 }
