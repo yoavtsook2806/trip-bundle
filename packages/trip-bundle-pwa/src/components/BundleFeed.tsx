@@ -108,7 +108,7 @@ const BundleFeed: React.FC<BundleFeedProps> = observer(({
 
       {/* Bundle List */}
       <div className="bundles-container">
-        {isLoading ? (
+        {isLoading || (bundles.length === 0 && isLoadingMore) ? (
           <ThinkingScreen message="Finding perfect trips for you..." />
         ) : bundles.length === 0 ? (
           <div className="empty-state">

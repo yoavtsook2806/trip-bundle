@@ -199,7 +199,8 @@ const App: React.FC = observer(() => {
       const cities = ['Paris', 'London', 'Tokyo', 'New York', 'Barcelona']; // Default cities for pagination
       
       console.log('🚀 [APP] Calling generateTripBundles service for Load More');
-      console.log('👤 [APP] User data:', userData);
+      console.log('👤 [APP] User preferences:', userData.userPreferences);
+      console.log('📅 [APP] Date range:', userData.dateRange);
       
       const generateTripBundles = getTripBundleService();
       const response = await generateTripBundles(userData, cities, { 

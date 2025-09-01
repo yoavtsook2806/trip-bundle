@@ -61,27 +61,77 @@ export const mockGenerateTripBundles: GenerateTripBundlesFunction = async (
           venue: 'Le Duc des Lombards',
           cost: 85,
           currency: 'EUR'
+        },
+        {
+          id: 'louvre-private-tour',
+          title: 'Private Louvre Museum Tour',
+          description: 'Skip-the-line access to the world\'s most famous museum',
+          date: '2024-10-16',
+          time: '10:00',
+          venue: 'Louvre Museum',
+          cost: 65,
+          currency: 'EUR'
+        },
+        {
+          id: 'seine-dinner-cruise',
+          title: 'Seine River Dinner Cruise',
+          description: 'Romantic dinner cruise with views of illuminated Paris',
+          date: '2024-10-16',
+          time: '19:30',
+          venue: 'Seine River',
+          cost: 95,
+          currency: 'EUR'
         }
       ],
       subEvents: [
         {
-          id: 'paris-food-tour',
-          title: 'Paris Food Tour',
-          description: 'Discover French culinary delights',
-          date: '2024-10-16',
-          time: '10:00',
-          venue: 'Paris Food District',
+          id: 'montmartre-walk',
+          title: 'Montmartre Walking Tour',
+          description: 'Explore the artistic heart of Paris',
+          date: '2024-10-17',
+          time: '14:00',
+          venue: 'Montmartre District',
+          cost: 25,
+          currency: 'EUR'
+        },
+        {
+          id: 'cafe-culture',
+          title: 'Traditional Parisian Café Experience',
+          description: 'Coffee and croissants at historic café',
+          date: '2024-10-17',
+          time: '09:00',
+          venue: 'Café de Flore',
+          cost: 15,
+          currency: 'EUR'
+        },
+        {
+          id: 'latin-quarter-stroll',
+          title: 'Latin Quarter Evening Stroll',
+          description: 'Discover hidden gems in the historic quarter',
+          date: '2024-10-17',
+          time: '18:00',
+          venue: 'Latin Quarter',
+          cost: 0,
+          currency: 'EUR'
+        },
+        {
+          id: 'wine-tasting',
+          title: 'French Wine Tasting',
+          description: 'Sample regional wines with expert sommelier',
+          date: '2024-10-18',
+          time: '16:00',
+          venue: 'Cave du Louvre',
           cost: 45,
           currency: 'EUR'
         },
         {
-          id: 'louvre-visit',
-          title: 'Louvre Museum Visit',
-          description: 'Explore world-famous art collections',
-          date: '2024-10-17',
-          time: '14:00',
-          venue: 'Louvre Museum',
-          cost: 20,
+          id: 'pastry-workshop',
+          title: 'Croissant Making Workshop',
+          description: 'Learn to make authentic French pastries',
+          date: '2024-10-18',
+          time: '11:00',
+          venue: 'Le Cordon Bleu',
+          cost: 75,
           currency: 'EUR'
         }
       ],
@@ -128,27 +178,67 @@ export const mockGenerateTripBundles: GenerateTripBundlesFunction = async (
           venue: 'Ryogoku Kokugikan',
           cost: 120,
           currency: 'EUR'
+        },
+        {
+          id: 'tsukiji-food-tour',
+          title: 'Tsukiji Fish Market Food Tour',
+          description: 'Experience the freshest sushi and seafood in Tokyo',
+          date: '2024-10-13',
+          time: '06:00',
+          venue: 'Tsukiji Outer Market',
+          cost: 85,
+          currency: 'EUR'
         }
       ],
       subEvents: [
         {
-          id: 'tokyo-food-tour',
-          title: 'Tokyo Food Tour',
-          description: 'Discover authentic Japanese cuisine',
-          date: '2024-10-11',
+          id: 'senso-ji-temple',
+          title: 'Senso-ji Temple Visit',
+          description: 'Explore Tokyo\'s oldest Buddhist temple',
+          date: '2024-10-13',
           time: '10:00',
-          venue: 'Tokyo Food District',
-          cost: 45,
+          venue: 'Senso-ji Temple',
+          cost: 0,
           currency: 'EUR'
         },
         {
-          id: 'temple-visit',
-          title: 'Traditional Temple Visit',
-          description: 'Experience spiritual Japanese culture',
+          id: 'shibuya-crossing',
+          title: 'Shibuya Crossing Experience',
+          description: 'Navigate the world\'s busiest pedestrian crossing',
           date: '2024-10-13',
           time: '14:00',
-          venue: 'Senso-ji Temple',
+          venue: 'Shibuya Crossing',
           cost: 0,
+          currency: 'EUR'
+        },
+        {
+          id: 'harajuku-fashion',
+          title: 'Harajuku Fashion District Tour',
+          description: 'Discover Tokyo\'s youth culture and fashion',
+          date: '2024-10-13',
+          time: '16:00',
+          venue: 'Harajuku',
+          cost: 20,
+          currency: 'EUR'
+        },
+        {
+          id: 'ramen-tasting',
+          title: 'Authentic Ramen Tasting',
+          description: 'Try different regional ramen styles',
+          date: '2024-10-14',
+          time: '12:00',
+          venue: 'Ramen Yokocho',
+          cost: 35,
+          currency: 'EUR'
+        },
+        {
+          id: 'tokyo-skytree',
+          title: 'Tokyo Skytree Observatory',
+          description: 'Panoramic views of Tokyo from 634m high',
+          date: '2024-10-14',
+          time: '18:00',
+          venue: 'Tokyo Skytree',
+          cost: 25,
           currency: 'EUR'
         }
       ],
@@ -195,17 +285,77 @@ export const mockGenerateTripBundles: GenerateTripBundlesFunction = async (
           venue: 'Her Majesty\'s Theatre',
           cost: 95,
           currency: 'GBP'
+        },
+        {
+          id: 'tower-of-london',
+          title: 'Tower of London & Crown Jewels',
+          description: 'Explore 1000 years of royal history',
+          date: '2024-11-03',
+          time: '10:00',
+          venue: 'Tower of London',
+          cost: 35,
+          currency: 'GBP'
+        },
+        {
+          id: 'thames-afternoon-tea',
+          title: 'Thames Afternoon Tea Cruise',
+          description: 'Traditional afternoon tea while cruising the Thames',
+          date: '2024-11-03',
+          time: '15:00',
+          venue: 'Thames River',
+          cost: 55,
+          currency: 'GBP'
         }
       ],
       subEvents: [
         {
           id: 'british-museum',
-          title: 'British Museum Tour',
-          description: 'Explore world history and culture',
-          date: '2024-11-01',
-          time: '14:00',
+          title: 'British Museum Highlights Tour',
+          description: 'Discover world treasures and ancient artifacts',
+          date: '2024-11-04',
+          time: '11:00',
           venue: 'British Museum',
+          cost: 0,
+          currency: 'GBP'
+        },
+        {
+          id: 'covent-garden',
+          title: 'Covent Garden Street Performers',
+          description: 'Enjoy live entertainment and shopping',
+          date: '2024-11-04',
+          time: '14:00',
+          venue: 'Covent Garden',
+          cost: 0,
+          currency: 'GBP'
+        },
+        {
+          id: 'pub-crawl',
+          title: 'Traditional London Pub Crawl',
+          description: 'Experience authentic British pub culture',
+          date: '2024-11-04',
+          time: '19:00',
+          venue: 'Historic London Pubs',
           cost: 25,
+          currency: 'GBP'
+        },
+        {
+          id: 'borough-market',
+          title: 'Borough Market Food Tasting',
+          description: 'Sample artisanal foods at London\'s oldest market',
+          date: '2024-11-05',
+          time: '10:00',
+          venue: 'Borough Market',
+          cost: 30,
+          currency: 'GBP'
+        },
+        {
+          id: 'london-eye',
+          title: 'London Eye Experience',
+          description: 'Panoramic views of London from the giant wheel',
+          date: '2024-11-05',
+          time: '16:00',
+          venue: 'London Eye',
+          cost: 35,
           currency: 'GBP'
         }
       ],
