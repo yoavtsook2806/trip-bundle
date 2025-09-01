@@ -25,14 +25,13 @@ export const mockGenerateTripBundles: GenerateTripBundlesFunction = async (
   console.log(`👤 User preferences:`, userData.userPreferences);
   console.log(`📅 Date range:`, userData.dateRange);
   
-  // Increment API call counter (only for page 1 - new searches)
-  if (page === 1) {
-    const { allowed, remaining } = await PromptsTokenStorage.incrementCall();
-    console.log(`📊 API call incremented: ${10 - remaining}/10 calls used`);
-    
-    if (!allowed) {
-      throw new Error('Daily API limit reached (10/10 calls). Please try again tomorrow.');
-    }
+  // Increment API call counter for every call (as requested)
+  // Note: In a real app, you might only count page 1 as new searches
+  const { allowed, remaining } = await PromptsTokenStorage.incrementCall();
+  console.log(`📊 API call incremented: ${10 - remaining}/10 calls used (Page ${page})`);
+  
+  if (!allowed) {
+    throw new Error('Daily API limit reached (10/10 calls). Please try again tomorrow.');
   }
   
   // Simulate API delay (2 seconds for better UX)

@@ -251,8 +251,10 @@ const App: React.FC = observer(() => {
               handleBundlesGenerated(response.bundles);
             }
             
-            // Complete the FTE flow
-            handleFTEComplete();
+            // Complete the FTE flow and ensure we show the feed view
+            setShowFTE(false);
+            setCurrentView('feed'); // Ensure we're in feed view to show bundles
+            console.log('✨ [APP] FTE completed, showing bundle feed');
           }}
           integrationActions={integrationActions} 
         />
