@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { TripBundle } from '../types';
 import BundleOffer from './BundleOffer';
 import { PromptsTokenStorage } from '../storage';
+import ThinkingScreen from './ThinkingScreen';
 import './BundleFeed.css';
 
 interface BundleFeedProps {
@@ -103,12 +104,7 @@ const BundleFeed: React.FC<BundleFeedProps> = observer(({
       {/* Bundle List */}
       <div className="bundles-container">
         {isLoading ? (
-          <div className="loading-state">
-            <div className="loading-spinner">
-              <div className="spinner"></div>
-            </div>
-            <p>Finding perfect trips for you...</p>
-          </div>
+          <ThinkingScreen message="Finding perfect trips for you..." />
         ) : bundles.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">🎒</div>

@@ -16,7 +16,7 @@ class UserPreferencesStore {
     },
     dateRange: {
       startDate: Date.now(),
-      endDate: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 days from now
+      endDate: Date.now() + (4 * 30 * 24 * 60 * 60 * 1000) // 4 months from now (approx 120 days)
     }
   };
 
@@ -99,7 +99,7 @@ class UserPreferencesStore {
       },
       dateRange: {
         startDate: Date.now(),
-        endDate: Date.now() + (7 * 24 * 60 * 60 * 1000)
+        endDate: Date.now() + (4 * 30 * 24 * 60 * 60 * 1000) // 4 months from now (approx 120 days)
       }
     };
     this.spotifyConnected = false;

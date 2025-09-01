@@ -55,7 +55,7 @@ export async function getTripBundleService() {
       },
       dateRange: {
         startDate: Date.now(),
-        endDate: Date.now() + (7 * 24 * 60 * 60 * 1000)
+        endDate: Date.now() + (4 * 30 * 24 * 60 * 60 * 1000) // 4 months from now
       }
     };
   }

@@ -94,9 +94,27 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
     }
   };
 
-  const handleGo = () => {
-    if (userData && onGoPressed) {
-      onGoPressed(userData);
+  const handleGo = async () => {
+    console.log('🚀 [USER_PREFS_FORM] GO button pressed');
+    
+    if (userData) {
+      try {
+        // Save user data before proceeding
+        await UserDataStorage.setUserData(userData);
+        console.log('💾 [USER_PREFS_FORM] User data saved before GO');
+        
+        if (onGoPressed) {
+          onGoPressed(userData);
+        }
+      } catch (error) {
+        console.error('Error saving user data before GO:', error);
+        // Still proceed even if save fails
+        if (onGoPressed) {
+          onGoPressed(userData);
+        }
+      }
+    } else {
+      console.warn('No user data available for GO button');
     }
   };
 

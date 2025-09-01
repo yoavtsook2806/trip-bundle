@@ -205,8 +205,9 @@ const App: React.FC = observer(() => {
         <FirstTimeExperience 
           onComplete={handleFTEComplete} 
           onGoPressed={async () => {
-            console.log('🚀 [APP] GO pressed in FTE, generating bundles');
-            await loadBundles();
+            console.log('🚀 [APP] GO pressed in FTE, completing flow');
+            // Complete the FTE flow (this will also load bundles)
+            await handleFTEComplete();
           }}
           integrationActions={integrationActions} 
         />
