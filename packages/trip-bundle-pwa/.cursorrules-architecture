@@ -1,0 +1,157 @@
+# Trip Bundle PWA - Architecture Rules
+
+## 📁 Directory Structure
+
+```
+src/
+├── components/     # React components (UI only)
+├── store/         # MobX stores (application state)
+├── actions/       # Actions (business logic)
+├── storage/       # Local storage utilities
+└── types.ts       # TypeScript type definitions
+```
+
+## 🏗️ Architecture Pattern
+
+### **CRITICAL RULE: Actions-Only Data Flow**
+**ALL data operations MUST go through action functions. Never directly call storage or service functions from components.**
+
+```typescript
+// ✅ CORRECT - Components call actions only
+const handleSave = () => {
+  updatePreferences(preferences, dateRange, isMock);
+};
+
+// ❌ WRONG - Components never call storage/service directly
+const handleSave = () => {
+  saveUserPreferences(preferences);
+  const response = await generateTripBundles(userData);
+};
+```
+
+### **Data Flow Pattern**
+1. **Components** → Call **Actions**
+2. **Actions** → Read from **Storage** and call **Services**
+3. **Actions** → Update **Store** with results
+4. **Store** → Triggers component re-renders (MobX observer)
+
+## 🔄 Layer Responsibilities
+
+### **Components Layer**
+- Render UI elements
+- Handle user interactions
+- Call action functions
+- Observe store state (MobX observer)
+- **NEVER** directly access storage or services
+
+### **Actions Layer** 
+- Business logic and data orchestration
+- Read from storage utilities
+- Call external services (trip-bundle-prompts-service)
+- Update MobX store with results
+- Handle error states and loading
+
+### **Store Layer (MobX)**
+- Application state management
+- Observable state for components
+- Computed values and getters
+- State mutations (called by actions)
+
+### **Storage Layer**
+- localStorage utilities
+- Data persistence
+- Default value providers
+- **ONLY** called by actions, never by components
+
+## 🎯 Action Function Patterns
+
+### **Action Function Template**
+```typescript
+export const actionName = async (params: Type) => {
+  console.log('🎯 Starting action...', params);
+  
+  // 1. Update loading state
+  appStore.setLoading(true);
+  
+  try {
+    // 2. Read from storage if needed
+    const data = getFromStorage();
+    
+    // 3. Call service if needed
+    const result = await serviceCall(data);
+    
+    // 4. Save to storage if needed
+    saveToStorage(result);
+    
+    // 5. Update store
+    appStore.updateState(result);
+    
+    console.log('✅ Action completed', result);
+  } catch (error) {
+    console.error('❌ Action failed:', error);
+    // Handle error state
+  } finally {
+    appStore.setLoading(false);
+  }
+};
+```
+
+## 📋 Implementation Checklist
+
+- [ ] Component only calls actions, never storage/services
+- [ ] Action handles all business logic
+- [ ] Store is updated through actions only
+- [ ] Loading states managed in actions
+- [ ] Error handling in actions
+- [ ] Console logging for debugging
+- [ ] TypeScript types for all parameters
+
+## 🚫 Anti-Patterns to Avoid
+
+```typescript
+// ❌ Component directly calling storage
+const preferences = getUserPreferences();
+
+// ❌ Component directly calling service
+const bundles = await generateTripBundles(userData);
+
+// ❌ Component directly updating store
+appStore.setBundles(bundles);
+
+// ❌ Mixing concerns in one function
+const handleSave = () => {
+  // Don't mix UI logic with data logic
+  setLoading(true);
+  saveData();
+  updateStore();
+  setLoading(false);
+};
+```
+
+## ✅ Correct Patterns
+
+```typescript
+// ✅ Component calls action
+const handleSave = () => {
+  updatePreferences(preferences, dateRange, isMock);
+};
+
+// ✅ Action orchestrates everything
+export const updatePreferences = async (prefs, dates, mock) => {
+  appStore.setLoading(true);
+  try {
+    saveUserPreferences(prefs);
+    const result = await generateTripBundles(userData, mock);
+    appStore.setBundles(result.bundles);
+  } finally {
+    appStore.setLoading(false);
+  }
+};
+```
+
+This architecture ensures:
+- Clear separation of concerns
+- Predictable data flow
+- Easy testing and debugging
+- Consistent error handling
+- Maintainable codebase

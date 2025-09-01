@@ -67,9 +67,16 @@ export interface UserData {
   dateRange: DateRange;
 }
 
+// Generation Options
+export interface GenerationOptions {
+  from?: number;
+  to?: number;
+}
+
 // Service Interface
 // Simplified service interface - just a single function
 export type GenerateTripBundlesFunction = (
   userData: UserData,
-  isMock?: boolean
+  isMock?: boolean,
+  options?: GenerationOptions
 ) => Promise<GPTResponse>;

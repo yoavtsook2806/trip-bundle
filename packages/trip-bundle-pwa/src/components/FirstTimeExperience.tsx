@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { UserPreferences, DateRange } from '../types';
 import { getDefaultUserPreferences } from '../storage';
+import { spotifyService } from '../services';
 import './FirstTimeExperience.css';
 
 interface FirstTimeExperienceProps {
@@ -13,6 +14,16 @@ export const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComp
     startDate: Date.now(),
     endDate: Date.now() + (7 * 24 * 60 * 60 * 1000) // Default to 1 week from now
   });
+  const [isConnectingSpotify, setIsConnectingSpotify] = useState(false);
+
+  const isSpotifyConnected = () => {
+    try {
+      const parsed = JSON.parse(preferences.musicProfile);
+      return parsed.type === 'spotify';
+    } catch {
+      return false;
+    }
+  };
 
   const handleInterestChange = (interestKey: keyof typeof preferences.interestTypes, isEnabled: boolean) => {
     setPreferences((prev: UserPreferences) => ({
@@ -29,6 +40,38 @@ export const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComp
       ...prev,
       musicProfile: value
     }));
+  };
+
+  const handleSpotifyConnect = async () => {
+    if (isConnectingSpotify) return;
+    
+    setIsConnectingSpotify(true);
+    try {
+      console.log('🎵 Attempting to connect to Spotify...');
+      const success = await spotifyService.authenticate();
+      
+      if (success) {
+        console.log('🎵 Spotify connection successful');
+        const userPrefs = await spotifyService.getUserPreferences();
+        // Just stringify the Spotify data instead of using prompts
+        const musicProfile = JSON.stringify({
+          type: 'spotify',
+          genres: userPrefs.topGenres.slice(0, 5),
+          artists: userPrefs.topArtists.slice(0, 5).map(a => ({ name: a.name, genres: a.genres })),
+          tracks: userPrefs.topTracks.slice(0, 5).map(t => ({ name: t.name, artist: t.artists[0]?.name })),
+          musicProfile: userPrefs.musicProfile
+        });
+        handleMusicProfileChange(musicProfile);
+      } else {
+        console.warn('🎵 Spotify connection failed');
+        alert('Failed to connect to Spotify. Please try again or use the text field instead.');
+      }
+    } catch (error) {
+      console.error('🎵 Spotify connection error:', error);
+      alert('Error connecting to Spotify. Please try again or use the text field instead.');
+    } finally {
+      setIsConnectingSpotify(false);
+    }
   };
 
   const handleFreeTextChange = (value: string) => {
@@ -105,18 +148,20 @@ export const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComp
           <h2>Music Taste</h2>
           <div className="music-options">
             <button 
-              className={`music-option ${preferences.musicProfile === 'spotify' ? 'active' : ''}`}
-              onClick={() => handleMusicProfileChange('spotify')}
+              className={`music-option ${isSpotifyConnected() ? 'active' : ''}`}
+              onClick={handleSpotifyConnect}
+              disabled={isConnectingSpotify}
             >
-              🎵 Connect Spotify
+              {isConnectingSpotify ? '🔄 Connecting...' : (isSpotifyConnected() ? '✅ Spotify Connected' : '🎵 Connect Spotify')}
             </button>
             <div className="music-text-option">
               <label>Or describe your music taste:</label>
               <textarea
-                value={preferences.musicProfile === 'spotify' ? '' : preferences.musicProfile}
+                value={isSpotifyConnected() ? 'Spotify data connected ✅' : preferences.musicProfile}
                 onChange={(e) => handleMusicProfileChange(e.target.value)}
                 placeholder="e.g., I love indie rock, jazz, and electronic music..."
                 rows={3}
+                readOnly={isSpotifyConnected()}
               />
             </div>
           </div>

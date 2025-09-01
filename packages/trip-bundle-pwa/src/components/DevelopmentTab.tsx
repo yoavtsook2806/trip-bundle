@@ -1,22 +1,20 @@
 import React from 'react';
 import { PromptsUsage } from '../types';
-import { resetPromptsUsage } from '../storage';
 import './DevelopmentTab.css';
 
 interface DevelopmentTabProps {
   promptsUsage: PromptsUsage;
   onClose: () => void;
-  onResetUsage: () => void;
+  onResetLocalStorage: () => void;
 }
 
 export const DevelopmentTab: React.FC<DevelopmentTabProps> = ({
   promptsUsage,
   onClose,
-  onResetUsage
+  onResetLocalStorage
 }) => {
-  const handleResetUsage = () => {
-    resetPromptsUsage();
-    onResetUsage();
+  const handleResetLocalStorage = () => {
+    onResetLocalStorage();
   };
 
   return (
@@ -43,8 +41,8 @@ export const DevelopmentTab: React.FC<DevelopmentTabProps> = ({
                 <strong>Date:</strong> {promptsUsage.date}
               </div>
             </div>
-            <button className="reset-button" onClick={handleResetUsage}>
-              Reset Usage Counter
+            <button className="reset-button" onClick={handleResetLocalStorage}>
+              Reset Local Storage
             </button>
           </div>
 

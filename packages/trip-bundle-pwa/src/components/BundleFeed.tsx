@@ -8,6 +8,10 @@ interface BundleFeedProps {
   onBundleSelect: (bundle: TripBundle) => void;
   onOpenPreferences: () => void;
   onOpenDevelopment?: () => void;
+  onLoadMore?: () => void;
+  onGenerateNew?: () => void;
+  canLoadMore?: boolean;
+  hasUserData?: boolean;
   isMockMode?: boolean;
 }
 
@@ -17,6 +21,10 @@ export const BundleFeed: React.FC<BundleFeedProps> = ({
   onBundleSelect,
   onOpenPreferences,
   onOpenDevelopment,
+  onLoadMore,
+  onGenerateNew,
+  canLoadMore = false,
+  hasUserData = false,
   isMockMode = false
 }) => {
   const getKeyEvents = (bundle: TripBundle) => {
@@ -70,11 +78,23 @@ export const BundleFeed: React.FC<BundleFeedProps> = ({
       {bundles.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">🎭</div>
-          <h2>No trip bundles yet</h2>
-          <p>Set your preferences and generate your first trip bundle!</p>
-          <button className="preferences-button-large" onClick={onOpenPreferences}>
-            Set Preferences
-          </button>
+          {hasUserData ? (
+            <>
+              <h2>Ready to create your bundles?</h2>
+              <p>Generate trip bundles based on your saved preferences!</p>
+              <button className="preferences-button-large" onClick={onGenerateNew}>
+                Generate New Bundles
+              </button>
+            </>
+          ) : (
+            <>
+              <h2>No trip bundles yet</h2>
+              <p>Set your preferences and generate your first trip bundle!</p>
+              <button className="preferences-button-large" onClick={onOpenPreferences}>
+                Set Preferences
+              </button>
+            </>
+          )}
         </div>
       ) : (
         <div className="bundles-grid">
@@ -123,6 +143,14 @@ export const BundleFeed: React.FC<BundleFeedProps> = ({
               </div>
             </div>
           ))}
+          
+          {canLoadMore && onLoadMore && (
+            <div className="load-more-container">
+              <button className="load-more-button" onClick={onLoadMore}>
+                Load More Bundles
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

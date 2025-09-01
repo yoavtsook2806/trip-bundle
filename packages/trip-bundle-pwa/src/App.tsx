@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { generateTripBundles } from 'trip-bundle-prompts-service';
+import React, { useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
 import {
   FirstTimeExperience,
   ThinkingScreen,
@@ -8,183 +8,75 @@ import {
   PreferencesScreen,
   DevelopmentTab
 } from './components';
+import { appStore } from './store';
 import {
-  AppState,
-  UserPreferences,
-  DateRange,
-  TripBundle,
-  UserData,
-
-} from './types';
-import {
-  getUserPreferences,
-  saveUserPreferences,
-  getDateRange,
-  saveDateRange,
-  hasCompletedFirstTimeSetup,
-  getPromptsUsage,
-  incrementPromptsUsage,
-  canMakePromptCall
-} from './storage';
+  initializeApp,
+  completeFirstTimeSetup,
+  updatePreferences,
+  navigateToScreen,
+  selectBundle,
+  resetLocalStorage,
+  loadMoreBundles,
+  generateNewBundles
+} from './actions';
 import './App.css';
 
 const MOCK_MODE = import.meta.env.VITE_MOCK === 'true' || true; // Force mock mode for now
 
-export const App: React.FC = () => {
-  const [appState, setAppState] = useState<AppState>({
-    currentScreen: 'firstTime',
-    isLoading: false,
-    bundles: [],
-    selectedBundle: null,
-    userPreferences: null,
-    dateRange: null,
-    promptsUsage: getPromptsUsage()
-  });
-
+export const App: React.FC = observer(() => {
   // Initialize app state on mount
   useEffect(() => {
-    const preferences = getUserPreferences();
-    const dateRange = getDateRange();
-    const hasSetup = hasCompletedFirstTimeSetup();
-
-    setAppState(prev => ({
-      ...prev,
-      userPreferences: preferences,
-      dateRange: dateRange,
-      currentScreen: hasSetup ? 'bundles' : 'firstTime',
-      promptsUsage: getPromptsUsage()
-    }));
+    initializeApp();
   }, []);
 
-  const generateBundles = async (preferences: UserPreferences, dateRange: DateRange) => {
-    if (!canMakePromptCall()) {
-      console.warn('Daily prompt limit reached');
-      return;
-    }
-
-    setAppState(prev => ({ ...prev, currentScreen: 'thinking', isLoading: true }));
-
-    try {
-      const userData: UserData = {
-        userPreferences: preferences,
-        dateRange: dateRange
-      };
-
-      console.log('🚀 Generating bundles with:', userData);
-      console.log('🎭 Mock mode:', MOCK_MODE);
-      
-      const response = await generateTripBundles(userData, MOCK_MODE);
-      
-      // Increment usage counter
-      const newUsage = incrementPromptsUsage();
-      
-      setAppState(prev => ({
-        ...prev,
-        bundles: response.bundles,
-        currentScreen: 'bundles',
-        isLoading: false,
-        promptsUsage: newUsage
-      }));
-
-      console.log('✅ Generated bundles:', response.bundles);
-    } catch (error) {
-      console.error('❌ Error generating bundles:', error);
-      setAppState(prev => ({
-        ...prev,
-        currentScreen: 'bundles',
-        isLoading: false
-      }));
-    }
+  const handleFirstTimeComplete = async (preferences: any, dateRange: any) => {
+    await completeFirstTimeSetup(preferences, dateRange, MOCK_MODE);
   };
 
-  const handleFirstTimeComplete = async (preferences: UserPreferences, dateRange: DateRange) => {
-    console.log('🎯 First time setup complete:', { preferences, dateRange });
-    
-    // Save preferences
-    saveUserPreferences(preferences);
-    saveDateRange(dateRange);
-    
-    setAppState(prev => ({
-      ...prev,
-      userPreferences: preferences,
-      dateRange: dateRange
-    }));
-
-    // Generate bundles
-    await generateBundles(preferences, dateRange);
-  };
-
-  const handleBundleSelect = (bundle: TripBundle) => {
-    setAppState(prev => ({
-      ...prev,
-      selectedBundle: bundle,
-      currentScreen: 'bundlePage'
-    }));
+  const handleBundleSelect = (bundle: any) => {
+    selectBundle(bundle);
   };
 
   const handleBackToBundles = () => {
-    setAppState(prev => ({
-      ...prev,
-      selectedBundle: null,
-      currentScreen: 'bundles'
-    }));
+    navigateToScreen('bundles');
+    selectBundle(null);
   };
 
   const handleOpenPreferences = () => {
-    setAppState(prev => ({
-      ...prev,
-      currentScreen: 'preferences'
-    }));
+    navigateToScreen('preferences');
   };
 
-  const handlePreferencesSave = async (preferences: UserPreferences, dateRange: DateRange) => {
-    console.log('💾 Saving preferences:', { preferences, dateRange });
-    
-    // Save preferences
-    saveUserPreferences(preferences);
-    saveDateRange(dateRange);
-    
-    setAppState(prev => ({
-      ...prev,
-      userPreferences: preferences,
-      dateRange: dateRange
-    }));
-
-    // Generate new bundles
-    await generateBundles(preferences, dateRange);
+  const handlePreferencesSave = async (preferences: any, dateRange: any) => {
+    await updatePreferences(preferences, dateRange, MOCK_MODE);
   };
 
   const handlePreferencesCancel = () => {
-    setAppState(prev => ({
-      ...prev,
-      currentScreen: 'bundles'
-    }));
+    navigateToScreen('bundles');
   };
 
   const handleOpenDevelopment = () => {
-    setAppState(prev => ({
-      ...prev,
-      currentScreen: 'development'
-    }));
+    navigateToScreen('development');
   };
 
   const handleCloseDevelopment = () => {
-    setAppState(prev => ({
-      ...prev,
-      currentScreen: 'bundles'
-    }));
+    navigateToScreen('bundles');
   };
 
-  const handleResetUsage = () => {
-    setAppState(prev => ({
-      ...prev,
-      promptsUsage: getPromptsUsage()
-    }));
+  const handleResetLocalStorage = () => {
+    resetLocalStorage();
+  };
+
+  const handleLoadMore = async () => {
+    await loadMoreBundles(MOCK_MODE);
+  };
+
+  const handleGenerateNew = async () => {
+    await generateNewBundles(MOCK_MODE);
   };
 
   // Render current screen
   const renderCurrentScreen = () => {
-    switch (appState.currentScreen) {
+    switch (appStore.currentScreen) {
       case 'firstTime':
         return (
           <FirstTimeExperience
@@ -198,29 +90,33 @@ export const App: React.FC = () => {
       case 'bundles':
         return (
           <BundleFeed
-            bundles={appState.bundles}
-            promptsUsage={appState.promptsUsage}
+            bundles={appStore.bundles}
+            promptsUsage={appStore.promptsUsage}
             onBundleSelect={handleBundleSelect}
             onOpenPreferences={handleOpenPreferences}
             onOpenDevelopment={MOCK_MODE ? handleOpenDevelopment : undefined}
+            onLoadMore={handleLoadMore}
+            onGenerateNew={handleGenerateNew}
+            canLoadMore={appStore.canLoadMore}
+            hasUserData={appStore.hasCompletedSetup}
             isMockMode={MOCK_MODE}
           />
         );
 
       case 'bundlePage':
-        return appState.selectedBundle ? (
+        return appStore.selectedBundle ? (
           <BundlePage
-            bundle={appState.selectedBundle}
+            bundle={appStore.selectedBundle}
             onBack={handleBackToBundles}
           />
         ) : null;
 
       case 'preferences':
-        return appState.userPreferences && appState.dateRange ? (
+        return appStore.userPreferences && appStore.dateRange ? (
           <PreferencesScreen
-            initialPreferences={appState.userPreferences}
-            initialDateRange={appState.dateRange}
-            promptsUsage={appState.promptsUsage}
+            initialPreferences={appStore.userPreferences}
+            initialDateRange={appStore.dateRange}
+            promptsUsage={appStore.promptsUsage}
             onSave={handlePreferencesSave}
             onCancel={handlePreferencesCancel}
           />
@@ -229,9 +125,9 @@ export const App: React.FC = () => {
       case 'development':
         return MOCK_MODE ? (
           <DevelopmentTab
-            promptsUsage={appState.promptsUsage}
+            promptsUsage={appStore.promptsUsage}
             onClose={handleCloseDevelopment}
-            onResetUsage={handleResetUsage}
+            onResetLocalStorage={handleResetLocalStorage}
           />
         ) : null;
 
@@ -245,4 +141,4 @@ export const App: React.FC = () => {
       {renderCurrentScreen()}
     </div>
   );
-};
+});
