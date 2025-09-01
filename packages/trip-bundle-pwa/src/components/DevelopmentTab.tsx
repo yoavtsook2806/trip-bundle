@@ -10,7 +10,7 @@ interface DevelopmentTabProps {
 }
 
 export const DevelopmentTab: React.FC<DevelopmentTabProps> = ({
-  promptsUsage,
+  promptsUsage: _promptsUsage,
   onClose,
   onResetLocalStorage
 }) => {

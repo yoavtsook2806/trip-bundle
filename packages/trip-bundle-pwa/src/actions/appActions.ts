@@ -1,4 +1,4 @@
-import { generateTripBundles } from 'trip-bundle-prompts-service';
+import { generateTripBundles, TripBundle } from 'trip-bundle-prompts-service';
 import { appStore } from '../store';
 import { 
   UserPreferences, 
