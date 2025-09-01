@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PromptsUsage } from '../types';
+import { getUserPreferences, getDateRange } from '../storage';
 import './DevelopmentTab.css';
 
 interface DevelopmentTabProps {
@@ -13,8 +14,48 @@ export const DevelopmentTab: React.FC<DevelopmentTabProps> = ({
   onClose,
   onResetLocalStorage
 }) => {
+  const [showUserData, setShowUserData] = useState(false);
+  const [userData, setUserData] = useState<any>(null);
+
   const handleResetLocalStorage = () => {
     onResetLocalStorage();
+  };
+
+  const handleShowUserData = () => {
+    const preferences = getUserPreferences();
+    const dateRange = getDateRange();
+    
+    // Get all localStorage data
+    const allLocalStorage: { [key: string]: any } = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key) {
+        try {
+          const value = localStorage.getItem(key);
+          allLocalStorage[key] = value ? JSON.parse(value) : value;
+        } catch {
+          allLocalStorage[key] = localStorage.getItem(key);
+        }
+      }
+    }
+
+    const data = {
+      userPreferences: preferences,
+      dateRange: dateRange,
+      localStorage: allLocalStorage,
+      spotifyIntegration: preferences.musicProfile ? (() => {
+        try {
+          const parsed = JSON.parse(preferences.musicProfile);
+          return parsed.type === 'spotify' ? parsed : { type: 'text', data: preferences.musicProfile };
+        } catch {
+          return { type: 'text', data: preferences.musicProfile };
+        }
+      })() : null
+    };
+    
+    setUserData(data);
+    setShowUserData(true);
+    console.log('🛠️ [DEV] User Data:', data);
   };
 
   return (
@@ -29,52 +70,34 @@ export const DevelopmentTab: React.FC<DevelopmentTabProps> = ({
 
         <div className="dev-content">
           <div className="dev-section">
-            <h2>API Usage</h2>
-            <div className="usage-info">
-              <div className="usage-item">
-                <strong>Calls Today:</strong> {promptsUsage.count}
-              </div>
-              <div className="usage-item">
-                <strong>Daily Limit:</strong> {promptsUsage.maxDaily}
-              </div>
-              <div className="usage-item">
-                <strong>Date:</strong> {promptsUsage.date}
-              </div>
-            </div>
-            <button className="reset-button" onClick={handleResetLocalStorage}>
-              Reset Local Storage
-            </button>
-          </div>
-
-          <div className="dev-section">
-            <h2>Environment</h2>
-            <div className="env-info">
-              <div className="env-item">
-                <strong>Mode:</strong> Mock Mode (Development)
-              </div>
-              <div className="env-item">
-                <strong>Mock Delay:</strong> 5 seconds
-              </div>
-              <div className="env-item">
-                <strong>Bundles Generated:</strong> 5 per call
-              </div>
+            <h2>Actions</h2>
+            <div className="dev-actions">
+              <button className="dev-button reset-button" onClick={handleResetLocalStorage}>
+                🗑️ Reset Local Storage
+              </button>
+              <button className="dev-button show-data-button" onClick={handleShowUserData}>
+                📊 Show User Data
+              </button>
             </div>
           </div>
 
-          <div className="dev-section">
-            <h2>Storage</h2>
-            <div className="storage-info">
-              <div className="storage-item">
-                <strong>User Preferences:</strong> localStorage
-              </div>
-              <div className="storage-item">
-                <strong>Date Range:</strong> localStorage
-              </div>
-              <div className="storage-item">
-                <strong>Usage Tracking:</strong> localStorage
+          {showUserData && userData && (
+            <div className="dev-section">
+              <h2>User Data</h2>
+              <div className="user-data-display">
+                <button 
+                  className="close-data-button" 
+                  onClick={() => setShowUserData(false)}
+                  style={{ float: 'right', marginBottom: '10px' }}
+                >
+                  ✕ Close
+                </button>
+                <pre className="user-data-json">
+                  {JSON.stringify(userData, null, 2)}
+                </pre>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

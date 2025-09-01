@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserPreferences, DateRange } from '../types';
 import { getDefaultUserPreferences } from '../storage';
 import { spotifyService } from '../services';
@@ -16,11 +16,88 @@ export const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComp
   });
   const [isConnectingSpotify, setIsConnectingSpotify] = useState(false);
 
+  // Check if we're returning from Spotify authentication
+  useEffect(() => {
+    const checkSpotifyReturn = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const spotifyAuthReturn = urlParams.get('spotify_auth_return');
+      const authCode = localStorage.getItem('spotify_auth_code');
+      
+      console.log('🎵 [FTE_SPOTIFY_RETURN] Checking for Spotify return:', {
+        spotifyAuthReturn: !!spotifyAuthReturn,
+        hasAuthCode: !!authCode,
+        currentUrl: window.location.href
+      });
+
+      if (spotifyAuthReturn && authCode && !isSpotifyConnected()) {
+        console.log('🎵 [FTE_SPOTIFY_RETURN] Processing Spotify return with auth code');
+        setIsConnectingSpotify(true);
+        
+        try {
+          // Handle the callback with the stored auth code
+          const success = await spotifyService.handleCallback(authCode);
+          console.log('🎵 [FTE_SPOTIFY_RETURN] Callback handling result:', success);
+          
+          if (success) {
+            console.log('🎵 [FTE_SPOTIFY_RETURN] ✅ Authentication successful, fetching user preferences...');
+            const userPrefs = await spotifyService.getUserPreferences();
+            console.log('🎵 [FTE_SPOTIFY_RETURN] User preferences fetched:', {
+              topGenres: userPrefs.topGenres?.length || 0,
+              topArtists: userPrefs.topArtists?.length || 0,
+              topTracks: userPrefs.topTracks?.length || 0
+            });
+            
+            const musicProfile = JSON.stringify({
+              type: 'spotify',
+              genres: userPrefs.topGenres.slice(0, 5),
+              artists: userPrefs.topArtists.slice(0, 5).map(a => ({ name: a.name, genres: a.genres })),
+              tracks: userPrefs.topTracks.slice(0, 5).map(t => ({ name: t.name, artist: t.artists[0]?.name })),
+              musicProfile: userPrefs.musicProfile
+            });
+            
+            console.log('🎵 [FTE_SPOTIFY_RETURN] ✅ Music profile created, updating state...');
+            handleMusicProfileChange(musicProfile);
+            console.log('🎵 [FTE_SPOTIFY_RETURN] ✅ Spotify connection completed successfully!');
+            
+            // Visual success indication only (no popup)
+            
+            // Clean up localStorage and URL
+            localStorage.removeItem('spotify_auth_code');
+            localStorage.removeItem('spotify_auth_state');
+            window.history.replaceState({}, document.title, window.location.pathname);
+            
+          } else {
+            console.error('🎵 [FTE_SPOTIFY_RETURN] ❌ Callback handling failed');
+            alert('Failed to complete Spotify authentication. Please try again.');
+            localStorage.removeItem('spotify_auth_code');
+            localStorage.removeItem('spotify_auth_state');
+          }
+        } catch (error) {
+          console.error('🎵 [FTE_SPOTIFY_RETURN] ❌ Error processing Spotify return:', error);
+          alert('Error completing Spotify authentication. Please try again.');
+          localStorage.removeItem('spotify_auth_code');
+          localStorage.removeItem('spotify_auth_state');
+        } finally {
+          setIsConnectingSpotify(false);
+        }
+      }
+    };
+
+    checkSpotifyReturn();
+  }, []);
+
   const isSpotifyConnected = () => {
     try {
+      if (!preferences.musicProfile) {
+        console.log('🎵 [FTE_SPOTIFY_STATE] No music profile set');
+        return false;
+      }
       const parsed = JSON.parse(preferences.musicProfile);
-      return parsed.type === 'spotify';
-    } catch {
+      const isConnected = parsed.type === 'spotify';
+      console.log('🎵 [FTE_SPOTIFY_STATE] Connection status:', isConnected, 'Profile:', parsed.type);
+      return isConnected;
+    } catch (error) {
+      console.log('🎵 [FTE_SPOTIFY_STATE] Failed to parse music profile:', preferences.musicProfile);
       return false;
     }
   };
@@ -171,11 +248,12 @@ export const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComp
             <div className="music-text-option">
               <label>Or describe your music taste:</label>
               <textarea
-                value={isSpotifyConnected() ? 'Spotify data connected ✅' : preferences.musicProfile}
+                value={isSpotifyConnected() ? '🎵 Spotify Connected! Your music preferences have been imported.' : preferences.musicProfile}
                 onChange={(e) => handleMusicProfileChange(e.target.value)}
                 placeholder="e.g., I love indie rock, jazz, and electronic music..."
                 rows={3}
                 readOnly={isSpotifyConnected()}
+                style={isSpotifyConnected() ? { backgroundColor: '#e8f5e8', color: '#2d5a2d', fontWeight: 'bold' } : {}}
               />
             </div>
           </div>
