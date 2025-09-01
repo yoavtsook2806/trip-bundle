@@ -9,6 +9,7 @@ import {
   type TripBundle,
   type Entertainment
 } from 'trip-bundle-prompts-service';
+import { PromptsTokenStorage } from '../storage/userPreferences';
 
 /**
  * Mock service that provides sample data for development
@@ -36,6 +37,16 @@ export class MockTripBundleService {
     const startTime = Date.now();
 
     console.log(`🎭 Using mock data (VITE_MOCK=true) - Page ${page}, Limit ${limit}`);
+    
+    // Increment API call counter (only for page 1 - new searches)
+    if (page === 1) {
+      const { allowed, remaining } = await PromptsTokenStorage.incrementCall();
+      console.log(`📊 API call incremented: ${10 - remaining}/10 calls used`);
+      
+      if (!allowed) {
+        throw new Error('Daily API limit reached (10/10 calls). Please try again tomorrow.');
+      }
+    }
     
     // Simulate API delay (5 seconds for thinking screen)
     await new Promise(resolve => setTimeout(resolve, 5000));

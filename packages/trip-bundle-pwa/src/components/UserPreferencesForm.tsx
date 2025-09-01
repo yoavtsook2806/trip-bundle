@@ -6,6 +6,7 @@ import './UserPreferencesForm.css';
 interface UserPreferencesFormProps {
   onUserDataUpdate?: (userData: UserData) => void;
   onClose?: () => void;
+  onCancel?: () => void; // Separate callback for cancel (no save/reload)
   onGoPressed?: (userData: UserData) => void; // New prop for GO button
   integrationActions?: IntegrationActions;
   isFirstTimeExperience?: boolean;
@@ -17,16 +18,18 @@ interface UserPreferencesFormProps {
 export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
   onUserDataUpdate,
   onClose,
+  onCancel,
   onGoPressed,
   integrationActions,
   isFirstTimeExperience = false,
   showGoButton = false,
-  hasChanges = false,
+  hasChanges: _hasChangesProp = false,
   onChangesDetected
 }) => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [originalUserData, setOriginalUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     loadUserData();
@@ -34,9 +37,14 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
 
   useEffect(() => {
     // Check for changes whenever userData updates
-    if (userData && originalUserData && onChangesDetected) {
-      const hasChanges = JSON.stringify(userData) !== JSON.stringify(originalUserData);
-      onChangesDetected(hasChanges);
+    if (userData && originalUserData) {
+      const hasChangesValue = JSON.stringify(userData) !== JSON.stringify(originalUserData);
+      setHasChanges(hasChangesValue);
+      
+      // Also call the callback if provided
+      if (onChangesDetected) {
+        onChangesDetected(hasChangesValue);
+      }
     }
   }, [userData, originalUserData, onChangesDetected]);
 
@@ -123,7 +131,12 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
       const confirmCancel = window.confirm('You have unsaved changes. Are you sure you want to discard them?');
       if (!confirmCancel) return;
     }
-    onClose?.();
+    // Use onCancel if available (preferences screen), otherwise onClose (FTE)
+    if (onCancel) {
+      onCancel();
+    } else {
+      onClose?.();
+    }
   };
 
   if (loading) {

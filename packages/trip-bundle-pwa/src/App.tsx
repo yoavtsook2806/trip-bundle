@@ -183,6 +183,12 @@ const App: React.FC = observer(() => {
     await loadBundles();
   };
 
+  const handlePreferencesCancel = () => {
+    console.log('❌ [APP] Preferences cancelled, returning to feed without changes');
+    setCurrentView('feed');
+    // No bundle reloading on cancel
+  };
+
 
 
   const handleDevelopmentTab = () => {
@@ -241,10 +247,10 @@ const App: React.FC = observer(() => {
           <UserPreferencesForm
             onUserDataUpdate={async () => {
               console.log('💾 [APP] Preferences saved, generating bundles');
-              await loadBundles();
-              setCurrentView('feed');
+              await handlePreferencesComplete();
             }}
             onClose={handlePreferencesComplete}
+            onCancel={handlePreferencesCancel}
             integrationActions={integrationActions}
             isFirstTimeExperience={false}
           />
