@@ -12,7 +12,9 @@ export const generateTripBundles: GenerateTripBundlesFunction = async (
 ): Promise<GPTResponse> => {
   console.log('🎯 Generating trip bundles...');
   console.log('📍 Mode:', isMock ? 'Mock AI' : 'Real AI');
-  console.log('👤 User preferences:', userData.userPreferences.interests);
+  console.log('👤 User preferences:', Object.keys(userData.userPreferences.interestTypes).filter(key => 
+    userData.userPreferences.interestTypes[key as keyof typeof userData.userPreferences.interestTypes].isEnabled
+  ));
   console.log('📅 Date range:', `${userData.dateRange.startDate} to ${userData.dateRange.endDate}`);
   console.log('📦 Existing bundles to filter:', existingBundles.map(b => `${b.id}: ${b.title}`));
   
