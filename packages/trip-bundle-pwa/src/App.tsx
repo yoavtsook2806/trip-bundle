@@ -99,6 +99,7 @@ export const App: React.FC = observer(() => {
             onGenerateNew={handleGenerateNew}
             canLoadMore={appStore.canLoadMore}
             hasUserData={appStore.hasCompletedSetup}
+            isLoading={appStore.isLoading}
             isMockMode={MOCK_MODE}
           />
         );

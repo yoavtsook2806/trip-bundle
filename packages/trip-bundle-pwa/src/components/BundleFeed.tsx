@@ -12,6 +12,7 @@ interface BundleFeedProps {
   onGenerateNew?: () => void;
   canLoadMore?: boolean;
   hasUserData?: boolean;
+  isLoading?: boolean;
   isMockMode?: boolean;
 }
 
@@ -25,6 +26,7 @@ export const BundleFeed: React.FC<BundleFeedProps> = ({
   onGenerateNew,
   canLoadMore = false,
   hasUserData = false,
+  isLoading = false,
   isMockMode = false
 }) => {
   const getKeyEvents = (bundle: TripBundle) => {
@@ -146,8 +148,19 @@ export const BundleFeed: React.FC<BundleFeedProps> = ({
           
           {canLoadMore && onLoadMore && (
             <div className="load-more-container">
-              <button className="load-more-button" onClick={onLoadMore}>
-                Load More Bundles
+              <button 
+                className={`load-more-button ${isLoading ? 'loading' : ''}`}
+                onClick={onLoadMore}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <span className="loading-spinner">🔄</span>
+                    Fetching New Bundles...
+                  </>
+                ) : (
+                  'Load More Bundles'
+                )}
               </button>
             </div>
           )}

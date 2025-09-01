@@ -270,11 +270,34 @@
   transition: all 0.3s ease;
 }
 
-.load-more-button:hover {
+.load-more-button:hover:not(:disabled) {
   background: #667eea;
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.load-more-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.load-more-button.loading {
+  background: #f8f9fa;
+  color: #667eea;
+  border-color: #667eea;
+}
+
+.loading-spinner {
+  display: inline-block;
+  margin-right: 8px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 @media (max-width: 768px) {
