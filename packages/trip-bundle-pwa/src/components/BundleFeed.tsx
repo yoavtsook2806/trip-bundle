@@ -35,6 +35,11 @@ const BundleFeed: React.FC<BundleFeedProps> = observer(({
     loadPromptsToken();
   }, []);
 
+  // Re-load prompts token when bundles change (after Load More)
+  useEffect(() => {
+    loadPromptsToken();
+  }, [bundles.length]);
+
   const loadPromptsToken = async () => {
     try {
       const token = await PromptsTokenStorage.getPromptsToken();

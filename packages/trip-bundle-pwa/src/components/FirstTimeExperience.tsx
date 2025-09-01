@@ -17,16 +17,15 @@ const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({
 }) => {
 
 
-  const handleGoPressed = async (userData: UserData) => {
+  const handleGoPressed = async (userData: UserData, response?: any) => {
     try {
       // Mark FTE as completed when GO is pressed
       await FirstTimeExperienceStorage.setFteWasPresented(true);
-      console.log('🚀 [FTE] GO button pressed, completing FTE');
-      onGoPressed(userData);
+      onGoPressed(userData, response);
     } catch (error) {
       console.error('Error completing FTE:', error);
       // Still proceed even if storage fails
-      onGoPressed(userData);
+      onGoPressed(userData, response);
     }
   };
 

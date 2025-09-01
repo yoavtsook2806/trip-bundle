@@ -56,18 +56,13 @@ const App: React.FC = observer(() => {
       
       // Always load existing bundles from storage first
       bundleSuggestionsStore.loadBundlesFromStorage();
-      console.log('💾 [APP] Loaded existing bundles from storage:', bundleSuggestionsStore.bundles.length);
       
       // Check if FTE should be shown
       const fteWasPresented = await fteActions.getFteWasPresented();
-      if (!fteWasPresented) {
-        console.log('✨ [APP] First time user, showing FTE');
-        setShowFTE(true);
-      } else {
-        console.log('🎯 [APP] Returning user with existing bundles');
-      }
       
-      console.log('🚀 [APP] App initialization completed');
+      if (!fteWasPresented) {
+        setShowFTE(true);
+      }
     };
     
     initializeApp();
@@ -139,13 +134,9 @@ const App: React.FC = observer(() => {
   };
 
   const handleBundlesGenerated = (bundles: any[]) => {
-    console.log('✅ [APP] Bundles generated:', bundles.length);
-    
     // Update the bundle suggestions store AND save to storage
     bundleSuggestionsStore.setBundles(bundles);
     bundleSuggestionsStore.saveBundlesToStorage();
-    
-    console.log('💾 [APP] Bundles saved to storage for persistence');
     setIsLoadingBundles(false);
   };
 
@@ -196,10 +187,7 @@ const App: React.FC = observer(() => {
   };
 
   const handleLoadMoreBundles = async () => {
-    console.log('📄 [APP] Loading more bundles');
-    
     if (bundleSuggestionsStore.pagination.isLoadingMore || !bundleSuggestionsStore.canLoadMore) {
-      console.log('⏸️ [APP] Already loading or no more bundles available');
       return;
     }
 
@@ -210,15 +198,14 @@ const App: React.FC = observer(() => {
       const userData = userPreferencesStore.userData;
       const cities = ['Paris', 'London', 'Tokyo', 'New York', 'Barcelona']; // Default cities for pagination
       
-      console.log(`📄 [APP] Loading page ${nextPage}`);
+      console.log('🚀 [APP] Calling generateTripBundles service for Load More');
+      console.log('👤 [APP] User data:', userData);
       
       const generateTripBundles = getTripBundleService();
       const response = await generateTripBundles(userData, cities, { 
         page: nextPage, 
         limit: 5 
       });
-      
-      console.log(`✅ [APP] Loaded ${response.bundles.length} more bundles`);
       
       // Append the new bundles to existing ones
       bundleSuggestionsStore.setBundles(
@@ -233,7 +220,6 @@ const App: React.FC = observer(() => {
       
       // Save updated bundles to storage
       bundleSuggestionsStore.saveBundlesToStorage();
-      console.log('💾 [APP] Load more bundles saved to storage');
       
     } catch (error) {
       console.error('❌ [APP] Error loading more bundles:', error);
@@ -253,17 +239,13 @@ const App: React.FC = observer(() => {
         <FirstTimeExperience 
           onComplete={handleFTEComplete} 
           onGoPressed={(_userData, response) => {
-            console.log('🚀 [APP] GO pressed in FTE, completing flow');
-            
             if (response) {
-              // Handle the generated bundles
               handleBundlesGenerated(response.bundles);
             }
             
             // Complete the FTE flow and ensure we show the feed view
             setShowFTE(false);
-            setCurrentView('feed'); // Ensure we're in feed view to show bundles
-            console.log('✨ [APP] FTE completed, showing bundle feed');
+            setCurrentView('feed');
           }}
           integrationActions={integrationActions} 
         />
