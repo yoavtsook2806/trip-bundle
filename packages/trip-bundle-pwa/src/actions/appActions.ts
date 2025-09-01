@@ -1,4 +1,4 @@
-import { generateTripBundles, GenerationOptions } from 'trip-bundle-prompts-service';
+import { generateTripBundles } from 'trip-bundle-prompts-service';
 import { appStore } from '../store';
 import { 
   UserPreferences, 
@@ -45,7 +45,7 @@ export const generateBundles = async (
   preferences: UserPreferences, 
   dateRange: DateRange,
   isMock: boolean = true,
-  options: GenerationOptions = { from: 0, to: 5 }
+  existingBundles: TripBundle[] = []
 ) => {
   if (!canMakePromptCall()) {
     console.warn('❌ Daily prompt limit reached');
@@ -63,7 +63,7 @@ export const generateBundles = async (
       dateRange: dateRange
     };
 
-    const response = await generateTripBundles(userData, isMock, options);
+    const response = await generateTripBundles(userData, isMock, existingBundles);
     
     // Update usage counter
     const newUsage = incrementPromptsUsage();
@@ -189,17 +189,15 @@ export const loadMoreBundles = async (isMock: boolean = true) => {
   appStore.setLoading(true);
 
   try {
-    const options: GenerationOptions = {
-      from: appStore.bundlesLoaded,
-      to: Math.min(appStore.bundlesLoaded + 5, appStore.maxBundles)
-    };
+    // Pass existing bundles to avoid duplicates
+    const existingBundles = appStore.bundles;
 
     const userData: UserData = {
       userPreferences: appStore.userPreferences,
       dateRange: appStore.dateRange
     };
 
-    const response = await generateTripBundles(userData, isMock, options);
+    const response = await generateTripBundles(userData, isMock, existingBundles);
     
     // Update usage counter
     const newUsage = incrementPromptsUsage();

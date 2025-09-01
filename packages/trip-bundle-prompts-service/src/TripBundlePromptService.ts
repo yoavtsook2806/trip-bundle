@@ -1,4 +1,6 @@
-import { UserData, GPTResponse, TripBundle, Event, GenerateTripBundlesFunction, GenerationOptions } from './types';
+import { UserData, GPTResponse, TripBundle, GenerateTripBundlesFunction } from './types';
+import { getBundlesFromAi as getMockBundlesFromAi } from './AiMockService';
+import { getBundlesFromAi as getRealBundlesFromAi } from './AiService';
 
 /**
  * Generates trip bundles - either mock data or real API call
@@ -6,480 +8,54 @@ import { UserData, GPTResponse, TripBundle, Event, GenerateTripBundlesFunction, 
 export const generateTripBundles: GenerateTripBundlesFunction = async (
   userData: UserData,
   isMock: boolean = true,
-  options: GenerationOptions = {}
+  existingBundles: TripBundle[] = []
 ): Promise<GPTResponse> => {
-  console.log('🎯 Generating trip bundles for:', userData);
-  console.log('📍 Mode:', isMock ? 'Mock' : 'Real API');
-  console.log('📊 Options:', options);
+  console.log('🎯 Generating trip bundles...');
+  console.log('📍 Mode:', isMock ? 'Mock AI' : 'Real AI');
+  console.log('👤 User preferences:', userData.userPreferences.interests);
+  console.log('📅 Date range:', `${userData.dateRange.startDate} to ${userData.dateRange.endDate}`);
+  console.log('📦 Existing bundles to filter:', existingBundles.map(b => `${b.id}: ${b.title}`));
+  
+  // Create user prompt for AI
+  const userPrompt = createUserPrompt(userData, existingBundles);
+  console.log('📝 Generated user prompt for AI');
   
   if (isMock) {
-    // Simulate API delay for mock mode
+    console.log('⏳ Simulating AI processing time (5 seconds)...');
+    // Simulate AI processing delay for mock mode
     await new Promise(resolve => setTimeout(resolve, 5000));
-    return generateMockBundles(userData, options);
-  } else {
-    // Real API implementation will go here
-    return generateRealBundles(userData, options);
-  }
-};
-
-/**
- * Generates mock trip bundles with realistic data
- */
-const generateMockBundles = async (userData: UserData, options: GenerationOptions = {}): Promise<GPTResponse> => {
-  const { from = 0, to = 5 } = options;
-  
-  // Generate all 10 mock bundles, then slice based on pagination
-  const mockBundles: TripBundle[] = [
-    {
-      id: '1',
-      title: 'Jazz & Gastronomy Weekend',
-      description: 'Experience the best of local jazz scene combined with culinary adventures in the heart of the city.',
-      city: 'New York',
-      startDate: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-      endDate: new Date(userData.dateRange.endDate).toISOString().split('T')[0],
-      events: [
-        {
-          interestType: 'concerts',
-          date: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-          time: '20:00',
-          venue: 'Blue Note',
-          cost: 45,
-          currency: 'USD',
-          bookingUrl: 'https://bluenote.net'
-        },
-        {
-          interestType: 'culinary',
-          date: new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0],
-          time: '19:30',
-          venue: 'Le Bernardin',
-          cost: 180,
-          currency: 'USD',
-          bookingUrl: 'https://lebernardiny.com'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'localCulture',
-          date: new Date(userData.dateRange.startDate + 43200000).toISOString().split('T')[0],
-          time: '14:00',
-          venue: 'Central Park',
-          cost: 0,
-          currency: 'USD'
-        }
-      ]
-    },
-    {
-      id: '2',
-      title: 'Art & Sports Fusion',
-      description: 'Blend contemporary art exhibitions with thrilling sports events for an unforgettable experience.',
-      city: 'Los Angeles',
-      startDate: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-      endDate: new Date(userData.dateRange.endDate).toISOString().split('T')[0],
-      events: [
-        {
-          interestType: 'artDesign',
-          date: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-          time: '11:00',
-          venue: 'LACMA',
-          cost: 25,
-          currency: 'USD',
-          bookingUrl: 'https://lacma.org'
-        },
-        {
-          interestType: 'sports',
-          date: new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0],
-          time: '19:00',
-          venue: 'Staples Center',
-          cost: 120,
-          currency: 'USD',
-          bookingUrl: 'https://staplescenter.com'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'culinary',
-          date: new Date(userData.dateRange.startDate + 43200000).toISOString().split('T')[0],
-          time: '18:00',
-          venue: 'Grand Central Market',
-          cost: 30,
-          currency: 'USD'
-        }
-      ]
-    },
-    {
-      id: '3',
-      title: 'Cultural Heritage Tour',
-      description: 'Dive deep into local traditions, museums, and historical landmarks that define the city.',
-      city: 'San Francisco',
-      startDate: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-      endDate: new Date(userData.dateRange.endDate).toISOString().split('T')[0],
-      events: [
-        {
-          interestType: 'localCulture',
-          date: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-          time: '10:00',
-          venue: 'Alcatraz Island',
-          cost: 40,
-          currency: 'USD',
-          bookingUrl: 'https://alcatrazcruises.com'
-        },
-        {
-          interestType: 'localCulture',
-          date: new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0],
-          time: '13:00',
-          venue: 'Chinatown',
-          cost: 15,
-          currency: 'USD'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'culinary',
-          date: new Date(userData.dateRange.startDate + 43200000).toISOString().split('T')[0],
-          time: '12:00',
-          venue: 'Ferry Building Marketplace',
-          cost: 25,
-          currency: 'USD'
-        }
-      ]
-    },
-    {
-      id: '4',
-      title: 'Music & Food Festival',
-      description: 'A perfect combination of live music performances and gourmet food experiences.',
-      city: 'Austin',
-      startDate: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-      endDate: new Date(userData.dateRange.endDate).toISOString().split('T')[0],
-      events: [
-        {
-          interestType: 'concerts',
-          date: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-          time: '21:00',
-          venue: 'The Continental Club',
-          cost: 35,
-          currency: 'USD',
-          bookingUrl: 'https://continentalclub.com'
-        },
-        {
-          interestType: 'culinary',
-          date: new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0],
-          time: '17:00',
-          venue: 'Franklin Barbecue',
-          cost: 40,
-          currency: 'USD'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'localCulture',
-          date: new Date(userData.dateRange.startDate + 43200000).toISOString().split('T')[0],
-          time: '15:00',
-          venue: 'South by Southwest',
-          cost: 50,
-          currency: 'USD'
-        }
-      ]
-    },
-    {
-      id: '5',
-      title: 'Sports & Nightlife Adventure',
-      description: 'Experience the thrill of live sports followed by the vibrant nightlife scene.',
-      city: 'Miami',
-      startDate: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-      endDate: new Date(userData.dateRange.endDate).toISOString().split('T')[0],
-      events: [
-        {
-          interestType: 'sports',
-          date: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-          time: '20:00',
-          venue: 'American Airlines Arena',
-          cost: 85,
-          currency: 'USD',
-          bookingUrl: 'https://aaarena.com'
-        },
-        {
-          interestType: 'concerts',
-          date: new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0],
-          time: '23:00',
-          venue: 'LIV Nightclub',
-          cost: 60,
-          currency: 'USD'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'culinary',
-          date: new Date(userData.dateRange.startDate + 43200000).toISOString().split('T')[0],
-          time: '19:00',
-          venue: 'Joe\'s Stone Crab',
-          cost: 95,
-          currency: 'USD'
-        }
-      ]
-    },
-    {
-      id: '6',
-      title: 'Adventure & Wellness Retreat',
-      description: 'Combine outdoor adventures with wellness activities for the perfect balance of excitement and relaxation.',
-      city: 'Denver',
-      startDate: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-      endDate: new Date(userData.dateRange.endDate).toISOString().split('T')[0],
-      events: [
-        {
-          interestType: 'sports',
-          date: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-          time: '08:00',
-          venue: 'Rocky Mountain National Park',
-          cost: 75,
-          currency: 'USD',
-          bookingUrl: 'https://nps.gov'
-        },
-        {
-          interestType: 'localCulture',
-          date: new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0],
-          time: '15:00',
-          venue: 'Red Rocks Amphitheatre',
-          cost: 25,
-          currency: 'USD'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'culinary',
-          date: new Date(userData.dateRange.startDate + 43200000).toISOString().split('T')[0],
-          time: '18:00',
-          venue: 'Farm to Table Restaurant',
-          cost: 65,
-          currency: 'USD'
-        }
-      ]
-    },
-    {
-      id: '7',
-      title: 'Tech & Innovation Experience',
-      description: 'Explore cutting-edge technology centers and innovative cultural spaces.',
-      city: 'Seattle',
-      startDate: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-      endDate: new Date(userData.dateRange.endDate).toISOString().split('T')[0],
-      events: [
-        {
-          interestType: 'localCulture',
-          date: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-          time: '10:00',
-          venue: 'Museum of Flight',
-          cost: 30,
-          currency: 'USD',
-          bookingUrl: 'https://museumofflight.org'
-        },
-        {
-          interestType: 'artDesign',
-          date: new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0],
-          time: '14:00',
-          venue: 'Chihuly Garden and Glass',
-          cost: 35,
-          currency: 'USD'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'culinary',
-          date: new Date(userData.dateRange.startDate + 43200000).toISOString().split('T')[0],
-          time: '17:00',
-          venue: 'Pike Place Market',
-          cost: 40,
-          currency: 'USD'
-        }
-      ]
-    },
-    {
-      id: '8',
-      title: 'Historic & Musical Journey',
-      description: 'Discover the rich history and vibrant music scene of the South.',
-      city: 'Nashville',
-      startDate: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-      endDate: new Date(userData.dateRange.endDate).toISOString().split('T')[0],
-      events: [
-        {
-          interestType: 'concerts',
-          date: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-          time: '20:00',
-          venue: 'Grand Ole Opry',
-          cost: 55,
-          currency: 'USD',
-          bookingUrl: 'https://opry.com'
-        },
-        {
-          interestType: 'localCulture',
-          date: new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0],
-          time: '11:00',
-          venue: 'Country Music Hall of Fame',
-          cost: 30,
-          currency: 'USD'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'culinary',
-          date: new Date(userData.dateRange.startDate + 43200000).toISOString().split('T')[0],
-          time: '12:30',
-          venue: 'Honky Tonk Central',
-          cost: 25,
-          currency: 'USD'
-        }
-      ]
-    },
-    {
-      id: '9',
-      title: 'Beach & Arts Festival',
-      description: 'Enjoy beautiful beaches combined with world-class art galleries and cultural events.',
-      city: 'San Diego',
-      startDate: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-      endDate: new Date(userData.dateRange.endDate).toISOString().split('T')[0],
-      events: [
-        {
-          interestType: 'artDesign',
-          date: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-          time: '10:00',
-          venue: 'San Diego Museum of Art',
-          cost: 20,
-          currency: 'USD',
-          bookingUrl: 'https://sdmart.org'
-        },
-        {
-          interestType: 'localCulture',
-          date: new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0],
-          time: '15:00',
-          venue: 'Balboa Park',
-          cost: 0,
-          currency: 'USD'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'culinary',
-          date: new Date(userData.dateRange.startDate + 43200000).toISOString().split('T')[0],
-          time: '19:00',
-          venue: 'Gaslamp Quarter',
-          cost: 50,
-          currency: 'USD'
-        }
-      ]
-    },
-    {
-      id: '10',
-      title: 'Mountain Adventure & Craft Culture',
-      description: 'Experience outdoor adventures paired with local craft breweries and artisan markets.',
-      city: 'Portland',
-      startDate: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-      endDate: new Date(userData.dateRange.endDate).toISOString().split('T')[0],
-      events: [
-        {
-          interestType: 'localCulture',
-          date: new Date(userData.dateRange.startDate).toISOString().split('T')[0],
-          time: '09:00',
-          venue: 'Mount Hood',
-          cost: 45,
-          currency: 'USD',
-          bookingUrl: 'https://mthood.gov'
-        },
-        {
-          interestType: 'artDesign',
-          date: new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0],
-          time: '13:00',
-          venue: 'Portland Art Museum',
-          cost: 25,
-          currency: 'USD'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'culinary',
-          date: new Date(userData.dateRange.startDate + 43200000).toISOString().split('T')[0],
-          time: '16:00',
-          venue: 'Food Truck Pod',
-          cost: 20,
-          currency: 'USD'
-        }
-      ]
-    }
-  ];
-
-  // Apply pagination
-  const paginatedBundles = mockBundles.slice(from, to);
-  
-  console.log(`✅ Generated ${paginatedBundles.length} mock trip bundles (${from}-${to} of ${mockBundles.length} total)`);
-  
-  return {
-    bundles: paginatedBundles
-  };
-};
-
-/**
- * Generates real trip bundles using OpenAI API
- */
-const generateRealBundles = async (userData: UserData, options: GenerationOptions = {}): Promise<GPTResponse> => {
-  const apiKey = (globalThis as any).VITE_OPENAI_API_KEY || process.env.VITE_OPENAI_API_KEY;
-  
-  if (!apiKey) {
-    throw new Error('OpenAI API key not configured');
-  }
-
-  console.log('🤖 Calling OpenAI API for real trip bundles...');
-  
-  try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a travel expert. Generate trip bundles based on user preferences in JSON format.'
-          },
-          {
-            role: 'user',
-            content: `Generate 5 trip bundles for these preferences: ${JSON.stringify(userData)}`
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 4000
-      })
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`OpenAI API error: ${response.status} ${errorText}`);
-    }
-
-    const result: any = await response.json();
     
-    if (!result.choices?.[0]?.message?.content) {
-      throw new Error('Invalid response from OpenAI API');
-    }
-
-    let parsedContent: any;
-    try {
-      parsedContent = JSON.parse(result.choices[0].message.content);
-    } catch (parseError) {
-      console.error('Failed to parse GPT response as JSON:', result.choices[0].message.content);
-      throw new Error('Invalid JSON response from GPT');
-    }
-
-    const gptResponse: GPTResponse = {
-      bundles: parsedContent.bundles || []
-    };
-
-    console.log(`✅ Successfully generated ${gptResponse.bundles.length} real trip bundles`);
-    return gptResponse;
-
-  } catch (error) {
-    console.error('❌ Error generating real trip bundles:', error);
-    throw error;
+    console.log('🤖 Calling Mock AI Service...');
+    const bundles = await getMockBundlesFromAi(userPrompt, existingBundles);
+    
+    console.log(`✅ Mock AI generated ${bundles.length} new trip bundles`);
+    return { bundles };
+  } else {
+    console.log('🚀 Calling Real AI Service...');
+    const bundles = await getRealBundlesFromAi(userPrompt, existingBundles);
+    
+    console.log(`✅ Real AI generated ${bundles.length} new trip bundles`);
+    return { bundles };
   }
+};
+
+/**
+ * Creates a user prompt for AI based on user data and existing bundles
+ */
+const createUserPrompt = (userData: UserData, existingBundles: TripBundle[]): string => {
+  // TODO: Implement sophisticated prompt generation logic
+  // This should create a detailed prompt for the AI that includes:
+  // - User preferences and interests
+  // - Date range and travel details
+  // - Context about existing bundles to avoid duplicates
+  // - Specific instructions for the AI response format
+  
+  const promptData = {
+    userData,
+    existingBundles: existingBundles.map(b => ({ id: b.id, title: b.title, city: b.city }))
+  };
+  
+  return JSON.stringify(promptData);
 };
 
 // For backward compatibility, also export as default
