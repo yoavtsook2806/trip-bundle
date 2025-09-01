@@ -1,9 +1,17 @@
 import { 
-  ITripBundleService, 
   GPTResponse, 
   UserData,
   GenerationOptions 
 } from 'trip-bundle-prompts-service';
+
+// Define the interface locally since it's not exported from the prompts service
+interface ITripBundleService {
+  updateUserData(userData: UserData): void;
+  isConfigured(): boolean;
+  generateTripBundles(options?: GenerationOptions): Promise<GPTResponse>;
+  getSystemPrompt?(): string;
+  getUserPrompt?(): string;
+}
 
 /**
  * Wrapper service that adds logging to all prompt service calls

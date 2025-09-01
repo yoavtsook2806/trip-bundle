@@ -2,8 +2,9 @@
 // TRIP BUNDLE PROMPTS SERVICE - Main Export File
 // =============================================================================
 
-// Main service class
-export { TripBundlePromptService } from './TripBundlePromptService';
+// Main service function
+export { generateTripBundles } from './TripBundlePromptService';
+export { default as generateTripBundlesDefault } from './TripBundlePromptService';
 
 // Types
 export type {
@@ -13,11 +14,11 @@ export type {
   InterestType,
   ServiceConfig,
   GenerationOptions,
+  GenerateTripBundlesFunction,
   GPTResponse,
   TripBundle,
   Event,
   Entertainment,
-  ITripBundleService,
   City
 } from './types';
 
@@ -27,6 +28,5 @@ export { ALL_ENTERTAINMENTS } from './constants';
 // Prompts (if needed by consumers for customization)
 export { getSystemPrompt, getUserPrompt } from './prompts';
 
-// Default export is the main service class
-import { TripBundlePromptService } from './TripBundlePromptService';
-export default TripBundlePromptService;
+// Default export is the main service function
+export { default } from './TripBundlePromptService';

@@ -95,8 +95,9 @@ export interface TripBundle {
 export interface GPTResponse {
   bundles: TripBundle[];
   reasoning: string;
-  alternatives: string[];
-  processingTime: number;
+  alternatives?: string[];
+  processingTime?: number;
+  totalResults?: number;
   pagination?: {
     page: number;
     limit: number;
@@ -157,11 +158,13 @@ export interface ServiceConfig {
 export interface GenerationOptions {
   page?: number;
   limit?: number;
+  forceRefresh?: boolean;
 }
 
 // Service Interface
-export interface ITripBundleService {
-  updateUserData(userData: UserData): void;
-  generateTripBundles(options?: GenerationOptions): Promise<GPTResponse>;
-  isConfigured(): boolean;
-}
+// Simplified service interface - just a single function
+export type GenerateTripBundlesFunction = (
+  userData: UserData,
+  cities: string[],
+  options?: GenerationOptions
+) => Promise<GPTResponse>;

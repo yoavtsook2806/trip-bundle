@@ -5,7 +5,7 @@ import './App.css';
 // Import our stores, services, and actions
 import { UserPreferencesStore, BundleSuggestionsStore, IntegrationsStore, FirstTimeExperienceStore } from './store';
 
-import { TripActions, IntegrationActions, FirstTimeExperienceActions, initFirstTimeExperienceData } from './actions';
+import { IntegrationActions, FirstTimeExperienceActions, initFirstTimeExperienceData } from './actions';
 import { FirstTimeExperienceStorage } from './storage';
 import { BundleFeed, BundlePage, UserPreferencesForm, DevelopmentTab, FirstTimeExperience } from './components';
 import type { TripBundle } from './types';
@@ -20,11 +20,6 @@ const fteStore = new FirstTimeExperienceStore();
 
 
 // Create actions instances with dependencies
-const tripActions = new TripActions(
-  bundleSuggestionsStore,
-  userPreferencesStore
-);
-
 const integrationActions = new IntegrationActions(
   userPreferencesStore,
   integrationsStore
@@ -65,7 +60,7 @@ const App: React.FC = observer(() => {
         setShowFTE(true);
       } else {
         console.log('🎯 [APP] Returning user, loading bundles');
-        await loadBundles();
+        bundleSuggestionsStore.loadBundlesFromStorage();
       }
       
       console.log('🚀 [APP] App initialization completed');
@@ -139,26 +134,19 @@ const App: React.FC = observer(() => {
     }
   };
 
-  const loadBundles = async () => {
-    try {
-      setIsLoadingBundles(true);
-      console.log('🎯 [APP] Loading trip bundles...');
-      
-      // Use trip actions to generate bundles
-      await tripActions.generateTripBundles();
-      
-      console.log('✅ [APP] Bundles loaded:', bundleSuggestionsStore.bundles.length);
-    } catch (error) {
-      console.error('❌ [APP] Error loading bundles:', error);
-    } finally {
-      setIsLoadingBundles(false);
-    }
+  const handleBundlesGenerated = (bundles: any[]) => {
+    console.log('✅ [APP] Bundles generated:', bundles.length);
+    
+    // Update the bundle suggestions store
+    bundleSuggestionsStore.setBundles(bundles);
+    
+    setIsLoadingBundles(false);
   };
 
-  const handleFTEComplete = async () => {
-    console.log('✨ [APP] FTE completed, loading bundles');
+  const handleFTEComplete = () => {
+    console.log('✨ [APP] FTE completed');
     setShowFTE(false);
-    await loadBundles();
+    // Bundles will be loaded by the UserPreferencesForm
   };
 
   const handleBundleClick = (bundle: TripBundle) => {
@@ -177,10 +165,10 @@ const App: React.FC = observer(() => {
     setCurrentView('preferences');
   };
 
-  const handlePreferencesComplete = async () => {
-    console.log('⚙️ [APP] Preferences updated, reloading bundles');
+  const handlePreferencesComplete = () => {
+    console.log('⚙️ [APP] Preferences updated');
     setCurrentView('feed');
-    await loadBundles();
+    // Bundles will be loaded by the UserPreferencesForm
   };
 
   const handlePreferencesCancel = () => {
@@ -210,10 +198,16 @@ const App: React.FC = observer(() => {
       <div className={`App ${pwaInfo.isStandalone ? 'standalone' : 'browser'}`}>
         <FirstTimeExperience 
           onComplete={handleFTEComplete} 
-          onGoPressed={async () => {
+          onGoPressed={(_userData, response) => {
             console.log('🚀 [APP] GO pressed in FTE, completing flow');
-            // Complete the FTE flow (this will also load bundles)
-            await handleFTEComplete();
+            
+            if (response) {
+              // Handle the generated bundles
+              handleBundlesGenerated(response.bundles);
+            }
+            
+            // Complete the FTE flow
+            handleFTEComplete();
           }}
           integrationActions={integrationActions} 
         />
@@ -245,9 +239,15 @@ const App: React.FC = observer(() => {
       ) : currentView === 'preferences' ? (
         <div className="preferences-view">
           <UserPreferencesForm
-            onUserDataUpdate={async () => {
-              console.log('💾 [APP] Preferences saved, generating bundles');
-              await handlePreferencesComplete();
+            onUserDataUpdate={(_userData, response) => {
+              console.log('💾 [APP] Preferences saved, bundles generated');
+              
+              if (response) {
+                // Handle the generated bundles
+                handleBundlesGenerated(response.bundles);
+              }
+              
+              handlePreferencesComplete();
             }}
             onClose={handlePreferencesComplete}
             onCancel={handlePreferencesCancel}
@@ -267,7 +267,7 @@ const App: React.FC = observer(() => {
           onBundleClick={handleBundleClick}
           onEditPreferences={handleEditPreferences}
           onDevelopmentTab={isMockMode ? handleDevelopmentTab : undefined}
-          onLoadMore={() => tripActions.loadMoreBundles()}
+          onLoadMore={() => console.log('Load more not implemented in simplified version')}
           isLoading={isLoadingBundles}
           isLoadingMore={bundleSuggestionsStore.pagination.isLoadingMore}
           hasMore={bundleSuggestionsStore.canLoadMore}

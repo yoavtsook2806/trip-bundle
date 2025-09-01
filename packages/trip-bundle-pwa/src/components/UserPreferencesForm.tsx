@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { UserDataStorage, UserData } from '../storage';
+import { getTripBundleService } from '../services/tripBundleServiceFactory';
+import { CITIES } from '../constants/cities';
+import ThinkingScreen from './ThinkingScreen';
 import type { IntegrationActions } from '../actions/integrationActions';
 import './UserPreferencesForm.css';
 
 interface UserPreferencesFormProps {
-  onUserDataUpdate?: (userData: UserData) => void;
+  onUserDataUpdate?: (userData: UserData, response?: any) => void;
   onClose?: () => void;
   onCancel?: () => void; // Separate callback for cancel (no save/reload)
-  onGoPressed?: (userData: UserData) => void; // New prop for GO button
+  onGoPressed?: (userData: UserData, response?: any) => void; // New prop for GO button
   integrationActions?: IntegrationActions;
   isFirstTimeExperience?: boolean;
   showGoButton?: boolean; // Whether to show GO button instead of save
@@ -22,13 +25,14 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
   onGoPressed,
   integrationActions,
   isFirstTimeExperience = false,
-  showGoButton = false,
+  showGoButton: _showGoButton = false,
   hasChanges: _hasChangesProp = false,
   onChangesDetected
 }) => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [originalUserData, setOriginalUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
@@ -60,7 +64,7 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
     }
   };
 
-  const updateUserData = async (updates: Partial<UserData>) => {
+  const updateUserData = (updates: Partial<UserData>) => {
     if (!userData) return;
     
     const updatedData = {
@@ -77,28 +81,36 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
     };
     
     setUserData(updatedData);
-    
-    // Auto-save only in FTE or when not showing save button
-    if (isFirstTimeExperience || !showGoButton) {
-      try {
-        await UserDataStorage.setUserData(updates);
-        onUserDataUpdate?.(updatedData);
-      } catch (error) {
-        console.error('Error auto-saving user data:', error);
-      }
-    }
+    // No auto-save - only save when user explicitly presses Save or GO
   };
 
   const handleSave = async () => {
     if (!userData) return;
     
+    setGenerating(true);
     try {
+      // 1. Save user data to storage
       await UserDataStorage.setUserData(userData);
       setOriginalUserData(JSON.parse(JSON.stringify(userData))); // Update baseline
-      onUserDataUpdate?.(userData);
+      console.log('💾 [USER_PREFS_FORM] User data saved');
+      
+      // 2. Call the trip bundle service
+      const generateTripBundles = getTripBundleService();
+      const cities = CITIES.map(city => city.name);
+      
+      console.log('🚀 [USER_PREFS_FORM] Calling generateTripBundles service');
+      const response = await generateTripBundles(userData, cities);
+      console.log('✅ [USER_PREFS_FORM] Generated bundles:', response.bundles.length);
+      
+      // 3. Call the callback with the response
+      onUserDataUpdate?.(userData, response);
       onClose?.();
     } catch (error) {
-      console.error('Error saving user data:', error);
+      console.error('Error saving user data or generating bundles:', error);
+      // Still close on error
+      onClose?.();
+    } finally {
+      setGenerating(false);
     }
   };
 
@@ -106,20 +118,32 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
     console.log('🚀 [USER_PREFS_FORM] GO button pressed');
     
     if (userData) {
+      setGenerating(true);
       try {
-        // Save user data before proceeding
+        // 1. Save user data before proceeding
         await UserDataStorage.setUserData(userData);
         console.log('💾 [USER_PREFS_FORM] User data saved before GO');
         
+        // 2. Call the trip bundle service
+        const generateTripBundles = getTripBundleService();
+        const cities = CITIES.map(city => city.name);
+        
+        console.log('🚀 [USER_PREFS_FORM] Calling generateTripBundles service');
+        const response = await generateTripBundles(userData, cities);
+        console.log('✅ [USER_PREFS_FORM] Generated bundles:', response.bundles.length);
+        
+        // 3. Call the callback with the response
         if (onGoPressed) {
-          onGoPressed(userData);
+          onGoPressed(userData, response);
         }
       } catch (error) {
-        console.error('Error saving user data before GO:', error);
-        // Still proceed even if save fails
+        console.error('Error saving user data or generating bundles:', error);
+        // Still proceed with callback even if service fails
         if (onGoPressed) {
           onGoPressed(userData);
         }
+      } finally {
+        setGenerating(false);
       }
     } else {
       console.warn('No user data available for GO button');
@@ -148,6 +172,10 @@ export const UserPreferencesForm: React.FC<UserPreferencesFormProps> = ({
         </div>
       </div>
     );
+  }
+
+  if (generating) {
+    return <ThinkingScreen message="Creating your perfect trip bundles..." />;
   }
 
   if (!userData) {

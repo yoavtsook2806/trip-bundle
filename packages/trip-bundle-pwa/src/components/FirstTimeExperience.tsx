@@ -7,7 +7,7 @@ import './FirstTimeExperience.css';
 
 interface FirstTimeExperienceProps {
   onComplete: () => void;
-  onGoPressed: (userData: UserData) => void; // New prop for GO button press
+  onGoPressed: (userData: UserData, response?: any) => void; // New prop for GO button press
   integrationActions?: IntegrationActions;
 }
 
