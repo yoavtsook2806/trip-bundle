@@ -1,253 +1,138 @@
 .development-tab {
-  padding: 20px;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.development-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 30px;
-}
-
-.header-content {
-  text-align: center;
-  flex: 1;
-}
-
-.development-header h2 {
-  color: #2c3e50;
-  margin-bottom: 10px;
-  font-size: 1.8rem;
-}
-
-.development-header p {
-  color: #7f8c8d;
-  font-size: 1rem;
-}
-
-.prompt-buttons {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  margin-bottom: 30px;
-  flex-wrap: wrap;
-}
-
-.prompt-button {
-  padding: 15px 25px;
-  border: none;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 180px;
+  min-height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-}
-
-.system-prompt-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-.system-prompt-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-}
-
-.user-prompt-btn {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  color: white;
-}
-
-.user-prompt-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(240, 147, 251, 0.3);
-}
-
-.reset-btn {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-  color: white;
-}
-
-.reset-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
-}
-
-.prompt-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.prompt-loading {
-  text-align: center;
-  padding: 40px 20px;
-}
-
-.prompt-loading .loader {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #667eea;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.prompt-loading p {
-  color: #7f8c8d;
-  font-size: 1rem;
-}
-
-.prompt-viewer {
-  background: #f8f9fa;
-  border-radius: 12px;
   padding: 20px;
-  border: 1px solid #e9ecef;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
 }
 
-.prompt-header {
+.dev-container {
+  background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.dev-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #e9ecef;
+  justify-content: space-between;
+  padding: 20px 25px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-.prompt-header h3 {
-  color: #2c3e50;
+.dev-header h1 {
+  color: #333;
   margin: 0;
   font-size: 1.4rem;
 }
 
-.close-prompt-btn {
-  background: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 50%;
+.close-button {
   width: 35px;
   height: 35px;
+  border: none;
+  background: #f5f5f5;
+  border-radius: 50%;
+  font-size: 1.1rem;
   cursor: pointer;
-  font-size: 1.2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
 }
 
-.close-prompt-btn:hover {
-  background: #c0392b;
-  transform: scale(1.1);
+.close-button:hover {
+  background: #e0e0e0;
 }
 
-.close-tab-btn {
-  background: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 35px;
-  height: 35px;
-  cursor: pointer;
-  font-size: 1.2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  margin-top: 10px;
+.dev-content {
+  padding: 25px;
 }
 
-.close-tab-btn:hover {
-  background: #c0392b;
-  transform: scale(1.1);
+.dev-section {
+  margin-bottom: 25px;
 }
 
-.prompt-content {
-  width: 100%;
-  min-height: 400px;
-  padding: 15px;
-  border: 1px solid #dee2e6;
+.dev-section:last-child {
+  margin-bottom: 0;
+}
+
+.dev-section h2 {
+  color: #333;
+  margin: 0 0 15px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.usage-info, .env-info, .storage-info {
+  background: #f8f9fa;
   border-radius: 8px;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  background: white;
-  color: #2c3e50;
-  resize: vertical;
-  box-sizing: border-box;
+  padding: 15px;
+  margin-bottom: 15px;
 }
 
-.prompt-content:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.prompt-actions {
-  margin-top: 15px;
+.usage-item, .env-item, .storage-item {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #e9ecef;
+  font-size: 0.9rem;
 }
 
-.copy-btn {
+.usage-item:last-child, .env-item:last-child, .storage-item:last-child {
+  border-bottom: none;
+}
+
+.usage-item strong, .env-item strong, .storage-item strong {
+  color: #333;
+}
+
+.reset-button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
   background: #28a745;
   color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
-.copy-btn:hover {
+.reset-button:hover {
   background: #218838;
   transform: translateY(-1px);
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
   .development-tab {
-    padding: 15px;
+    padding: 10px;
   }
   
-  .prompt-buttons {
-    flex-direction: column;
-    align-items: center;
+  .dev-container {
+    max-height: 90vh;
   }
   
-  .prompt-button {
-    width: 100%;
-    max-width: 280px;
+  .dev-header {
+    padding: 15px 20px;
   }
   
-  .prompt-content {
-    min-height: 300px;
-    font-size: 0.8rem;
+  .dev-content {
+    padding: 20px;
   }
   
-  .prompt-header {
-    flex-direction: column;
-    gap: 15px;
-    align-items: flex-start;
-  }
-  
-  .close-prompt-btn {
-    align-self: flex-end;
+  .dev-header h1 {
+    font-size: 1.2rem;
   }
 }

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { TripBundle, TripEvent } from '../types';
-
+import React from 'react';
+import { TripBundle, Event } from '../types';
 import './BundlePage.css';
 
 interface BundlePageProps {
@@ -8,338 +7,140 @@ interface BundlePageProps {
   onBack: () => void;
 }
 
-const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
-  const [events, setEvents] = useState<TripEvent[]>([]);
-  const [eventsLoading, setEventsLoading] = useState(true);
-  const [eventsError, setEventsError] = useState<string | null>(null);
-  const [eventsPage, setEventsPage] = useState(1);
-  const [eventsHasMore, setEventsHasMore] = useState(true);
-  const [loadingMoreEvents, setLoadingMoreEvents] = useState(false);
+export const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
+  const formatEventDate = (date: string, time: string) => {
+    const eventDate = new Date(date);
+    const options: Intl.DateTimeFormatOptions = { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    };
+    return `${eventDate.toLocaleDateString('en-US', options)} at ${time}`;
+  };
 
-  useEffect(() => {
-    loadEvents();
-  }, [bundle]);
-
-  const loadEvents = async (loadMore = false) => {
-    try {
-      if (loadMore) {
-        setLoadingMoreEvents(true);
-      } else {
-        setEventsLoading(true);
-        setEventsPage(1);
-        setEvents([]);
-      }
-      setEventsError(null);
-      
-      const page = loadMore ? eventsPage + 1 : 1;
-      
-      // Use subEvents from the bundle instead of fetching events
-      const bundleEvents = bundle.subEvents || [];
-      
-      if (loadMore) {
-        // For pagination, we would slice the subEvents
-        const startIndex = (page - 1) * 5;
-        const endIndex = startIndex + 5;
-        const pageEvents = bundleEvents.slice(startIndex, endIndex);
-        setEvents(prev => [...prev, ...pageEvents]);
-        setEventsPage(page);
-        setEventsHasMore(endIndex < bundleEvents.length);
-      } else {
-        // Show first 5 subEvents
-        const pageEvents = bundleEvents.slice(0, 5);
-        setEvents(pageEvents);
-        setEventsPage(1);
-        setEventsHasMore(bundleEvents.length > 5);
-      }
-    } catch (error) {
-      console.error('Error loading events:', error);
-      setEventsError('Failed to load events. Please try again.');
-    } finally {
-      setEventsLoading(false);
-      setLoadingMoreEvents(false);
+  const getInterestIcon = (interestType: string) => {
+    switch (interestType) {
+      case 'concerts': return '🎵';
+      case 'sports': return '⚽';
+      case 'artDesign': return '🎨';
+      case 'localCulture': return '🏛️';
+      case 'culinary': return '🍽️';
+      default: return '✨';
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric'
-    });
+  const getInterestName = (interestType: string) => {
+    switch (interestType) {
+      case 'concerts': return 'Concerts';
+      case 'sports': return 'Sports';
+      case 'artDesign': return 'Art & Design';
+      case 'localCulture': return 'Local Culture';
+      case 'culinary': return 'Culinary';
+      default: return 'Other';
+    }
   };
 
-  const formatCurrency = (amount: number, currency: string) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency
-    }).format(amount);
-  };
+  const renderEvent = (event: Event, index: number, isSubEvent = false) => (
+    <div key={index} className={`event-card ${isSubEvent ? 'sub-event' : ''}`}>
+      <div className="event-header">
+        <div className="event-type">
+          <span className="event-icon">{getInterestIcon(event.interestType)}</span>
+          <span className="event-category">{getInterestName(event.interestType)}</span>
+        </div>
+        <div className="event-cost">
+          {event.cost > 0 ? `$${event.cost} ${event.currency}` : 'Free'}
+        </div>
+      </div>
+      
+      <h3 className="event-venue">{event.venue}</h3>
+      <p className="event-datetime">{formatEventDate(event.date, event.time)}</p>
+      
+      {event.bookingUrl && (
+        <a 
+          href={event.bookingUrl} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="booking-button"
+        >
+          Book Now →
+        </a>
+      )}
+    </div>
+  );
 
-  const getCategoryIcon = (category: string) => {
-    const icons: Record<string, string> = {
-      music: '🎵',
-      sports: '⚽',
-      culture: '🎭',
-      food: '🍽️',
-      nightlife: '🌙',
-      nature: '🌿',
-      adventure: '🏔️'
-    };
-    return icons[category] || '🎉';
-  };
-
-  const getCategoryColor = (category: string) => {
-    const colors: Record<string, string> = {
-      music: '#9C27B0',
-      sports: '#FF5722',
-      culture: '#3F51B5',
-      food: '#FF9800',
-      nightlife: '#673AB7',
-      nature: '#4CAF50',
-      adventure: '#795548'
-    };
-    return colors[category] || '#667eea';
-  };
-
-  const calculateTotalCost = () => {
-    return bundle.totalCost.amount;
-  };
+  const totalCost = [...bundle.events, ...bundle.subEvents].reduce((sum, event) => sum + event.cost, 0);
 
   return (
     <div className="bundle-page">
-      {/* Compact Header */}
       <div className="bundle-header">
-        <div className="header-top">
-          <button className="back-icon-btn" onClick={onBack} title="Back to Feed">
-            ←
-          </button>
-          <div className="bundle-title">
-            <h1>{bundle.city}, {bundle.country}</h1>
-            <p className="bundle-dates">
-              {formatDate(bundle.startDate)} - {formatDate(bundle.endDate)}
-            </p>
+        <button className="back-button" onClick={onBack}>
+          ← Back to Bundles
+        </button>
+        <div className="bundle-hero">
+          <div className="hero-background">
+            <div className="city-badge-large">{bundle.city}</div>
           </div>
-          <div className="header-spacer"></div>
+          <div className="hero-content">
+            <h1 className="bundle-title-large">{bundle.title}</h1>
+            <p className="bundle-description-large">{bundle.description}</p>
+            <div className="bundle-meta">
+              <div className="date-range">
+                📅 {new Date(bundle.startDate).toLocaleDateString()} - {new Date(bundle.endDate).toLocaleDateString()}
+              </div>
+              <div className="total-cost">
+                💰 Total Cost: {totalCost > 0 ? `$${totalCost}` : 'Free'}
+              </div>
+              <div className="event-count">
+                🎯 {bundle.events.length + bundle.subEvents.length} Events
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div className="bundle-content">
-        {/* Bundle Overview */}
-        <div className="bundle-overview">
-          <div className="overview-card">
-            <h2>🎯 Trip Overview</h2>
-            <div className="overview-grid">
-              <div className="overview-item">
-                <span className="overview-icon">📅</span>
-                <div>
-                  <h4>Duration</h4>
-                  <p>{bundle.duration} days</p>
-                </div>
-              </div>
-              <div className="overview-item">
-                <span className="overview-icon">💰</span>
-                <div>
-                  <h4>Total Cost</h4>
-                  <p>{formatCurrency(calculateTotalCost(), bundle.totalCost.currency)}</p>
-                </div>
-              </div>
-              <div className="overview-item">
-                <span className="overview-icon">🎭</span>
-                <div>
-                  <h4>Activities</h4>
-                  <p>{bundle.events.length} included</p>
-                </div>
-              </div>
-              <div className="overview-item">
-                <span className="overview-icon">⭐</span>
-                <div>
-                  <h4>Match Score</h4>
-                  <p>{Math.round(bundle.confidence)}%</p>
-                </div>
-              </div>
+        {bundle.events.length > 0 && (
+          <section className="events-section">
+            <h2>🌟 Main Events</h2>
+            <div className="events-grid">
+              {bundle.events.map((event, index) => renderEvent(event, index, false))}
+            </div>
+          </section>
+        )}
+
+        {bundle.subEvents.length > 0 && (
+          <section className="events-section">
+            <h2>✨ Additional Experiences</h2>
+            <div className="events-grid">
+              {bundle.subEvents.map((event, index) => renderEvent(event, index, true))}
+            </div>
+          </section>
+        )}
+
+        <section className="bundle-summary">
+          <h2>📋 Trip Summary</h2>
+          <div className="summary-card">
+            <div className="summary-item">
+              <strong>Destination:</strong> {bundle.city}
+            </div>
+            <div className="summary-item">
+              <strong>Duration:</strong> {new Date(bundle.startDate).toLocaleDateString()} - {new Date(bundle.endDate).toLocaleDateString()}
+            </div>
+            <div className="summary-item">
+              <strong>Total Events:</strong> {bundle.events.length + bundle.subEvents.length}
+            </div>
+            <div className="summary-item">
+              <strong>Estimated Cost:</strong> {totalCost > 0 ? `$${totalCost}` : 'Free'}
+            </div>
+            <div className="summary-item">
+              <strong>Experience Types:</strong> {
+                [...new Set([...bundle.events, ...bundle.subEvents].map(e => getInterestName(e.interestType)))].join(', ')
+              }
             </div>
           </div>
-        </div>
-
-        {/* Accommodation */}
-        <div className="bundle-section">
-          <h2>🏨 Accommodation</h2>
-          <div className="accommodation-card">
-            <div className="accommodation-info">
-              <h3>{bundle.accommodation.name}</h3>
-              <p className="accommodation-type">{bundle.accommodation.type}</p>
-              <div className="accommodation-rating">
-                {'⭐'.repeat(bundle.accommodation.rating)}
-                <span>({bundle.accommodation.rating}/5)</span>
-              </div>
-              <p className="accommodation-description">Comfortable {bundle.accommodation.type} in {bundle.accommodation.location}</p>
-            </div>
-            <div className="accommodation-price">
-              <span className="price-per-night">
-                {formatCurrency(bundle.accommodation.pricePerNight, bundle.totalCost.currency)}/night
-              </span>
-              <span className="total-price">
-                Total: {formatCurrency(bundle.accommodation.pricePerNight * bundle.duration, bundle.totalCost.currency)}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Transport */}
-        <div className="bundle-section">
-          <h2>🚗 Transport</h2>
-          <div className="transport-card">
-            <div className="transport-info">
-              <h3>{bundle.transportation.type}</h3>
-              <p>{bundle.transportation.details}</p>
-            </div>
-            <div className="transport-price">
-              {formatCurrency(bundle.transportation.cost, bundle.transportation.currency)}
-            </div>
-          </div>
-        </div>
-
-        {/* Included Activities */}
-        <div className="bundle-section">
-          <h2>🎭 Included Activities</h2>
-          <div className="activities-grid">
-            {bundle.events.map((event, index: number) => (
-              <div key={index} className="activity-card">
-                <div className="activity-header">
-                  <span 
-                    className="activity-icon"
-                    style={{ backgroundColor: getCategoryColor(event.entertainment.category) }}
-                  >
-                    {getCategoryIcon(event.entertainment.category)}
-                  </span>
-                  <div className="activity-info">
-                    <h4>{event.entertainment.name}</h4>
-                    <span className="activity-category">{event.entertainment.category}</span>
-                  </div>
-                </div>
-                <p className="activity-description">{event.entertainment.description}</p>
-                <div className="activity-footer">
-                  <span className="activity-cost">
-                    {formatCurrency(event.cost, event.currency)}
-                  </span>
-                  {event.entertainment.tags && event.entertainment.tags.length > 0 && (
-                    <div className="activity-tags">
-                      {event.entertainment.tags.slice(0, 2).map((tag: string, tagIndex: number) => (
-                        <span key={tagIndex} className="activity-tag">{tag}</span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* More Events */}
-        <div className="bundle-section">
-          <h2>🎪 More Events in {bundle.city}</h2>
-          {eventsLoading ? (
-            <div className="events-loading">
-              <div className="loading-spinner">
-                <div className="spinner"></div>
-              </div>
-              <p>Loading more events...</p>
-            </div>
-          ) : eventsError ? (
-            <div className="events-error">
-              <p>{eventsError}</p>
-              <button onClick={() => loadEvents()} className="retry-btn">
-                Try Again
-              </button>
-            </div>
-          ) : events.length === 0 ? (
-            <div className="no-events">
-              <p>No additional events found for these dates.</p>
-            </div>
-          ) : (
-            <>
-              <div className="events-grid">
-                {events.map((event, index) => (
-                  <div key={index} className="event-card">
-                    <div className="event-header">
-                      <span 
-                        className="event-category"
-                        style={{ backgroundColor: getCategoryColor(event.entertainment.category) }}
-                      >
-                        {getCategoryIcon(event.entertainment.category)}
-                        {event.entertainment.category.toUpperCase()}
-                      </span>
-                    </div>
-                    <div className="event-info">
-                      <h4>{event.entertainment.name}</h4>
-                      <p className="event-description">{event.entertainment.description}</p>
-                      <div className="event-details">
-                        <div className="event-detail">
-                          <span className="detail-icon">📍</span>
-                          <span>{event.venue}</span>
-                        </div>
-                        <div className="event-detail">
-                          <span className="detail-icon">📅</span>
-                          <span>{formatDate(event.date)}</span>
-                        </div>
-                        <div className="event-detail">
-                          <span className="detail-icon">⏰</span>
-                          <span>{event.time}</span>
-                        </div>
-                        <div className="event-detail">
-                          <span className="detail-icon">💰</span>
-                          <span>{formatCurrency(event.cost, event.currency)}</span>
-                        </div>
-                      </div>
-                      {event.entertainment.tags && event.entertainment.tags.length > 0 && (
-                        <div className="event-tags">
-                          {event.entertainment.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
-                            <span key={tagIndex} className="event-tag">{tag}</span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    {event.bookingUrl && (
-                      <div className="event-actions">
-                        <a
-                          href={event.bookingUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="book-event-btn"
-                        >
-                          Book Tickets
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-              
-              {/* Load More Events Button */}
-              {eventsHasMore && (
-                <div className="load-more-events">
-                  {loadingMoreEvents ? (
-                    <div className="loading-more-container">
-                      <div className="loader"></div>
-                      <p>Loading more events...</p>
-                    </div>
-                  ) : (
-                    <button 
-                      className="load-more-btn" 
-                      onClick={() => loadEvents(true)}
-                    >
-                      🎪 Load More Events
-                    </button>
-                  )}
-                </div>
-              )}
-            </>
-          )}
-        </div>
+        </section>
       </div>
     </div>
   );
 };
-
-export default BundlePage;

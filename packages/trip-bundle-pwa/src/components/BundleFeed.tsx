@@ -1,161 +1,130 @@
-import React, { useState, useEffect } from 'react';
-import { observer } from 'mobx-react-lite';
-import { TripBundle } from '../types';
-import BundleOffer from './BundleOffer';
-import { PromptsTokenStorage } from '../storage';
-import ThinkingScreen from './ThinkingScreen';
+import React from 'react';
+import { TripBundle, PromptsUsage } from '../types';
 import './BundleFeed.css';
 
 interface BundleFeedProps {
   bundles: TripBundle[];
-  onBundleClick: (bundle: TripBundle) => void;
-  onEditPreferences: () => void;
-  onDevelopmentTab?: () => void;
-  onLoadMore?: () => void;
-  isLoading?: boolean;
-  isLoadingMore?: boolean;
-  hasMore?: boolean;
+  promptsUsage: PromptsUsage;
+  onBundleSelect: (bundle: TripBundle) => void;
+  onOpenPreferences: () => void;
+  onOpenDevelopment?: () => void;
   isMockMode?: boolean;
 }
 
-const BundleFeed: React.FC<BundleFeedProps> = observer(({
+export const BundleFeed: React.FC<BundleFeedProps> = ({
   bundles,
-  onBundleClick,
-  onEditPreferences,
-  onDevelopmentTab,
-  onLoadMore,
-  isLoading = false,
-  isLoadingMore = false,
-  hasMore = false,
+  promptsUsage,
+  onBundleSelect,
+  onOpenPreferences,
+  onOpenDevelopment,
   isMockMode = false
 }) => {
-  const [promptsToken, setPromptsToken] = useState({ calls: 0, remaining: 10 });
+  const getKeyEvents = (bundle: TripBundle) => {
+    // Get up to 3 key events
+    return bundle.events.slice(0, 3);
+  };
 
-  useEffect(() => {
-    loadPromptsToken();
-  }, []);
+  const formatEventTime = (date: string, time: string) => {
+    const eventDate = new Date(date);
+    return `${eventDate.toLocaleDateString()} at ${time}`;
+  };
 
-  // Re-load prompts token when bundles change (after Load More)
-  useEffect(() => {
-    loadPromptsToken();
-  }, [bundles.length]);
-
-  const loadPromptsToken = async () => {
-    try {
-      const token = await PromptsTokenStorage.getPromptsToken();
-      setPromptsToken({ calls: token.calls, remaining: token.remaining });
-    } catch (error) {
-      console.error('Error loading prompts token:', error);
+  const getInterestIcon = (interestType: string) => {
+    switch (interestType) {
+      case 'concerts': return '🎵';
+      case 'sports': return '⚽';
+      case 'artDesign': return '🎨';
+      case 'localCulture': return '🏛️';
+      case 'culinary': return '🍽️';
+      default: return '✨';
     }
   };
 
-
-
   return (
     <div className="bundle-feed">
-      {/* Compact Header */}
       <div className="feed-header">
-        <div className="header-top">
-          <div className="app-logo">
-            <img src="/TripBundleIcon.jpeg" alt="TripBundle" className="logo-icon" />
-          </div>
-          <div className="header-actions">
-            <button 
-              className="icon-btn edit-preferences-btn"
-              onClick={onEditPreferences}
-              title="Edit Preferences"
-            >
-              ⚙️
-            </button>
-            {isMockMode && onDevelopmentTab && (
-              <button 
-                className="icon-btn dev-tab-btn"
-                onClick={onDevelopmentTab}
-                title="Development"
-              >
-                🔧
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Title and Description */}
-        <div className="page-title">
-          <h1>Trip Bundle</h1>
-          <p>Your Journey, Personalized</p>
-        </div>
-
-        {/* API Usage Indicator */}
-        <div className="api-usage-indicator">
-          <div className="usage-info">
+        <h1>🎯 Your Trip Bundles</h1>
+        <div className="header-actions">
+          <div className="usage-counter">
             <span className="usage-text">
-              Daily searches: {promptsToken.calls}/10
+              {promptsUsage.count}/{promptsUsage.maxDaily} calls today
             </span>
             <div className="usage-bar">
               <div 
                 className="usage-fill" 
-                style={{ width: `${(promptsToken.calls / 10) * 100}%` }}
-              ></div>
+                style={{ width: `${(promptsUsage.count / promptsUsage.maxDaily) * 100}%` }}
+              />
             </div>
           </div>
-          {promptsToken.remaining === 0 && (
-            <div className="usage-warning">
-              ⚠️ Daily limit reached. Resets tomorrow.
-            </div>
+          <button className="preferences-button" onClick={onOpenPreferences}>
+            ⚙️ Preferences
+          </button>
+          {isMockMode && onOpenDevelopment && (
+            <button className="dev-button" onClick={onOpenDevelopment}>
+              🛠️ Dev
+            </button>
           )}
         </div>
       </div>
 
-      {/* Bundle List */}
-      <div className="bundles-container">
-        {isLoading || (bundles.length === 0 && isLoadingMore) ? (
-          <ThinkingScreen message="Finding perfect trips for you..." />
-        ) : bundles.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon">🎒</div>
-            <h3>No trips found</h3>
-            <p>Try adjusting your preferences or date range to find more options.</p>
-            <button className="edit-preferences-btn" onClick={onEditPreferences}>
-              Update Preferences
-            </button>
-          </div>
-        ) : (
-          <>
-            <div className="bundles-grid">
-              {bundles.map((bundle) => (
-                <div key={bundle.id} className="bundle-item" onClick={() => onBundleClick(bundle)}>
-                  <BundleOffer
-                    bundle={bundle}
-                    onSelect={() => onBundleClick(bundle)}
-                    onEventClick={() => {}} // Events will be handled in BundlePage
-                  />
-                </div>
-              ))}
-            </div>
-            
-            {/* Load More Bundles Button */}
-            {hasMore && onLoadMore && (
-              <div className="load-more-bundles">
-                {isLoadingMore ? (
-                  <div className="loading-more-container">
-                    <div className="loader"></div>
-                    <p>Loading more trip bundles...</p>
-                  </div>
-                ) : (
-                  <button 
-                    className="load-more-btn" 
-                    onClick={onLoadMore}
-                  >
-                    🎯 Load More Trip Bundles
-                  </button>
-                )}
+      {bundles.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-icon">🎭</div>
+          <h2>No trip bundles yet</h2>
+          <p>Set your preferences and generate your first trip bundle!</p>
+          <button className="preferences-button-large" onClick={onOpenPreferences}>
+            Set Preferences
+          </button>
+        </div>
+      ) : (
+        <div className="bundles-grid">
+          {bundles.map((bundle) => (
+            <div 
+              key={bundle.id} 
+              className="bundle-card"
+              onClick={() => onBundleSelect(bundle)}
+            >
+              <div className="bundle-image">
+                <div className="city-badge">{bundle.city}</div>
               </div>
-            )}
-          </>
-        )}
-      </div>
+              
+              <div className="bundle-content">
+                <h3 className="bundle-title">{bundle.title}</h3>
+                <p className="bundle-description">{bundle.description}</p>
+                
+                <div className="key-events">
+                  <h4>Key Events:</h4>
+                  {getKeyEvents(bundle).map((event: any, index: number) => (
+                    <div key={index} className="event-item">
+                      <span className="event-icon">
+                        {getInterestIcon(event.interestType)}
+                      </span>
+                      <div className="event-details">
+                        <span className="event-venue">{event.venue}</span>
+                        <span className="event-time">
+                          {formatEventTime(event.date, event.time)}
+                        </span>
+                      </div>
+                      <span className="event-cost">
+                        {event.cost > 0 ? `$${event.cost}` : 'Free'}
+                      </span>
+                    </div>
+                  ))}
+                  {bundle.events.length > 3 && (
+                    <div className="more-events">
+                      +{bundle.events.length - 3} more events
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div className="bundle-footer">
+                <span className="view-details">View Details →</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
-});
-
-export default BundleFeed;
+};

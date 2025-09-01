@@ -25,8 +25,6 @@ export interface GPTResponse {
   bundles: TripBundle[];
 }
 
-
-
 // =============================================================================
 // USER DATA TYPES (Input to the service)
 // =============================================================================
@@ -68,8 +66,10 @@ export interface UserData {
   userPreferences: UserPreferences;
   dateRange: DateRange;
 }
+
 // Service Interface
 // Simplified service interface - just a single function
 export type GenerateTripBundlesFunction = (
-  userData: UserData
+  userData: UserData,
+  isMock?: boolean
 ) => Promise<GPTResponse>;

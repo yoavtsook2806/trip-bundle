@@ -1,325 +1,227 @@
-.fte-container {
+.first-time-experience {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-}
-
-.fte-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 24px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-.fte-welcome h1 {
-  margin: 0 0 12px 0;
-  font-size: 2.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.fte-welcome p {
-  margin: 0 0 8px 0;
-  font-size: 1.1rem;
-  color: #495057;
-  line-height: 1.5;
-}
-
-.fte-subtitle {
-  color: #6c757d !important;
-  font-style: italic;
-}
-
-.fte-actions {
-  display: flex;
-  align-items: center;
-}
-
-.fte-skip-btn {
-  padding: 10px 20px;
-  background: transparent;
-  border: 2px solid #6c757d;
-  border-radius: 8px;
-  color: #6c757d;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.fte-skip-btn:hover {
-  background: #6c757d;
-  color: white;
-  transform: translateY(-1px);
-}
-
-.fte-form-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  min-height: 600px; /* Ensure minimum height */
-}
-
-/* Ensure the preferences form is visible in FTE */
-.fte-container .preferences-form {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: none;
-  min-height: 500px; /* Ensure form has minimum height */
-}
-
-/* Removed duplicate completion button - now using UserPreferencesForm's built-in Done button */
-
-/* Skipped state */
-.fte-skipped {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  padding: 40px;
+  padding: 20px;
 }
 
-.fte-skipped-content {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
+.fte-container {
+  background: white;
   border-radius: 20px;
-  padding: 48px;
-  text-align: center;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  max-width: 500px;
+  padding: 40px;
+  max-width: 600px;
   width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
 }
 
-.fte-skipped-content h2 {
-  margin: 0 0 20px 0;
-  font-size: 2rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.fte-container h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 2.5rem;
 }
 
-.fte-skipped-content p {
-  margin: 0 0 32px 0;
+.fte-container > p {
+  text-align: center;
+  color: #666;
+  margin-bottom: 40px;
   font-size: 1.1rem;
-  color: #6c757d;
-  line-height: 1.6;
 }
 
-.fte-continue-btn {
-  padding: 16px 32px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  font-weight: 700;
+.fte-section {
+  margin-bottom: 30px;
+}
+
+.fte-section h2 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+}
+
+.interests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.interest-checkbox {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
-.fte-continue-btn:hover {
+.interest-checkbox:hover {
+  border-color: #667eea;
+  background-color: #f8f9ff;
+}
+
+.interest-checkbox input[type="checkbox"] {
+  margin-right: 10px;
+  width: 18px;
+  height: 18px;
+  accent-color: #667eea;
+}
+
+.interest-checkbox input[type="checkbox"]:checked + .interest-label {
+  color: #667eea;
+  font-weight: 600;
+}
+
+.interest-label {
+  font-size: 1rem;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.music-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.music-option {
+  padding: 15px 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.music-option:hover {
+  border-color: #667eea;
+  background-color: #f8f9ff;
+}
+
+.music-option.active {
+  border-color: #667eea;
+  background-color: #667eea;
+  color: white;
+}
+
+.music-text-option {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.music-text-option label {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.music-text-option textarea {
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+}
+
+.music-text-option textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.date-range {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.date-input {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.date-input label {
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.date-input input[type="date"] {
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.date-input input[type="date"]:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.fte-section textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+}
+
+.fte-section textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.go-button {
+  width: 100%;
+  padding: 18px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
+
+.go-button.enabled {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.go-button.enabled:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
 }
 
-/* Removed duplicate rule - now handled above */
-
-.fte-container .form-header {
-  background: transparent;
-  border-bottom: 1px solid #e9ecef;
+.go-button.disabled {
+  background: #e0e0e0;
+  color: #999;
+  cursor: not-allowed;
 }
 
-.fte-container .form-header h2 {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Ensure form sections are visible in FTE */
-.fte-container .form-content {
-  display: block !important;
-  min-height: 400px;
-}
-
-.fte-container .form-section {
-  display: block !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-}
-
-.fte-container .section-navigation {
-  display: flex !important;
-  justify-content: center !important;
-  margin-bottom: 2rem !important;
-}
-
-/* Fix text colors for FTE - make text dark on white background */
-.fte-container .form-section h3 {
-  color: #333 !important;
-}
-
-.fte-container .form-group label {
-  color: #555 !important;
-}
-
-.fte-container .form-group input,
-.fte-container .form-group select,
-.fte-container .form-group textarea {
-  color: #333 !important;
-  background: #fff !important;
-  border: 1px solid #ddd !important;
-}
-
-.fte-container .checkbox-group label {
-  color: #555 !important;
-}
-
-.fte-container .integration-item h4 {
-  color: #333 !important;
-}
-
-.fte-container .integration-item p {
-  color: #666 !important;
-}
-
-/* Fix navigation buttons */
-.fte-container .form-actions button {
-  color: #fff !important;
-}
-
-/* Fix section navigation buttons */
-.fte-container .section-navigation button {
-  background: rgba(255, 255, 255, 0.1) !important;
-  color: #333 !important;
-  border: 1px solid #ddd !important;
-}
-
-.fte-container .section-navigation button.active {
-  background: linear-gradient(135deg, #667eea, #764ba2) !important;
-  color: #fff !important;
-}
-
-/* Fix checkbox styling */
-.fte-container .checkbox-group input[type="checkbox"] {
-  accent-color: #667eea !important;
-}
-
-/* Fix integration buttons visibility */
-.fte-container .integration-btn {
-  background: linear-gradient(135deg, #667eea, #764ba2) !important;
-  color: white !important;
-  border: none !important;
-  opacity: 1 !important;
-}
-
-.fte-container .integration-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #5a6fd8, #6a4190) !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
-}
-
-.fte-container .integration-btn.connected {
-  background: linear-gradient(135deg, #28a745, #20c997) !important;
-  color: white !important;
-}
-
-.fte-container .integration-btn:disabled {
-  background: #ccc !important;
-  color: #666 !important;
-  opacity: 0.7 !important;
-}
-
-/* Mobile responsiveness */
 @media (max-width: 768px) {
   .fte-container {
-    padding: 16px;
+    padding: 30px 20px;
   }
-
-  .fte-header {
-    flex-direction: column;
-    gap: 20px;
-    align-items: stretch;
-  }
-
-  .fte-welcome h1 {
+  
+  .fte-container h1 {
     font-size: 2rem;
   }
-
-  .fte-actions {
-    justify-content: center;
+  
+  .interests-grid {
+    grid-template-columns: 1fr;
   }
-
-  .fte-completion {
-    padding: 20px;
-  }
-
-  .fte-complete-btn {
-    width: 100%;
-    padding: 14px 24px;
-    font-size: 1.1rem;
-  }
-
-  .fte-skipped-content {
-    padding: 32px 24px;
-  }
-
-  .fte-skipped-content h2 {
-    font-size: 1.5rem;
-  }
-
-  .fte-continue-btn {
-    width: 100%;
-    padding: 14px 24px;
-  }
-}
-
-@media (max-width: 480px) {
-  .fte-container {
-    padding: 12px;
-  }
-
-  .fte-header {
-    padding: 20px;
-  }
-
-  .fte-welcome h1 {
-    font-size: 1.5rem;
-  }
-
-  .fte-welcome p {
-    font-size: 1rem;
-  }
-
-  .fte-skip-btn {
-    padding: 8px 16px;
-    font-size: 0.9rem;
-  }
-
-  .fte-skipped-content {
-    padding: 24px 20px;
-  }
-
-  .fte-skipped-content h2 {
-    font-size: 1.3rem;
-  }
-
-  .fte-skipped-content p {
-    font-size: 1rem;
+  
+  .date-range {
+    grid-template-columns: 1fr;
   }
 }

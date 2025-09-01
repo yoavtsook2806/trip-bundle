@@ -1,0 +1,385 @@
+.preferences-screen {
+  min-height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+
+.preferences-container {
+  background: white;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.preferences-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 30px;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  background: white;
+  border-radius: 20px 20px 0 0;
+}
+
+.close-button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: #f5f5f5;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.close-button:hover {
+  background: #e0e0e0;
+}
+
+.preferences-header h1 {
+  color: #333;
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.usage-indicator {
+  display: flex;
+  align-items: center;
+}
+
+.usage-count {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+  padding: 6px 12px;
+  background: #f0f0f0;
+  border-radius: 15px;
+}
+
+.usage-count.limit-reached {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.limit-warning {
+  background: #ffecb3;
+  color: #f57c00;
+  padding: 15px 30px;
+  text-align: center;
+  font-weight: 500;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.preferences-content {
+  padding: 30px;
+}
+
+.pref-section {
+  margin-bottom: 30px;
+}
+
+.pref-section h2 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.interests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.interest-checkbox {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.interest-checkbox:hover {
+  border-color: #667eea;
+  background-color: #f8f9ff;
+}
+
+.interest-checkbox input[type="checkbox"] {
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+  accent-color: #667eea;
+}
+
+.interest-checkbox input[type="checkbox"]:checked + .interest-label {
+  color: #667eea;
+  font-weight: 600;
+}
+
+.interest-label {
+  font-size: 0.9rem;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.music-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.music-option {
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.music-option:hover {
+  border-color: #667eea;
+  background-color: #f8f9ff;
+}
+
+.music-option.active {
+  border-color: #667eea;
+  background-color: #667eea;
+  color: white;
+}
+
+.music-text-option {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.music-text-option label {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.music-text-option textarea {
+  padding: 10px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+}
+
+.music-text-option textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.date-range {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.date-input {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.date-input label {
+  color: #666;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.date-input input[type="date"] {
+  padding: 10px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: border-color 0.3s ease;
+}
+
+.date-input input[type="date"]:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.pref-section textarea {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+}
+
+.pref-section textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.preferences-footer {
+  padding: 20px 30px;
+  border-top: 1px solid #e0e0e0;
+  position: sticky;
+  bottom: 0;
+  background: white;
+  border-radius: 0 0 20px 20px;
+}
+
+.save-button {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.save-button.enabled {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.save-button.enabled:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.save-button.disabled {
+  background: #e0e0e0;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 20px;
+}
+
+.confirm-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.confirm-modal h3 {
+  color: #333;
+  margin: 0 0 15px 0;
+  font-size: 1.3rem;
+}
+
+.confirm-modal p {
+  color: #666;
+  margin: 0 0 25px 0;
+  line-height: 1.4;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.cancel-modal, .confirm-modal-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-modal {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.cancel-modal:hover {
+  background: #e0e0e0;
+}
+
+.confirm-modal-btn {
+  background: #d32f2f;
+  color: white;
+}
+
+.confirm-modal-btn:hover {
+  background: #b71c1c;
+}
+
+@media (max-width: 768px) {
+  .preferences-screen {
+    padding: 10px;
+  }
+  
+  .preferences-container {
+    max-height: 95vh;
+  }
+  
+  .preferences-header {
+    padding: 15px 20px;
+  }
+  
+  .preferences-content {
+    padding: 20px;
+  }
+  
+  .preferences-footer {
+    padding: 15px 20px;
+  }
+  
+  .preferences-header h1 {
+    font-size: 1.3rem;
+  }
+  
+  .interests-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .date-range {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal-buttons {
+    flex-direction: column;
+  }
+}

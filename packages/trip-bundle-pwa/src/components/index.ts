@@ -1,7 +1,6 @@
-export { default as BundleOffer } from './BundleOffer';
-export { UserPreferencesForm } from './UserPreferencesForm';
+export { FirstTimeExperience } from './FirstTimeExperience';
+export { ThinkingScreen } from './ThinkingScreen';
+export { BundleFeed } from './BundleFeed';
+export { BundlePage } from './BundlePage';
+export { PreferencesScreen } from './PreferencesScreen';
 export { DevelopmentTab } from './DevelopmentTab';
-export { default as BundleFeed } from './BundleFeed';
-export { default as BundlePage } from './BundlePage';
-export { default as FirstTimeExperience } from './FirstTimeExperience';
-export { default as ThinkingScreen } from './ThinkingScreen';
