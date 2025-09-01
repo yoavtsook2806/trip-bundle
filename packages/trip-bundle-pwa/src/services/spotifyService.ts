@@ -66,48 +66,67 @@ export class SpotifyService {
 
   // Authentication
   async authenticate(): Promise<boolean> {
-    console.log('🎵 [DEBUG] Starting Spotify authentication...');
+    console.log('🎵 [SPOTIFY_AUTH] Starting Spotify authentication...');
+    console.log('🎵 [SPOTIFY_AUTH] Current state:', {
+      hasClientId: !!this.clientId,
+      hasAccessToken: !!this.accessToken,
+      hasRefreshToken: !!this.refreshToken,
+      tokenExpiry: this.tokenExpiry,
+      isCurrentlyAuthenticated: this.isAuthenticated()
+    });
     
     if (!this.clientId) {
+      console.error('🎵 [SPOTIFY_AUTH] ❌ No Spotify Client ID configured');
       throw new Error('Spotify Client ID not configured. Please check your environment variables.');
     }
 
     // Check if already authenticated
     if (this.isAuthenticated()) {
-      console.log('🎵 [DEBUG] Already authenticated with valid token');
+      console.log('🎵 [SPOTIFY_AUTH] ✅ Already authenticated with valid token');
       return true;
     }
 
     // Try to restore from localStorage
+    console.log('🎵 [SPOTIFY_AUTH] Attempting to restore tokens from localStorage...');
     this.loadTokensFromStorage();
+    console.log('🎵 [SPOTIFY_AUTH] After loading from storage:', {
+      hasAccessToken: !!this.accessToken,
+      hasRefreshToken: !!this.refreshToken,
+      tokenExpiry: this.tokenExpiry,
+      isAuthenticated: this.isAuthenticated()
+    });
+    
     if (this.isAuthenticated()) {
-      console.log('🎵 [DEBUG] Successfully restored valid tokens from localStorage');
+      console.log('🎵 [SPOTIFY_AUTH] ✅ Successfully restored valid tokens from localStorage');
       return true;
     }
 
     // Try to refresh token if available
     if (this.refreshToken) {
-      console.log('🎵 [DEBUG] Attempting to refresh access token...');
+      console.log('🎵 [SPOTIFY_AUTH] Attempting to refresh access token...');
       try {
         const refreshed = await this.refreshAccessToken();
+        console.log('🎵 [SPOTIFY_AUTH] Refresh token result:', refreshed);
         if (refreshed && this.isAuthenticated()) {
-          console.log('🎵 [DEBUG] Successfully refreshed token');
+          console.log('🎵 [SPOTIFY_AUTH] ✅ Successfully refreshed token');
           return true;
         }
       } catch (error) {
-        console.warn('🎵 [DEBUG] Failed to refresh Spotify token:', error);
+        console.warn('🎵 [SPOTIFY_AUTH] ⚠️ Failed to refresh Spotify token:', error);
       }
     }
 
     // Start OAuth flow
-    console.log('🎵 [DEBUG] Starting OAuth flow...');
+    console.log('🎵 [SPOTIFY_AUTH] 🚀 Starting OAuth flow...');
     return this.startOAuthFlow();
   }
 
   private startOAuthFlow(): Promise<boolean> {
     return new Promise(async (resolve, reject) => {
       try {
+        console.log('🎵 [SPOTIFY_OAUTH] Generating auth URL...');
         const authUrl = await this.getAuthUrl();
+        console.log('🎵 [SPOTIFY_OAUTH] Generated auth URL:', authUrl.substring(0, 100) + '...');
         
         // Clear any previous auth state
         localStorage.removeItem('spotify_auth_code');
@@ -115,12 +134,13 @@ export class SpotifyService {
         
         // For mobile/PWA: Use direct redirect instead of popup
         if (this.isMobileOrPWA()) {
-          console.log('🎵 [DEBUG] Mobile/PWA detected - using direct redirect');
+          console.log('🎵 [SPOTIFY_OAUTH] Mobile/PWA detected - using direct redirect');
           window.location.href = authUrl;
           return;
         }
         
         // Desktop: Try popup first, fallback to redirect
+        console.log('🎵 [SPOTIFY_OAUTH] Opening popup window...');
         const popup = window.open(
           authUrl,
           'spotify-auth',
@@ -128,10 +148,12 @@ export class SpotifyService {
         );
 
         if (!popup) {
-          console.log('🎵 [DEBUG] Popup blocked - falling back to redirect');
+          console.log('🎵 [SPOTIFY_OAUTH] ⚠️ Popup blocked - falling back to redirect');
           window.location.href = authUrl;
           return;
         }
+        
+        console.log('🎵 [SPOTIFY_OAUTH] ✅ Popup opened successfully, waiting for auth...');
 
         let authCompleted = false;
         let checkClosed: NodeJS.Timeout;

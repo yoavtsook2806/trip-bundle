@@ -12,7 +12,7 @@ export const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComp
   const [preferences, setPreferences] = useState<UserPreferences>(getDefaultUserPreferences());
   const [dateRange, setDateRange] = useState<DateRange>({
     startDate: Date.now(),
-    endDate: Date.now() + (7 * 24 * 60 * 60 * 1000) // Default to 1 week from now
+    endDate: Date.now() + (4 * 30 * 24 * 60 * 60 * 1000) // Default to 4 months from now
   });
   const [isConnectingSpotify, setIsConnectingSpotify] = useState(false);
 
@@ -43,16 +43,27 @@ export const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComp
   };
 
   const handleSpotifyConnect = async () => {
-    if (isConnectingSpotify) return;
+    console.log('🎵 [FTE_SPOTIFY] Starting Spotify connection...');
+    if (isConnectingSpotify) {
+      console.log('🎵 [FTE_SPOTIFY] Already connecting, ignoring duplicate request');
+      return;
+    }
     
     setIsConnectingSpotify(true);
     try {
-      console.log('🎵 Attempting to connect to Spotify...');
+      console.log('🎵 [FTE_SPOTIFY] Calling spotifyService.authenticate()...');
       const success = await spotifyService.authenticate();
+      console.log('🎵 [FTE_SPOTIFY] Authentication result:', success);
       
       if (success) {
-        console.log('🎵 Spotify connection successful');
+        console.log('🎵 [FTE_SPOTIFY] ✅ Authentication successful, fetching user preferences...');
         const userPrefs = await spotifyService.getUserPreferences();
+        console.log('🎵 [FTE_SPOTIFY] User preferences fetched:', {
+          topGenres: userPrefs.topGenres?.length || 0,
+          topArtists: userPrefs.topArtists?.length || 0,
+          topTracks: userPrefs.topTracks?.length || 0
+        });
+        
         // Just stringify the Spotify data instead of using prompts
         const musicProfile = JSON.stringify({
           type: 'spotify',
@@ -61,15 +72,18 @@ export const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComp
           tracks: userPrefs.topTracks.slice(0, 5).map(t => ({ name: t.name, artist: t.artists[0]?.name })),
           musicProfile: userPrefs.musicProfile
         });
+        console.log('🎵 [FTE_SPOTIFY] ✅ Music profile created, updating state...');
         handleMusicProfileChange(musicProfile);
+        console.log('🎵 [FTE_SPOTIFY] ✅ Spotify connection completed successfully!');
       } else {
-        console.warn('🎵 Spotify connection failed');
+        console.error('🎵 [FTE_SPOTIFY] ❌ Spotify authentication failed');
         alert('Failed to connect to Spotify. Please try again or use the text field instead.');
       }
     } catch (error) {
-      console.error('🎵 Spotify connection error:', error);
+      console.error('🎵 [FTE_SPOTIFY] ❌ Error connecting to Spotify:', error);
       alert('Error connecting to Spotify. Please try again or use the text field instead.');
     } finally {
+      console.log('🎵 [FTE_SPOTIFY] Setting connecting state to false');
       setIsConnectingSpotify(false);
     }
   };
