@@ -271,9 +271,11 @@ class BundleSuggestionsStore {
       const bundlesData = {
         bundles: this.bundles,
         lastGenerated: this.lastGenerated,
-        selectedBundleId: this.selectedBundle?.id || null
+        selectedBundleId: this.selectedBundle?.id || null,
+        pagination: this.pagination
       };
       localStorage.setItem('trip_bundle_suggestions', JSON.stringify(bundlesData));
+      console.log('💾 [STORE] Saved', this.bundles.length, 'bundles to storage with pagination info');
     } catch (error) {
       console.warn('Failed to save bundles to localStorage:', error);
     }
@@ -287,9 +289,16 @@ class BundleSuggestionsStore {
         this.bundles = bundlesData.bundles || [];
         this.lastGenerated = bundlesData.lastGenerated ? new Date(bundlesData.lastGenerated) : null;
         
+        // Restore pagination info
+        if (bundlesData.pagination) {
+          this.pagination = { ...this.pagination, ...bundlesData.pagination };
+        }
+        
         if (bundlesData.selectedBundleId) {
           this.selectBundleById(bundlesData.selectedBundleId);
         }
+        
+        console.log('💾 [STORE] Loaded', this.bundles.length, 'bundles from storage with pagination:', this.pagination);
       }
     } catch (error) {
       console.warn('Failed to load bundles from localStorage:', error);

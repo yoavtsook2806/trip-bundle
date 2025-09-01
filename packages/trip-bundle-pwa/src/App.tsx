@@ -54,14 +54,17 @@ const App: React.FC = observer(() => {
         initFirstTimeExperienceData(fteStore, FirstTimeExperienceStorage)
       ]);
       
+      // Always load existing bundles from storage first
+      bundleSuggestionsStore.loadBundlesFromStorage();
+      console.log('💾 [APP] Loaded existing bundles from storage:', bundleSuggestionsStore.bundles.length);
+      
       // Check if FTE should be shown
       const fteWasPresented = await fteActions.getFteWasPresented();
       if (!fteWasPresented) {
         console.log('✨ [APP] First time user, showing FTE');
         setShowFTE(true);
       } else {
-        console.log('🎯 [APP] Returning user, loading bundles');
-        bundleSuggestionsStore.loadBundlesFromStorage();
+        console.log('🎯 [APP] Returning user with existing bundles');
       }
       
       console.log('🚀 [APP] App initialization completed');
@@ -138,9 +141,11 @@ const App: React.FC = observer(() => {
   const handleBundlesGenerated = (bundles: any[]) => {
     console.log('✅ [APP] Bundles generated:', bundles.length);
     
-    // Update the bundle suggestions store
+    // Update the bundle suggestions store AND save to storage
     bundleSuggestionsStore.setBundles(bundles);
+    bundleSuggestionsStore.saveBundlesToStorage();
     
+    console.log('💾 [APP] Bundles saved to storage for persistence');
     setIsLoadingBundles(false);
   };
 
@@ -225,6 +230,10 @@ const App: React.FC = observer(() => {
         },
         true // append = true
       );
+      
+      // Save updated bundles to storage
+      bundleSuggestionsStore.saveBundlesToStorage();
+      console.log('💾 [APP] Load more bundles saved to storage');
       
     } catch (error) {
       console.error('❌ [APP] Error loading more bundles:', error);
