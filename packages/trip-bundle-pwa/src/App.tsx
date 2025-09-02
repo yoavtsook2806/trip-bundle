@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import {
-  FirstTimeExperience,
   ThinkingScreen,
   BundleFeed,
   BundlePage,
@@ -78,11 +77,16 @@ export const App: React.FC = observer(() => {
   const renderCurrentScreen = () => {
     switch (appStore.currentScreen) {
       case 'firstTime':
-        return (
-          <FirstTimeExperience
-            onComplete={handleFirstTimeComplete}
+        return appStore.userPreferences && appStore.dateRange ? (
+          <PreferencesScreen
+            initialPreferences={appStore.userPreferences}
+            initialDateRange={appStore.dateRange}
+            promptsUsage={appStore.promptsUsage}
+            onSave={handleFirstTimeComplete}
+            onCancel={() => {}} // No cancel in FTE mode
+            isFTEMode={true}
           />
-        );
+        ) : null;
 
       case 'thinking':
         return <ThinkingScreen />;

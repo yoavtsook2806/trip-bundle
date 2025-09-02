@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { UserPreferences, DateRange, PromptsUsage } from '../types';
 import { canMakePromptCall } from '../storage';
 import { spotifyService } from '../services';
+import { getConfig } from '../config/production';
 import './PreferencesScreen.css';
 
 interface PreferencesScreenProps {
@@ -10,6 +11,7 @@ interface PreferencesScreenProps {
   promptsUsage: PromptsUsage;
   onSave: (preferences: UserPreferences, dateRange: DateRange) => void;
   onCancel: () => void;
+  isFTEMode?: boolean; // New prop to indicate if this is First Time Experience mode
 }
 
 export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
@@ -17,13 +19,18 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
   initialDateRange,
   promptsUsage,
   onSave,
-  onCancel
+  onCancel,
+  isFTEMode = false
 }) => {
   const [preferences, setPreferences] = useState<UserPreferences>(initialPreferences);
   const [dateRange, setDateRange] = useState<DateRange>(initialDateRange);
   const [hasChanges, setHasChanges] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [isConnectingSpotify, setIsConnectingSpotify] = useState(false);
+
+  // Check if Spotify is available in current configuration
+  const config = getConfig();
+  const isSpotifyAvailable = !!config.SPOTIFY_CLIENT_ID;
 
   const isSpotifyConnected = () => {
     if (!preferences.musicProfile) return false;
@@ -34,12 +41,19 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
            preferences.musicProfile.includes('Recent favorite songs include');
   };
 
-  // Check for changes
+  // Check for changes (in FTE mode, always allow saving if basic data is present)
   useEffect(() => {
-    const prefsChanged = JSON.stringify(preferences) !== JSON.stringify(initialPreferences);
-    const datesChanged = JSON.stringify(dateRange) !== JSON.stringify(initialDateRange);
-    setHasChanges(prefsChanged || datesChanged);
-  }, [preferences, dateRange, initialPreferences, initialDateRange]);
+    if (isFTEMode) {
+      // In FTE mode, enable save button if user has selected at least one interest
+      const hasInterests = Object.values(preferences.interestTypes).some(interest => interest.isEnabled);
+      setHasChanges(hasInterests);
+    } else {
+      // In preferences mode, check for actual changes
+      const prefsChanged = JSON.stringify(preferences) !== JSON.stringify(initialPreferences);
+      const datesChanged = JSON.stringify(dateRange) !== JSON.stringify(initialDateRange);
+      setHasChanges(prefsChanged || datesChanged);
+    }
+  }, [preferences, dateRange, initialPreferences, initialDateRange, isFTEMode]);
 
   const handleInterestChange = (interestKey: keyof typeof preferences.interestTypes, isEnabled: boolean) => {
     setPreferences(prev => ({
@@ -145,15 +159,19 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
     <div className="preferences-screen">
       <div className="preferences-container">
         <div className="preferences-header">
-          <button className="close-button" onClick={handleCancel}>
-            ✕
-          </button>
-          <h1>⚙️ Preferences</h1>
-          <div className="usage-indicator">
-            <span className={`usage-count ${isLimitReached ? 'limit-reached' : ''}`}>
-              {promptsUsage.count}/{promptsUsage.maxDaily} calls today
-            </span>
-          </div>
+          {!isFTEMode && (
+            <button className="close-button" onClick={handleCancel}>
+              ✕
+            </button>
+          )}
+          <h1>{isFTEMode ? '✈️ Plan Your Perfect Trip' : '⚙️ Preferences'}</h1>
+          {!isFTEMode && (
+            <div className="usage-indicator">
+              <span className={`usage-count ${isLimitReached ? 'limit-reached' : ''}`}>
+                {promptsUsage.count}/{promptsUsage.maxDaily} calls today
+              </span>
+            </div>
+          )}
         </div>
 
         {isLimitReached && (
@@ -187,11 +205,14 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
             <h2>Music Taste</h2>
             <div className="music-options">
               <button 
-                className={`music-option ${isSpotifyConnected() ? 'active' : ''}`}
+                className={`music-option ${isSpotifyConnected() ? 'active' : ''} ${!isSpotifyAvailable ? 'disabled' : ''}`}
                 onClick={handleSpotifyConnect}
-                disabled={isConnectingSpotify}
+                disabled={isConnectingSpotify || !isSpotifyAvailable}
+                title={!isSpotifyAvailable ? 'Spotify integration not available in this deployment' : ''}
               >
-                {isConnectingSpotify ? '🔄 Connecting...' : (isSpotifyConnected() ? '✅ Spotify Connected' : '🎵 Connect Spotify')}
+                {!isSpotifyAvailable ? '🚫 Spotify Not Available' : 
+                 isConnectingSpotify ? '🔄 Connecting...' : 
+                 (isSpotifyConnected() ? '✅ Spotify Connected' : '🎵 Connect Spotify')}
               </button>
               <div className="music-text-option">
                 <label>Or describe your music taste:</label>
@@ -247,7 +268,7 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
             onClick={handleSave}
             disabled={!canSave}
           >
-            {isLimitReached ? 'Daily Limit Reached' : 'Save & Generate New Bundles'}
+            {isLimitReached ? 'Daily Limit Reached' : (isFTEMode ? 'GO!' : 'Save & Generate New Bundles')}
           </button>
         </div>
       </div>

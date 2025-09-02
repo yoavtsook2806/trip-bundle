@@ -13,6 +13,9 @@ import {
   hasCompletedFirstTimeExperience,
   markFirstTimeExperienceCompleted,
   resetFirstTimeExperience,
+  getFteWasPresented,
+  markFteAsPresented,
+  resetFtePresented,
   getPromptsUsage,
   incrementPromptsUsage,
   canMakePromptCall,
@@ -27,7 +30,8 @@ export const initializeApp = () => {
   
   const preferences = getUserPreferences();
   const dateRange = getDateRange();
-  const hasSetup = hasCompletedFirstTimeExperience();
+  const fteWasPresented = getFteWasPresented();
+  const hasCompletedGo = hasCompletedFirstTimeExperience(); // This is for the "GO" button press
   const promptsUsage = getPromptsUsage();
 
   appStore.setUserPreferences(preferences);
@@ -35,9 +39,12 @@ export const initializeApp = () => {
     appStore.setDateRange(dateRange);
   }
   appStore.setPromptsUsage(promptsUsage);
-  appStore.setCurrentScreen(hasSetup ? 'bundles' : 'firstTime');
   
-  console.log('✅ App initialized', { hasSetup, promptsUsage });
+  // Show FTE if it was never presented OR if "GO" was never pressed
+  const shouldShowFTE = !fteWasPresented || !hasCompletedGo;
+  appStore.setCurrentScreen(shouldShowFTE ? 'firstTime' : 'bundles');
+  
+  console.log('✅ App initialized', { fteWasPresented, hasCompletedGo, shouldShowFTE, promptsUsage });
 };
 
 /**
@@ -102,7 +109,8 @@ export const completeFirstTimeSetup = async (
   saveUserPreferences(preferences);
   saveDateRange(dateRange);
   
-  // Mark FTE as completed (Go button was pressed)
+  // Mark FTE as presented and completed (Go button was pressed)
+  markFteAsPresented();
   markFirstTimeExperienceCompleted();
   
   // Update store
@@ -166,8 +174,9 @@ export const resetLocalStorage = () => {
   // Reset prompts usage specifically
   resetPromptsUsage();
   
-  // Reset FTE completion status
+  // Reset FTE completion and presentation status
   resetFirstTimeExperience();
+  resetFtePresented();
   
   // Reset store to initial state
   appStore.resetAll();

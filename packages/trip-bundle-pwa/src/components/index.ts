@@ -1,4 +1,3 @@
-export { FirstTimeExperience } from './FirstTimeExperience';
 export { ThinkingScreen } from './ThinkingScreen';
 export { BundleFeed } from './BundleFeed';
 export { BundlePage } from './BundlePage';
