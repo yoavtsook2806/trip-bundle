@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { UserPreferences, DateRange, PromptsUsage } from '../types';
-import { canMakePromptCall } from '../storage';
+import { canMakePromptCall, saveUserPreferences, saveDateRange } from '../storage';
 import { spotifyService } from '../services';
 import { getConfig } from '../config/production';
 import './PreferencesScreen.css';
@@ -22,6 +22,16 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
   onCancel,
   isFTEMode = false
 }) => {
+  console.log('🎵 [PREFERENCES_COMPONENT] Component initializing with props:', {
+    initialPreferences: {
+      interests: Object.entries(initialPreferences.interestTypes).filter(([_, v]) => v.isEnabled).map(([k, _]) => k),
+      freeText: initialPreferences.freeTextInterests,
+      musicProfile: initialPreferences.musicProfile?.substring(0, 50) + '...'
+    },
+    isFTEMode,
+    componentRender: Date.now()
+  });
+
   const [preferences, setPreferences] = useState<UserPreferences>(initialPreferences);
   const [dateRange, setDateRange] = useState<DateRange>(initialDateRange);
   const [hasChanges, setHasChanges] = useState(false);
@@ -100,6 +110,34 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
     checkSpotifyReturn();
   }, []);
 
+  // Update local state when props change (important for preserving data during app re-initialization)
+  useEffect(() => {
+    console.log('🎵 [PREFERENCES_PROPS_UPDATE] Props changed, updating local state:', {
+      newInitialPreferences: {
+        interests: Object.entries(initialPreferences.interestTypes).filter(([_, v]) => v.isEnabled).map(([k, _]) => k),
+        freeText: initialPreferences.freeTextInterests,
+        musicProfile: initialPreferences.musicProfile?.substring(0, 50) + '...'
+      },
+      currentPreferences: {
+        interests: Object.entries(preferences.interestTypes).filter(([_, v]) => v.isEnabled).map(([k, _]) => k),
+        freeText: preferences.freeTextInterests,
+        musicProfile: preferences.musicProfile?.substring(0, 50) + '...'
+      },
+      shouldUpdate: JSON.stringify(initialPreferences) !== JSON.stringify(preferences)
+    });
+
+    // Only update if the initial preferences have actually changed and are different from current state
+    if (JSON.stringify(initialPreferences) !== JSON.stringify(preferences)) {
+      console.log('🎵 [PREFERENCES_PROPS_UPDATE] Updating preferences from props');
+      setPreferences(initialPreferences);
+    }
+    
+    if (JSON.stringify(initialDateRange) !== JSON.stringify(dateRange)) {
+      console.log('🎵 [PREFERENCES_PROPS_UPDATE] Updating date range from props');
+      setDateRange(initialDateRange);
+    }
+  }, [initialPreferences, initialDateRange]);
+
   const isSpotifyConnected = () => {
     if (!preferences.musicProfile) {
       console.log('🎵 [PREFERENCES_SPOTIFY_STATE] No music profile set');
@@ -139,20 +177,51 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
   }, [preferences, dateRange, initialPreferences, initialDateRange, isFTEMode]);
 
   const handleInterestChange = (interestKey: keyof typeof preferences.interestTypes, isEnabled: boolean) => {
-    setPreferences(prev => ({
-      ...prev,
-      interestTypes: {
-        ...prev.interestTypes,
-        [interestKey]: { isEnabled }
-      }
-    }));
+    setPreferences(prev => {
+      const updated = {
+        ...prev,
+        interestTypes: {
+          ...prev.interestTypes,
+          [interestKey]: { isEnabled }
+        }
+      };
+      
+      // Save to storage immediately to persist through app reinitializations
+      console.log('🎵 [PREFERENCES_INTEREST_CHANGE] Saving updated preferences to storage');
+      saveUserPreferences(updated);
+      
+      return updated;
+    });
   };
 
   const handleMusicProfileChange = (value: string) => {
-    setPreferences(prev => ({
-      ...prev,
-      musicProfile: value
-    }));
+    console.log('🎵 [PREFERENCES_MUSIC_CHANGE] Updating music profile:', {
+      oldProfile: preferences.musicProfile?.substring(0, 50) + '...',
+      newProfile: value.substring(0, 50) + '...',
+      currentPreferences: {
+        interests: Object.entries(preferences.interestTypes).filter(([_, v]) => v.isEnabled).map(([k, _]) => k),
+        freeText: preferences.freeTextInterests,
+        hasData: !!preferences
+      }
+    });
+    
+    setPreferences(prev => {
+      const updated = {
+        ...prev,
+        musicProfile: value
+      };
+      console.log('🎵 [PREFERENCES_MUSIC_CHANGE] Updated preferences:', {
+        interests: Object.entries(updated.interestTypes).filter(([_, v]) => v.isEnabled).map(([k, _]) => k),
+        freeText: updated.freeTextInterests,
+        musicProfile: updated.musicProfile?.substring(0, 50) + '...'
+      });
+      
+      // Save to storage immediately to persist through app reinitializations
+      console.log('🎵 [PREFERENCES_MUSIC_CHANGE] Saving updated preferences to storage');
+      saveUserPreferences(updated);
+      
+      return updated;
+    });
   };
 
   const handleSpotifyConnect = async () => {
@@ -220,27 +289,51 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
   };
 
   const handleFreeTextChange = (value: string) => {
-    setPreferences(prev => ({
-      ...prev,
-      freeTextInterests: value
-    }));
+    setPreferences(prev => {
+      const updated = {
+        ...prev,
+        freeTextInterests: value
+      };
+      
+      // Save to storage immediately to persist through app reinitializations
+      console.log('🎵 [PREFERENCES_FREETEXT_CHANGE] Saving updated preferences to storage');
+      saveUserPreferences(updated);
+      
+      return updated;
+    });
   };
 
   const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newStartDate = new Date(e.target.value).getTime();
-    setDateRange(prev => ({
-      ...prev,
-      startDate: newStartDate,
-      endDate: Math.max(prev.endDate, newStartDate + (24 * 60 * 60 * 1000))
-    }));
+    setDateRange(prev => {
+      const updated = {
+        ...prev,
+        startDate: newStartDate,
+        endDate: Math.max(prev.endDate, newStartDate + (24 * 60 * 60 * 1000))
+      };
+      
+      // Save to storage immediately to persist through app reinitializations
+      console.log('🎵 [PREFERENCES_DATE_CHANGE] Saving updated date range to storage');
+      saveDateRange(updated);
+      
+      return updated;
+    });
   };
 
   const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEndDate = new Date(e.target.value).getTime();
-    setDateRange(prev => ({
-      ...prev,
-      endDate: newEndDate
-    }));
+    setDateRange(prev => {
+      const updated = {
+        ...prev,
+        endDate: newEndDate
+      };
+      
+      // Save to storage immediately to persist through app reinitializations
+      console.log('🎵 [PREFERENCES_DATE_CHANGE] Saving updated date range to storage');
+      saveDateRange(updated);
+      
+      return updated;
+    });
   };
 
   const isFormValid = () => {
