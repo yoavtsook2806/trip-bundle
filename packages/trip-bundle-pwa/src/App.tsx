@@ -141,7 +141,19 @@ export const App: React.FC = observer(() => {
         ) : null;
 
       default:
-        return <FirstTimeExperience onComplete={handleFirstTimeComplete} />;
+        return (
+          <PreferencesScreen
+            initialPreferences={appStore.userPreferences || getDefaultUserPreferences()}
+            initialDateRange={appStore.dateRange || {
+              startDate: Date.now(),
+              endDate: Date.now() + (4 * 30 * 24 * 60 * 60 * 1000) // 4 months from now
+            }}
+            promptsUsage={appStore.promptsUsage}
+            onSave={handleFirstTimeComplete}
+            onCancel={() => {}} // No cancel in FTE mode
+            isFTEMode={true}
+          />
+        );
     }
   };
 
