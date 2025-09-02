@@ -8,6 +8,7 @@ import {
   DevelopmentTab
 } from './components';
 import { appStore } from './store';
+import { getDefaultUserPreferences } from './storage';
 import {
   initializeApp,
   completeFirstTimeSetup,
@@ -77,16 +78,19 @@ export const App: React.FC = observer(() => {
   const renderCurrentScreen = () => {
     switch (appStore.currentScreen) {
       case 'firstTime':
-        return appStore.userPreferences && appStore.dateRange ? (
+        return (
           <PreferencesScreen
-            initialPreferences={appStore.userPreferences}
-            initialDateRange={appStore.dateRange}
+            initialPreferences={appStore.userPreferences || getDefaultUserPreferences()}
+            initialDateRange={appStore.dateRange || {
+              startDate: Date.now(),
+              endDate: Date.now() + (4 * 30 * 24 * 60 * 60 * 1000) // 4 months from now
+            }}
             promptsUsage={appStore.promptsUsage}
             onSave={handleFirstTimeComplete}
             onCancel={() => {}} // No cancel in FTE mode
             isFTEMode={true}
           />
-        ) : null;
+        );
 
       case 'thinking':
         return <ThinkingScreen />;

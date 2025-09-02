@@ -10,12 +10,9 @@ import {
   saveUserPreferences,
   getDateRange,
   saveDateRange,
-  hasCompletedFirstTimeExperience,
-  markFirstTimeExperienceCompleted,
-  resetFirstTimeExperience,
-  getFteWasPresented,
-  markFteAsPresented,
-  resetFtePresented,
+  getFteCompleted,
+  markFteAsCompleted,
+  resetFteCompleted,
   getPromptsUsage,
   incrementPromptsUsage,
   canMakePromptCall,
@@ -30,8 +27,7 @@ export const initializeApp = () => {
   
   const preferences = getUserPreferences();
   const dateRange = getDateRange();
-  const fteWasPresented = getFteWasPresented();
-  const hasCompletedGo = hasCompletedFirstTimeExperience(); // This is for the "GO" button press
+  const fteCompleted = getFteCompleted();
   const promptsUsage = getPromptsUsage();
 
   appStore.setUserPreferences(preferences);
@@ -40,11 +36,10 @@ export const initializeApp = () => {
   }
   appStore.setPromptsUsage(promptsUsage);
   
-  // Show FTE if it was never presented OR if "GO" was never pressed
-  const shouldShowFTE = !fteWasPresented || !hasCompletedGo;
-  appStore.setCurrentScreen(shouldShowFTE ? 'firstTime' : 'bundles');
+  // Show FTE if it was never completed (GO button never pressed)
+  appStore.setCurrentScreen(fteCompleted ? 'bundles' : 'firstTime');
   
-  console.log('✅ App initialized', { fteWasPresented, hasCompletedGo, shouldShowFTE, promptsUsage });
+  console.log('✅ App initialized', { fteCompleted, promptsUsage });
 };
 
 /**
@@ -109,9 +104,8 @@ export const completeFirstTimeSetup = async (
   saveUserPreferences(preferences);
   saveDateRange(dateRange);
   
-  // Mark FTE as presented and completed (Go button was pressed)
-  markFteAsPresented();
-  markFirstTimeExperienceCompleted();
+  // Mark FTE as completed (GO button was pressed)
+  markFteAsCompleted();
   
   // Update store
   appStore.setUserPreferences(preferences);
@@ -174,9 +168,8 @@ export const resetLocalStorage = () => {
   // Reset prompts usage specifically
   resetPromptsUsage();
   
-  // Reset FTE completion and presentation status
-  resetFirstTimeExperience();
-  resetFtePresented();
+  // Reset FTE completion status
+  resetFteCompleted();
   
   // Reset store to initial state
   appStore.resetAll();
