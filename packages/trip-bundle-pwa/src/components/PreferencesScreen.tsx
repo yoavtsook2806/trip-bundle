@@ -26,12 +26,12 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
   const [isConnectingSpotify, setIsConnectingSpotify] = useState(false);
 
   const isSpotifyConnected = () => {
-    try {
-      const parsed = JSON.parse(preferences.musicProfile);
-      return parsed.type === 'spotify';
-    } catch {
-      return false;
-    }
+    if (!preferences.musicProfile) return false;
+    
+    // Check if the music profile contains Spotify-specific indicators
+    return preferences.musicProfile.includes('Favorite artists include') || 
+           preferences.musicProfile.includes('Primary music genres are') ||
+           preferences.musicProfile.includes('Recent favorite songs include');
   };
 
   // Check for changes
@@ -69,15 +69,10 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
       if (success) {
         console.log('🎵 Spotify connection successful');
         const userPrefs = await spotifyService.getUserPreferences();
-        // Just stringify the Spotify data instead of using prompts
-        const musicProfile = JSON.stringify({
-          type: 'spotify',
-          genres: userPrefs.topGenres.slice(0, 5),
-          artists: userPrefs.topArtists.slice(0, 5).map(a => ({ name: a.name, genres: a.genres })),
-          tracks: userPrefs.topTracks.slice(0, 5).map(t => ({ name: t.name, artist: t.artists[0]?.name })),
-          musicProfile: userPrefs.musicProfile
-        });
-        handleMusicProfileChange(musicProfile);
+        // Generate textual music profile for AI understanding
+        const textualMusicProfile = spotifyService.generateTextualMusicProfile(userPrefs);
+        console.log('🎵 [PREFERENCES_SPOTIFY] Generated textual profile:', textualMusicProfile);
+        handleMusicProfileChange(textualMusicProfile);
       } else {
         console.warn('🎵 Spotify connection failed');
         alert('Failed to connect to Spotify. Please try again or use the text field instead.');
@@ -201,7 +196,7 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
               <div className="music-text-option">
                 <label>Or describe your music taste:</label>
                 <textarea
-                  value={isSpotifyConnected() ? 'Spotify data connected ✅' : preferences.musicProfile}
+                  value={isSpotifyConnected() ? '🎵 Spotify Connected! Your music preferences have been imported.' : preferences.musicProfile}
                   onChange={(e) => handleMusicProfileChange(e.target.value)}
                   placeholder="e.g., I love indie rock, jazz, and electronic music..."
                   rows={3}

@@ -58,16 +58,12 @@ export const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComp
               topTracks: userPrefs.topTracks?.length || 0
             });
             
-            const musicProfile = JSON.stringify({
-              type: 'spotify',
-              genres: userPrefs.topGenres.slice(0, 5),
-              artists: userPrefs.topArtists.slice(0, 5).map(a => ({ name: a.name, genres: a.genres })),
-              tracks: userPrefs.topTracks.slice(0, 5).map(t => ({ name: t.name, artist: t.artists[0]?.name })),
-              musicProfile: userPrefs.musicProfile
-            });
+            // Generate textual music profile for AI understanding
+            const textualMusicProfile = spotifyService.generateTextualMusicProfile(userPrefs);
+            console.log('🎵 [FTE_SPOTIFY_RETURN] Generated textual profile:', textualMusicProfile);
             
             console.log('🎵 [FTE_SPOTIFY_RETURN] ✅ Music profile created, updating state...');
-            handleMusicProfileChange(musicProfile);
+            handleMusicProfileChange(textualMusicProfile);
             console.log('🎵 [FTE_SPOTIFY_RETURN] ✅ Spotify connection completed successfully!');
             
             // Visual success indication only (no popup)
@@ -98,19 +94,18 @@ export const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComp
   }, []);
 
   const isSpotifyConnected = () => {
-    try {
-      if (!preferences.musicProfile) {
-        console.log('🎵 [FTE_SPOTIFY_STATE] No music profile set');
-        return false;
-      }
-      const parsed = JSON.parse(preferences.musicProfile);
-      const isConnected = parsed.type === 'spotify';
-      console.log('🎵 [FTE_SPOTIFY_STATE] Connection status:', isConnected, 'Profile:', parsed.type);
-      return isConnected;
-    } catch (error) {
-      console.log('🎵 [FTE_SPOTIFY_STATE] Failed to parse music profile:', preferences.musicProfile);
+    if (!preferences.musicProfile) {
+      console.log('🎵 [FTE_SPOTIFY_STATE] No music profile set');
       return false;
     }
+    
+    // Check if the music profile contains Spotify-specific indicators
+    const isConnected = preferences.musicProfile.includes('Favorite artists include') || 
+                       preferences.musicProfile.includes('Primary music genres are') ||
+                       preferences.musicProfile.includes('Recent favorite songs include');
+    
+    console.log('🎵 [FTE_SPOTIFY_STATE] Connection status:', isConnected, 'Profile length:', preferences.musicProfile.length);
+    return isConnected;
   };
 
   const handleInterestChange = (interestKey: keyof typeof preferences.interestTypes, isEnabled: boolean) => {
@@ -152,16 +147,12 @@ export const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComp
           topTracks: userPrefs.topTracks?.length || 0
         });
         
-        // Just stringify the Spotify data instead of using prompts
-        const musicProfile = JSON.stringify({
-          type: 'spotify',
-          genres: userPrefs.topGenres.slice(0, 5),
-          artists: userPrefs.topArtists.slice(0, 5).map(a => ({ name: a.name, genres: a.genres })),
-          tracks: userPrefs.topTracks.slice(0, 5).map(t => ({ name: t.name, artist: t.artists[0]?.name })),
-          musicProfile: userPrefs.musicProfile
-        });
+        // Generate textual music profile for AI understanding
+        const textualMusicProfile = spotifyService.generateTextualMusicProfile(userPrefs);
+        console.log('🎵 [FTE_SPOTIFY] Generated textual profile:', textualMusicProfile);
+        
         console.log('🎵 [FTE_SPOTIFY] ✅ Music profile created, updating state...');
-        handleMusicProfileChange(musicProfile);
+        handleMusicProfileChange(textualMusicProfile);
         console.log('🎵 [FTE_SPOTIFY] ✅ Spotify connection completed successfully!');
       } else {
         console.error('🎵 [FTE_SPOTIFY] ❌ Spotify authentication failed');

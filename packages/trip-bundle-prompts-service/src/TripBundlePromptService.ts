@@ -45,19 +45,49 @@ export const generateTripBundles: GenerateTripBundlesFunction = async (
  * Creates a user prompt for AI based on user data and existing bundles
  */
 const createUserPrompt = (userData: UserData, existingBundles: TripBundle[]): string => {
-  // TODO: Implement sophisticated prompt generation logic
-  // This should create a detailed prompt for the AI that includes:
-  // - User preferences and interests
-  // - Date range and travel details
-  // - Context about existing bundles to avoid duplicates
-  // - Specific instructions for the AI response format
-  
-  const promptData = {
-    userData,
-    existingBundles: existingBundles.map(b => ({ id: b.id, title: b.title, city: b.city }))
-  };
-  
-  return JSON.stringify(promptData);
+  // Format interests into readable text
+  const interests = Object.entries(userData.userPreferences.interestTypes)
+    .filter(([_, isSelected]) => isSelected)
+    .map(([interest, _]) => interest)
+    .join(', ');
+
+  // Format music profile
+  const musicProfile = userData.userPreferences.musicProfile || 'No music preferences specified';
+
+  // Format free text interests
+  const freeTextInterests = userData.userPreferences.freeTextInterests || 'No additional interests specified';
+
+  // Format excluded bundles
+  const excludedBundles = existingBundles.length > 0 
+    ? existingBundles.map(bundle => `${bundle.title} (${bundle.city})`).join(', ')
+    : 'None';
+
+  // Format date range
+  const startDate = new Date(userData.dateRange.startDate).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+  const endDate = new Date(userData.dateRange.endDate).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+  const dateRange = `From ${startDate} to ${endDate}`;
+
+  // Create the formatted prompt
+  const userPrompt = `User taste profile (provided by the user):
+1. Interested in: ${interests}
+2. Music profile: ${musicProfile}
+3. Free text: ${freeTextInterests}
+4. Excluded bundles: ${excludedBundles}
+Date range:
+${dateRange}`;
+
+  // Log the user prompt
+  console.log('🎯 [USER_PROMPT] Generated user prompt:', userPrompt);
+
+  return userPrompt;
 };
 
 // For backward compatibility, also export as default

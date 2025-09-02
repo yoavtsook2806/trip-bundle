@@ -466,6 +466,39 @@ For real devices, make sure to:
     };
   }
 
+  /**
+   * Converts Spotify user preferences into a textual description for AI understanding
+   */
+  generateTextualMusicProfile(preferences: SpotifyUserPreferences): string {
+    const { topArtists, topTracks, topGenres } = preferences;
+
+    // Format top artists (limit to 5 for readability)
+    const artistNames = topArtists.slice(0, 5).map(artist => artist.name);
+    const artistsText = artistNames.length > 0 
+      ? `Favorite artists include ${artistNames.join(', ')}`
+      : 'No favorite artists identified';
+
+    // Format top genres (limit to 5 for readability)
+    const genresText = topGenres.length > 0
+      ? `Primary music genres are ${topGenres.slice(0, 5).join(', ')}`
+      : 'No specific genre preferences identified';
+
+    // Format top tracks (limit to 3 for readability)
+    const trackTexts = topTracks.slice(0, 3).map(track => 
+      `"${track.name}" by ${track.artists[0]?.name || 'Unknown Artist'}`
+    );
+    const tracksText = trackTexts.length > 0
+      ? `Recent favorite songs include ${trackTexts.join(', ')}`
+      : 'No favorite tracks identified';
+
+    // Combine into a coherent description
+    const musicDescription = `${artistsText}. ${genresText}. ${tracksText}. This music taste suggests preferences for live music events, concerts, and music festivals that align with these genres and artists.`;
+
+    console.log('🎵 [MUSIC_PROFILE] Generated textual music profile:', musicDescription);
+
+    return musicDescription;
+  }
+
   // Utility methods
   private async makeApiRequest(endpoint: string): Promise<any> {
     await this.ensureValidToken();
