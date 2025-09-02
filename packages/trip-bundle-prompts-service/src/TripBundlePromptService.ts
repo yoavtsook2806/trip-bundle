@@ -42,6 +42,38 @@ export const generateTripBundles: GenerateTripBundlesFunction = async (
 };
 
 /**
+ * Generates a list of excluded events from existing bundles
+ */
+const generateExcludedEvents = (existingBundles: TripBundle[]): string => {
+  if (existingBundles.length === 0) {
+    return 'None';
+  }
+
+  const excludedEvents: string[] = [];
+  
+  existingBundles.forEach(bundle => {
+    // Add key events from existing bundles to excluded list
+    if (bundle.keyEvents && bundle.keyEvents.events) {
+      bundle.keyEvents.events.forEach(event => {
+        excludedEvents.push(`${event.title} (${event.venue})`);
+      });
+    }
+    
+    // Add minor events from existing bundles to excluded list
+    if (bundle.minorEvents && bundle.minorEvents.events) {
+      bundle.minorEvents.events.forEach(event => {
+        excludedEvents.push(`${event.title} (${event.venue})`);
+      });
+    }
+    
+    // Also include the bundle location/city as a general exclusion
+    excludedEvents.push(`Events in ${bundle.city} (already covered by ${bundle.title})`);
+  });
+
+  return excludedEvents.join(', ');
+};
+
+/**
  * Creates a user prompt for AI based on user data and existing bundles
  */
 const createUserPrompt = (userData: UserData, existingBundles: TripBundle[]): string => {
@@ -57,10 +89,8 @@ const createUserPrompt = (userData: UserData, existingBundles: TripBundle[]): st
   // Format free text interests
   const freeTextInterests = userData.userPreferences.freeTextInterests || 'No additional interests specified';
 
-  // Format excluded bundles
-  const excludedBundles = existingBundles.length > 0 
-    ? existingBundles.map(bundle => `${bundle.title} (${bundle.city})`).join(', ')
-    : 'None';
+  // Generate excluded events from existing bundles
+  const excludedEvents = generateExcludedEvents(existingBundles);
 
   // Format date range
   const startDate = new Date(userData.dateRange.startDate).toLocaleDateString('en-US', {
@@ -80,7 +110,7 @@ const createUserPrompt = (userData: UserData, existingBundles: TripBundle[]): st
 1. Interested in: ${interests}
 2. Music profile: ${musicProfile}
 3. Free text: ${freeTextInterests}
-4. Excluded bundles: ${excludedBundles}
+4. Excluded events: ${excludedEvents}
 Date range:
 ${dateRange}`;
 

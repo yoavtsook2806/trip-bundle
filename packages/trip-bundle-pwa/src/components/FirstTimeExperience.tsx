@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { UserPreferences, DateRange } from '../types';
-import { getDefaultUserPreferences } from '../storage';
+import { getDefaultUserPreferences, getUserPreferences, getDateRange } from '../storage';
 import { spotifyService } from '../services';
 import { getConfig } from '../config/production';
 import './FirstTimeExperience.css';
@@ -10,11 +10,19 @@ interface FirstTimeExperienceProps {
 }
 
 export const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComplete }) => {
-  const [preferences, setPreferences] = useState<UserPreferences>(getDefaultUserPreferences());
-  const [dateRange, setDateRange] = useState<DateRange>({
-    startDate: Date.now(),
-    endDate: Date.now() + (4 * 30 * 24 * 60 * 60 * 1000) // Default to 4 months from now
-  });
+  // Load existing preferences if they exist, otherwise use defaults
+  const existingPreferences = getUserPreferences();
+  const existingDateRange = getDateRange();
+  
+  const [preferences, setPreferences] = useState<UserPreferences>(
+    existingPreferences || getDefaultUserPreferences()
+  );
+  const [dateRange, setDateRange] = useState<DateRange>(
+    existingDateRange || {
+      startDate: Date.now(),
+      endDate: Date.now() + (4 * 30 * 24 * 60 * 60 * 1000) // Default to 4 months from now
+    }
+  );
   const [isConnectingSpotify, setIsConnectingSpotify] = useState(false);
   
   // Check if Spotify is available in current configuration
