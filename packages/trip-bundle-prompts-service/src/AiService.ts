@@ -9,12 +9,10 @@ import { TripBundle } from './types';
  * TODO: Implement real AI API calls
  */
 export const getBundlesFromAi = async (
-  userPrompt: string,
-  existingBundles: TripBundle[] = []
+  userPrompt: string
 ): Promise<TripBundle[]> => {
   console.log('🤖 [REAL] Getting bundles from AI...');
   console.log('📝 User prompt:', userPrompt);
-  console.log('📦 Existing bundles to filter:', existingBundles.map(b => b.id));
 
   // TODO: Implement real AI API calls here
   // This should:
