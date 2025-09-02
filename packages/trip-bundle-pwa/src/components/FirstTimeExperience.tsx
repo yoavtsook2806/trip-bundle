@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { UserPreferences, DateRange } from '../types';
 import { getDefaultUserPreferences } from '../storage';
 import { spotifyService } from '../services';
+import { getConfig } from '../config/production';
 import './FirstTimeExperience.css';
 
 interface FirstTimeExperienceProps {
@@ -15,6 +16,16 @@ export const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComp
     endDate: Date.now() + (4 * 30 * 24 * 60 * 60 * 1000) // Default to 4 months from now
   });
   const [isConnectingSpotify, setIsConnectingSpotify] = useState(false);
+  
+  // Check if Spotify is available in current configuration
+  const config = getConfig();
+  const isSpotifyAvailable = !!config.SPOTIFY_CLIENT_ID;
+  
+  console.log('🎵 [FTE_INIT] Spotify availability:', {
+    isSpotifyAvailable,
+    clientId: config.SPOTIFY_CLIENT_ID,
+    redirectUri: config.SPOTIFY_REDIRECT_URI
+  });
 
   // Check if we're returning from Spotify authentication
   useEffect(() => {
@@ -158,7 +169,15 @@ export const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComp
       }
     } catch (error) {
       console.error('🎵 [FTE_SPOTIFY] ❌ Error connecting to Spotify:', error);
-      alert('Error connecting to Spotify. Please try again or use the text field instead.');
+      
+      // Check if it's a configuration error
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('Client ID not configured')) {
+        console.log('🎵 [FTE_SPOTIFY] Configuration issue detected - showing user-friendly message');
+        alert('Spotify integration is not available in this deployment. Please use the text field to describe your music preferences instead.');
+      } else {
+        alert('Error connecting to Spotify. Please try again or use the text field instead.');
+      }
     } finally {
       console.log('🎵 [FTE_SPOTIFY] Setting connecting state to false');
       setIsConnectingSpotify(false);
@@ -238,12 +257,15 @@ export const FirstTimeExperience: React.FC<FirstTimeExperienceProps> = ({ onComp
         <div className="fte-section">
           <h2>Music Taste</h2>
           <div className="music-options">
-            <button 
-              className={`music-option ${isSpotifyConnected() ? 'active' : ''}`}
+                        <button
+              className={`music-option ${isSpotifyConnected() ? 'active' : ''} ${!isSpotifyAvailable ? 'disabled' : ''}`}
               onClick={handleSpotifyConnect}
-              disabled={isConnectingSpotify}
+              disabled={isConnectingSpotify || !isSpotifyAvailable}
+              title={!isSpotifyAvailable ? 'Spotify integration not available in this deployment' : ''}
             >
-              {isConnectingSpotify ? '🔄 Connecting...' : (isSpotifyConnected() ? '✅ Spotify Connected' : '🎵 Connect Spotify')}
+              {!isSpotifyAvailable ? '🚫 Spotify Not Available' : 
+               isConnectingSpotify ? '🔄 Connecting...' : 
+               (isSpotifyConnected() ? '✅ Spotify Connected' : '🎵 Connect Spotify')}
             </button>
             <div className="music-text-option">
               <label>Or describe your music taste:</label>

@@ -1,3 +1,5 @@
+import { getConfig } from '../config/production';
+
 // Spotify API Types
 export interface SpotifyUserProfile {
   id: string;
@@ -46,19 +48,33 @@ export class SpotifyService {
   private codeVerifier: string | null = null;
 
   constructor() {
-    // Load configuration from environment variables
-    this.clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID || null;
-    this.clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET || null;
+    // Get configuration (production or development)
+    const config = getConfig();
     
-    // Set redirect URI - use environment variable if available, otherwise use current origin
-    this.redirectUri = import.meta.env.VITE_SPOTIFY_REDIRECT_URI || `${window.location.origin}/spotify-callback.html`;
+    // Load configuration from config system
+    this.clientId = config.SPOTIFY_CLIENT_ID;
+    this.clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET || null;
+    this.redirectUri = config.SPOTIFY_REDIRECT_URI;
     
     console.log('🎵 [SPOTIFY_SERVICE] Initializing...', {
       clientId: this.clientId,
       hasClientSecret: !!this.clientSecret,
       redirectUri: this.redirectUri,
       currentOrigin: window.location.origin,
-      userAgent: navigator.userAgent.substring(0, 50) + '...'
+      userAgent: navigator.userAgent.substring(0, 50) + '...',
+      configSource: config,
+      allEnvVars: {
+        VITE_SPOTIFY_CLIENT_ID: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
+        VITE_SPOTIFY_CLIENT_SECRET: import.meta.env.VITE_SPOTIFY_CLIENT_SECRET,
+        VITE_SPOTIFY_REDIRECT_URI: import.meta.env.VITE_SPOTIFY_REDIRECT_URI,
+        VITE_MOCK: import.meta.env.VITE_MOCK,
+        MODE: import.meta.env.MODE,
+        PROD: import.meta.env.PROD,
+        DEV: import.meta.env.DEV
+      },
+      isGitHubPages: window.location.hostname === 'yoavtsook2806.github.io',
+      hostname: window.location.hostname,
+      protocol: window.location.protocol
     });
     
     // Load existing tokens from localStorage
