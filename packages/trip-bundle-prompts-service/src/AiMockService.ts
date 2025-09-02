@@ -55,6 +55,13 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
             venue: 'Wembley Stadium',
             bookingUrl: 'https://www.ticketmaster.co.uk/coldplay-tickets/artist/806'
+          },
+          {
+            title: 'London Symphony Orchestra at Royal Albert Hall',
+            interestType: 'concerts',
+            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
+            venue: 'Royal Albert Hall',
+            bookingUrl: 'https://www.royalalberthall.com/'
           }
         ]
       },
@@ -74,6 +81,27 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
             venue: 'British Museum',
             bookingUrl: 'https://www.britishmuseum.org/'
+          },
+          {
+            title: 'Camden Market Food Tour',
+            interestType: 'culinary',
+            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
+            venue: 'Camden Market',
+            bookingUrl: 'https://www.camdenmarket.com/'
+          },
+          {
+            title: 'Thames River Evening Cruise',
+            interestType: 'localCulture',
+            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
+            venue: 'Thames River',
+            bookingUrl: 'https://www.thamesrivercruises.co.uk/'
+          },
+          {
+            title: 'Tate Modern Gallery Visit',
+            interestType: 'artDesign',
+            date: getStartTimestamp() + (12 * 60 * 60 * 1000), // Day 1 afternoon
+            venue: 'Tate Modern',
+            bookingUrl: 'https://www.tate.org.uk/visit/tate-modern'
           }
         ]
       }
@@ -95,6 +123,20 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
             venue: 'Etihad Stadium',
             bookingUrl: 'https://www.mancity.com/tickets'
+          },
+          {
+            title: 'Manchester United Stadium Tour',
+            interestType: 'sports',
+            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
+            venue: 'Old Trafford',
+            bookingUrl: 'https://www.manutd.com/en/visit-old-trafford'
+          },
+          {
+            title: 'City vs United Legends Match',
+            interestType: 'sports',
+            date: getStartTimestamp() + (12 * 60 * 60 * 1000), // Day 1 afternoon
+            venue: 'Manchester Academy',
+            bookingUrl: 'https://www.manchesteracademy.net/'
           }
         ]
       },
@@ -114,6 +156,27 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
             venue: 'Various Historic Pubs',
             bookingUrl: 'https://www.manchesterpubtours.com/'
+          },
+          {
+            title: 'Curry Mile Food Experience',
+            interestType: 'culinary',
+            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
+            venue: 'Curry Mile, Rusholme',
+            bookingUrl: 'https://www.visitmanchester.com/curry-mile'
+          },
+          {
+            title: 'Manchester Music History Tour',
+            interestType: 'localCulture',
+            date: getStartTimestamp() + (36 * 60 * 60 * 1000), // Day 2 evening
+            venue: 'Northern Quarter',
+            bookingUrl: 'https://www.manchestermusictours.com/'
+          },
+          {
+            title: 'John Rylands Library Visit',
+            interestType: 'artDesign',
+            date: getStartTimestamp() + (6 * 60 * 60 * 1000), // Day 1 morning
+            venue: 'John Rylands Library',
+            bookingUrl: 'https://www.library.manchester.ac.uk/rylands/'
           }
         ]
       }
@@ -135,6 +198,13 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
             venue: 'Paris La Défense Arena',
             bookingUrl: 'https://www.taylorswift.com/tour'
+          },
+          {
+            title: 'French Cabaret Show at Moulin Rouge',
+            interestType: 'concerts',
+            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
+            venue: 'Moulin Rouge',
+            bookingUrl: 'https://www.moulinrouge.fr/en'
           }
         ]
       },
@@ -161,6 +231,20 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
             venue: 'Montmartre District',
             bookingUrl: 'https://www.paris-walks.com/'
+          },
+          {
+            title: 'Versailles Palace Day Trip',
+            interestType: 'artDesign',
+            date: getStartTimestamp() + (12 * 60 * 60 * 1000), // Day 1 afternoon
+            venue: 'Palace of Versailles',
+            bookingUrl: 'https://www.chateauversailles.fr/'
+          },
+          {
+            title: 'Latin Quarter Wine Tasting',
+            interestType: 'culinary',
+            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
+            venue: 'Latin Quarter',
+            bookingUrl: 'https://www.pariswinetasting.com/'
           }
         ]
       }
@@ -182,6 +266,20 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
             venue: 'Allegiant Stadium',
             bookingUrl: 'https://www.nfl.com/super-bowl/tickets'
+          },
+          {
+            title: 'NBA All-Star Weekend',
+            interestType: 'sports',
+            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
+            venue: 'T-Mobile Arena',
+            bookingUrl: 'https://www.nba.com/allstar'
+          },
+          {
+            title: 'Super Bowl Halftime Show After-Party',
+            interestType: 'concerts',
+            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3 night
+            venue: 'MGM Grand',
+            bookingUrl: 'https://www.mgmgrand.com/'
           }
         ]
       },
@@ -201,6 +299,27 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
             venue: 'Hell\'s Kitchen Restaurant',
             bookingUrl: 'https://www.gordonramsayrestaurants.com/hells-kitchen-las-vegas/'
+          },
+          {
+            title: 'High Roller Observation Wheel',
+            interestType: 'localCulture',
+            date: getStartTimestamp() + (12 * 60 * 60 * 1000), // Day 1 afternoon
+            venue: 'The LINQ Promenade',
+            bookingUrl: 'https://www.caesars.com/linq/things-to-do/attractions/high-roller'
+          },
+          {
+            title: 'Fremont Street Experience',
+            interestType: 'localCulture',
+            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
+            venue: 'Fremont Street',
+            bookingUrl: 'https://vegasexperience.com/'
+          },
+          {
+            title: 'Bellagio Fountain Show & Buffet',
+            interestType: 'culinary',
+            date: getStartTimestamp() + (36 * 60 * 60 * 1000), // Day 2 evening
+            venue: 'Bellagio Hotel',
+            bookingUrl: 'https://www.bellagio.com/'
           }
         ]
       }
@@ -222,6 +341,13 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
             venue: 'Camp Nou',
             bookingUrl: 'https://www.fcbarcelona.com/en/tickets'
+          },
+          {
+            title: 'FC Barcelona vs Atletico Madrid',
+            interestType: 'sports',
+            date: getStartTimestamp() + (12 * 60 * 60 * 1000), // Day 1 afternoon
+            venue: 'Camp Nou',
+            bookingUrl: 'https://www.fcbarcelona.com/en/tickets'
           }
         ]
       },
@@ -241,6 +367,27 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
             venue: 'Barrio Gótico',
             bookingUrl: 'https://www.barcelona-tourist-guide.com/en/eat/tapas-tours.html'
+          },
+          {
+            title: 'Park Güell Guided Tour',
+            interestType: 'artDesign',
+            date: getStartTimestamp() + (6 * 60 * 60 * 1000), // Day 1 morning
+            venue: 'Park Güell',
+            bookingUrl: 'https://www.parkguell.cat/en'
+          },
+          {
+            title: 'Barcelona Beach & Seafood',
+            interestType: 'culinary',
+            date: getStartTimestamp() + (36 * 60 * 60 * 1000), // Day 2 evening
+            venue: 'Barceloneta Beach',
+            bookingUrl: 'https://www.barcelona.com/barceloneta'
+          },
+          {
+            title: 'Gothic Quarter Walking Tour',
+            interestType: 'localCulture',
+            date: getStartTimestamp() + (48 * 60 * 60 * 1000), // Day 3 morning
+            venue: 'Gothic Quarter',
+            bookingUrl: 'https://www.barcelona-tourist-guide.com/en/tours/gothic-quarter.html'
           }
         ]
       }
@@ -262,6 +409,13 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
             venue: 'Madison Square Garden',
             bookingUrl: 'https://www.msg.com/beyonce'
+          },
+          {
+            title: 'Alicia Keys Live at Apollo Theater',
+            interestType: 'concerts',
+            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
+            venue: 'Apollo Theater',
+            bookingUrl: 'https://www.apollotheater.org/'
           }
         ]
       },
@@ -281,6 +435,27 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
             venue: 'Central Park Conservatory Garden',
             bookingUrl: 'https://www.centralparkconservancy.org/'
+          },
+          {
+            title: 'Metropolitan Museum of Art',
+            interestType: 'artDesign',
+            date: getStartTimestamp() + (6 * 60 * 60 * 1000), // Day 1 morning
+            venue: 'Metropolitan Museum',
+            bookingUrl: 'https://www.metmuseum.org/'
+          },
+          {
+            title: 'Brooklyn Bridge & DUMBO Food Tour',
+            interestType: 'culinary',
+            date: getStartTimestamp() + (36 * 60 * 60 * 1000), // Day 2 evening
+            venue: 'Brooklyn Bridge',
+            bookingUrl: 'https://www.brooklynfoodtours.com/'
+          },
+          {
+            title: 'Statue of Liberty & Ellis Island',
+            interestType: 'localCulture',
+            date: getStartTimestamp() + (12 * 60 * 60 * 1000), // Day 1 afternoon
+            venue: 'Liberty Island',
+            bookingUrl: 'https://www.nps.gov/stli/'
           }
         ]
       }
@@ -302,6 +477,20 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
             venue: 'Circuit de Monaco',
             bookingUrl: 'https://www.formula1.com/en/racing/2024/Monaco.html'
+          },
+          {
+            title: 'Monaco Grand Prix Qualifying',
+            interestType: 'sports',
+            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
+            venue: 'Circuit de Monaco',
+            bookingUrl: 'https://www.formula1.com/en/racing/2024/Monaco.html'
+          },
+          {
+            title: 'Monaco Historic Grand Prix',
+            interestType: 'sports',
+            date: getStartTimestamp() + (12 * 60 * 60 * 1000), // Day 1 afternoon
+            venue: 'Circuit de Monaco',
+            bookingUrl: 'https://www.acm.mc/en/evenements/grand-prix-de-monaco-historique'
           }
         ]
       },
@@ -321,6 +510,27 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
             venue: 'Hotel Hermitage',
             bookingUrl: 'https://www.ducasse-paris.com/en/restaurant/le-louis-xv'
+          },
+          {
+            title: 'Prince\'s Palace & Changing of Guard',
+            interestType: 'localCulture',
+            date: getStartTimestamp() + (6 * 60 * 60 * 1000), // Day 1 morning
+            venue: 'Prince\'s Palace',
+            bookingUrl: 'https://www.palais.mc/en'
+          },
+          {
+            title: 'Yacht Club de Monaco Tour',
+            interestType: 'localCulture',
+            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
+            venue: 'Yacht Club de Monaco',
+            bookingUrl: 'https://www.yacht-club-monaco.mc/'
+          },
+          {
+            title: 'French Riviera Wine Tasting',
+            interestType: 'culinary',
+            date: getStartTimestamp() + (36 * 60 * 60 * 1000), // Day 2 evening
+            venue: 'Côtes de Provence Vineyards',
+            bookingUrl: 'https://www.provence-wine.com/'
           }
         ]
       }
@@ -342,6 +552,13 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
             venue: 'TeamLab Borderless',
             bookingUrl: 'https://borderless.teamlab.art/en/'
+          },
+          {
+            title: 'Tokyo International Anime Fair',
+            interestType: 'artDesign',
+            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
+            venue: 'Tokyo Big Sight',
+            bookingUrl: 'https://www.animejapan.jp/en/'
           }
         ]
       },
@@ -368,6 +585,20 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
             venue: 'Ghibli Museum',
             bookingUrl: 'https://www.ghibli-museum.jp/en/'
+          },
+          {
+            title: 'Harajuku Fashion & Street Culture',
+            interestType: 'localCulture',
+            date: getStartTimestamp() + (6 * 60 * 60 * 1000), // Day 1 morning
+            venue: 'Harajuku District',
+            bookingUrl: 'https://www.gotokyo.org/en/destinations/shibuya/harajuku.html'
+          },
+          {
+            title: 'Tsukiji Outer Market Food Tour',
+            interestType: 'culinary',
+            date: getStartTimestamp() + (4 * 24 * 60 * 60 * 1000), // Day 5
+            venue: 'Tsukiji Outer Market',
+            bookingUrl: 'https://www.tsukiji.or.jp/english/'
           }
         ]
       }
@@ -384,11 +615,25 @@ export const getBundlesFromAi = async (
         title: 'Main Events',
         events: [
           {
-            title: 'Coachella Valley Music Festival',
+            title: 'Coachella Valley Music Festival - Weekend 1',
             interestType: 'concerts',
             date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
             venue: 'Empire Polo Club',
             bookingUrl: 'https://www.coachella.com/'
+          },
+          {
+            title: 'Coachella After-Party: Desert Oasis',
+            interestType: 'concerts',
+            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
+            venue: 'Desert Air Hotel',
+            bookingUrl: 'https://www.coachella.com/after-parties'
+          },
+          {
+            title: 'Stagecoach Country Music Festival',
+            interestType: 'concerts',
+            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
+            venue: 'Empire Polo Club',
+            bookingUrl: 'https://www.stagecoachfestival.com/'
           }
         ]
       },
@@ -408,6 +653,27 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
             venue: 'Two Bunch Palms Resort',
             bookingUrl: 'https://www.twobunchpalms.com/'
+          },
+          {
+            title: 'Palm Springs Aerial Tramway',
+            interestType: 'localCulture',
+            date: getStartTimestamp() + (6 * 60 * 60 * 1000), // Day 1 morning
+            venue: 'Palm Springs Aerial Tramway',
+            bookingUrl: 'https://www.pstramway.com/'
+          },
+          {
+            title: 'Desert Food & Wine Festival',
+            interestType: 'culinary',
+            date: getStartTimestamp() + (12 * 60 * 60 * 1000), // Day 1 afternoon
+            venue: 'Indian Wells',
+            bookingUrl: 'https://www.desertfoodandwine.com/'
+          },
+          {
+            title: 'Salton Sea Art Installation Tour',
+            interestType: 'artDesign',
+            date: getStartTimestamp() + (36 * 60 * 60 * 1000), // Day 2 evening
+            venue: 'Salton Sea',
+            bookingUrl: 'https://www.saltonsea.ca.gov/'
           }
         ]
       }
@@ -429,6 +695,20 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
             venue: 'All England Lawn Tennis Club',
             bookingUrl: 'https://www.wimbledon.com/en_GB/tickets/index.html'
+          },
+          {
+            title: 'Wimbledon Ladies\' Final',
+            interestType: 'sports',
+            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
+            venue: 'All England Lawn Tennis Club',
+            bookingUrl: 'https://www.wimbledon.com/en_GB/tickets/index.html'
+          },
+          {
+            title: 'Wimbledon Qualifying Tournament',
+            interestType: 'sports',
+            date: getStartTimestamp() + (12 * 60 * 60 * 1000), // Day 1 afternoon
+            venue: 'All England Lawn Tennis Club',
+            bookingUrl: 'https://www.wimbledon.com/en_GB/tickets/index.html'
           }
         ]
       },
@@ -448,6 +728,27 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
             venue: 'Kew Gardens',
             bookingUrl: 'https://www.kew.org/'
+          },
+          {
+            title: 'Hampton Court Palace Tour',
+            interestType: 'localCulture',
+            date: getStartTimestamp() + (6 * 60 * 60 * 1000), // Day 1 morning
+            venue: 'Hampton Court Palace',
+            bookingUrl: 'https://www.hrp.org.uk/hampton-court-palace/'
+          },
+          {
+            title: 'Thames Valley Wine Tasting',
+            interestType: 'culinary',
+            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
+            venue: 'Thames Valley Vineyards',
+            bookingUrl: 'https://www.thamesvalleywinery.co.uk/'
+          },
+          {
+            title: 'Royal Observatory Greenwich',
+            interestType: 'artDesign',
+            date: getStartTimestamp() + (36 * 60 * 60 * 1000), // Day 2 evening
+            venue: 'Royal Observatory',
+            bookingUrl: 'https://www.rmg.co.uk/royal-observatory'
           }
         ]
       }
