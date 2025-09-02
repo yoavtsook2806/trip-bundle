@@ -39,7 +39,7 @@ export interface SpotifyUserPreferences {
 export class SpotifyService {
   private clientId: string | null = null;
   private clientSecret: string | null = null;
-  private redirectUri: string = `${window.location.origin}/spotify-callback.html`;
+  private redirectUri: string;
   private accessToken: string | null = null;
   private refreshToken: string | null = null;
   private tokenExpiry: number | null = null;
@@ -50,10 +50,15 @@ export class SpotifyService {
     this.clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID || null;
     this.clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET || null;
     
+    // Set redirect URI - use environment variable if available, otherwise use current origin
+    this.redirectUri = import.meta.env.VITE_SPOTIFY_REDIRECT_URI || `${window.location.origin}/spotify-callback.html`;
+    
     console.log('🎵 [SPOTIFY_SERVICE] Initializing...', {
       clientId: this.clientId,
       hasClientSecret: !!this.clientSecret,
-      redirectUri: this.redirectUri
+      redirectUri: this.redirectUri,
+      currentOrigin: window.location.origin,
+      userAgent: navigator.userAgent.substring(0, 50) + '...'
     });
     
     // Load existing tokens from localStorage
@@ -72,12 +77,25 @@ export class SpotifyService {
       hasAccessToken: !!this.accessToken,
       hasRefreshToken: !!this.refreshToken,
       tokenExpiry: this.tokenExpiry,
-      isCurrentlyAuthenticated: this.isAuthenticated()
+      isCurrentlyAuthenticated: this.isAuthenticated(),
+      redirectUri: this.redirectUri,
+      currentUrl: window.location.href,
+      isMobile: this.isMobileOrPWA()
     });
     
     if (!this.clientId) {
       console.error('🎵 [SPOTIFY_AUTH] ❌ No Spotify Client ID configured');
-      throw new Error('Spotify Client ID not configured. Please check your environment variables.');
+      const errorMsg = `Spotify Client ID not configured. Please check your environment variables.
+      
+Current environment:
+- VITE_SPOTIFY_CLIENT_ID: ${import.meta.env.VITE_SPOTIFY_CLIENT_ID || 'NOT SET'}
+- VITE_SPOTIFY_REDIRECT_URI: ${import.meta.env.VITE_SPOTIFY_REDIRECT_URI || 'NOT SET'}
+- Current Origin: ${window.location.origin}
+
+For real devices, make sure to:
+1. Set VITE_SPOTIFY_REDIRECT_URI to match your device's IP/domain
+2. Configure the same URI in your Spotify app settings`;
+      throw new Error(errorMsg);
     }
 
     // Check if already authenticated
@@ -490,8 +508,24 @@ export class SpotifyService {
   }
 
   private isMobileOrPWA(): boolean {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-           window.matchMedia('(display-mode: standalone)').matches;
+    const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|Tablet/i.test(navigator.userAgent);
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches;
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const isSmallScreen = window.innerWidth <= 768;
+    
+    const result = isMobileUA || isPWA || (isTouchDevice && isSmallScreen);
+    
+    console.log('🎵 [DEVICE_DETECTION]', {
+      isMobileUA,
+      isPWA,
+      isTouchDevice,
+      isSmallScreen,
+      windowWidth: window.innerWidth,
+      userAgent: navigator.userAgent.substring(0, 100),
+      finalResult: result
+    });
+    
+    return result;
   }
 
   private saveTokensToStorage(): void {

@@ -10,7 +10,9 @@ import {
   saveUserPreferences,
   getDateRange,
   saveDateRange,
-  hasCompletedFirstTimeSetup,
+  hasCompletedFirstTimeExperience,
+  markFirstTimeExperienceCompleted,
+  resetFirstTimeExperience,
   getPromptsUsage,
   incrementPromptsUsage,
   canMakePromptCall,
@@ -25,7 +27,7 @@ export const initializeApp = () => {
   
   const preferences = getUserPreferences();
   const dateRange = getDateRange();
-  const hasSetup = hasCompletedFirstTimeSetup();
+  const hasSetup = hasCompletedFirstTimeExperience();
   const promptsUsage = getPromptsUsage();
 
   appStore.setUserPreferences(preferences);
@@ -100,6 +102,9 @@ export const completeFirstTimeSetup = async (
   saveUserPreferences(preferences);
   saveDateRange(dateRange);
   
+  // Mark FTE as completed (Go button was pressed)
+  markFirstTimeExperienceCompleted();
+  
   // Update store
   appStore.setUserPreferences(preferences);
   appStore.setDateRange(dateRange);
@@ -160,6 +165,9 @@ export const resetLocalStorage = () => {
   
   // Reset prompts usage specifically
   resetPromptsUsage();
+  
+  // Reset FTE completion status
+  resetFirstTimeExperience();
   
   // Reset store to initial state
   appStore.resetAll();
