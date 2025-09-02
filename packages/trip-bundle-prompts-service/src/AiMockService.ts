@@ -55,13 +55,6 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
             venue: 'Wembley Stadium',
             bookingUrl: 'https://www.ticketmaster.co.uk/coldplay-tickets/artist/806'
-          },
-          {
-            title: 'London Symphony Orchestra at Royal Albert Hall',
-            interestType: 'concerts',
-            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
-            venue: 'Royal Albert Hall',
-            bookingUrl: 'https://www.royalalberthall.com/'
           }
         ]
       },
@@ -102,13 +95,6 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
             venue: 'Etihad Stadium',
             bookingUrl: 'https://www.mancity.com/tickets'
-          },
-          {
-            title: 'Manchester United Stadium Tour',
-            interestType: 'sports',
-            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
-            venue: 'Old Trafford',
-            bookingUrl: 'https://www.manutd.com/en/visit-old-trafford'
           }
         ]
       },
@@ -149,20 +135,6 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
             venue: 'Paris La Défense Arena',
             bookingUrl: 'https://www.taylorswift.com/tour'
-          },
-          {
-            title: 'Opéra de Paris - La Traviata',
-            interestType: 'artDesign',
-            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
-            venue: 'Palais Garnier',
-            bookingUrl: 'https://www.operadeparis.fr/'
-          },
-          {
-            title: 'French Wine Tasting Experience',
-            interestType: 'culinary',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'Les Caves du Louvre',
-            bookingUrl: 'https://www.lescavesdulouvre.com/'
           }
         ]
       },
@@ -210,13 +182,6 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
             venue: 'Allegiant Stadium',
             bookingUrl: 'https://www.nfl.com/super-bowl/tickets'
-          },
-          {
-            title: 'VIP Casino Experience at Bellagio',
-            interestType: 'localCulture',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'Bellagio Casino',
-            bookingUrl: 'https://www.bellagio.com/'
           }
         ]
       },
@@ -257,13 +222,6 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
             venue: 'Camp Nou',
             bookingUrl: 'https://www.fcbarcelona.com/en/tickets'
-          },
-          {
-            title: 'Park Güell Exclusive Morning Tour',
-            interestType: 'artDesign',
-            date: getStartTimestamp(), // Day 1
-            venue: 'Park Güell',
-            bookingUrl: 'https://parkguell.barcelona/'
           }
         ]
       },
@@ -304,13 +262,6 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
             venue: 'Madison Square Garden',
             bookingUrl: 'https://www.msg.com/beyonce'
-          },
-          {
-            title: 'Top of the Rock Observatory Experience',
-            interestType: 'localCulture',
-            date: getStartTimestamp(), // Day 1
-            venue: 'Rockefeller Center',
-            bookingUrl: 'https://www.topoftherocknyc.com/'
           }
         ]
       },
@@ -351,20 +302,6 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
             venue: 'Circuit de Monaco',
             bookingUrl: 'https://www.formula1.com/en/racing/2024/Monaco.html'
-          },
-          {
-            title: 'Prince\'s Palace of Monaco Tour',
-            interestType: 'localCulture',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'Prince\'s Palace',
-            bookingUrl: 'https://www.palais.mc/'
-          },
-          {
-            title: 'Yacht Charter Experience',
-            interestType: 'localCulture',
-            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
-            venue: 'Port Hercules',
-            bookingUrl: 'https://www.monacoboatservice.com/'
           }
         ]
       },
@@ -405,13 +342,6 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
             venue: 'TeamLab Borderless',
             bookingUrl: 'https://borderless.teamlab.art/en/'
-          },
-          {
-            title: 'Tokyo Skytree VIP Experience',
-            interestType: 'localCulture',
-            date: getStartTimestamp(), // Day 1
-            venue: 'Tokyo Skytree',
-            bookingUrl: 'https://www.tokyo-skytree.jp/en/'
           }
         ]
       },
@@ -459,13 +389,6 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
             venue: 'Empire Polo Club',
             bookingUrl: 'https://www.coachella.com/'
-          },
-          {
-            title: 'Palm Springs Air Museum',
-            interestType: 'localCulture',
-            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
-            venue: 'Palm Springs Air Museum',
-            bookingUrl: 'https://www.palmspringsairmuseum.org/'
           }
         ]
       },
@@ -506,20 +429,6 @@ export const getBundlesFromAi = async (
             date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
             venue: 'All England Lawn Tennis Club',
             bookingUrl: 'https://www.wimbledon.com/en_GB/tickets/index.html'
-          },
-          {
-            title: 'Wimbledon Lawn Tennis Museum',
-            interestType: 'sports',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'All England Lawn Tennis Club',
-            bookingUrl: 'https://www.wimbledon.com/en_GB/museum/index.html'
-          },
-          {
-            title: 'Thames River Cruise & Tower Bridge',
-            interestType: 'localCulture',
-            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
-            venue: 'Tower Bridge',
-            bookingUrl: 'https://www.towerbridge.org.uk/'
           }
         ]
       },
