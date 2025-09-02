@@ -31,14 +31,97 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
   // Check if Spotify is available in current configuration
   const config = getConfig();
   const isSpotifyAvailable = !!config.SPOTIFY_CLIENT_ID;
+  
+  console.log('🎵 [PREFERENCES_INIT] Spotify availability:', {
+    isSpotifyAvailable,
+    clientId: config.SPOTIFY_CLIENT_ID,
+    redirectUri: config.SPOTIFY_REDIRECT_URI,
+    isFTEMode
+  });
+
+  // Check if we're returning from Spotify authentication
+  useEffect(() => {
+    const checkSpotifyReturn = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const spotifyAuthReturn = urlParams.get('spotify_auth_return');
+      const authCode = localStorage.getItem('spotify_auth_code');
+
+      console.log('🎵 [PREFERENCES_SPOTIFY_RETURN] Checking for Spotify return:', {
+        spotifyAuthReturn: !!spotifyAuthReturn,
+        hasAuthCode: !!authCode,
+        currentUrl: window.location.href
+      });
+
+      if (spotifyAuthReturn && authCode && !isSpotifyConnected()) {
+        console.log('🎵 [PREFERENCES_SPOTIFY_RETURN] Processing Spotify return with auth code');
+        setIsConnectingSpotify(true);
+
+        try {
+          console.log('🎵 [PREFERENCES_SPOTIFY_RETURN] Calling spotifyService.handleCallback...');
+          const success = await spotifyService.handleCallback(authCode);
+          console.log('🎵 [PREFERENCES_SPOTIFY_RETURN] Callback handling result:', success);
+
+          if (success) {
+            console.log('🎵 [PREFERENCES_SPOTIFY_RETURN] ✅ Authentication successful, fetching user preferences...');
+            const userPrefs = await spotifyService.getUserPreferences();
+            console.log('🎵 [PREFERENCES_SPOTIFY_RETURN] User preferences fetched:', {
+              topGenres: userPrefs.topGenres?.length || 0,
+              topArtists: userPrefs.topArtists?.length || 0,
+              topTracks: userPrefs.topTracks?.length || 0
+            });
+
+            // Generate textual music profile for AI understanding
+            const textualMusicProfile = spotifyService.generateTextualMusicProfile(userPrefs);
+            console.log('🎵 [PREFERENCES_SPOTIFY_RETURN] Generated textual profile:', textualMusicProfile);
+
+            console.log('🎵 [PREFERENCES_SPOTIFY_RETURN] ✅ Music profile created, updating state...');
+            handleMusicProfileChange(textualMusicProfile);
+            console.log('🎵 [PREFERENCES_SPOTIFY_RETURN] ✅ Spotify connection completed successfully!');
+
+            // Clean up localStorage and URL
+            localStorage.removeItem('spotify_auth_code');
+            localStorage.removeItem('spotify_auth_state');
+            window.history.replaceState({}, document.title, window.location.pathname);
+          } else {
+            console.error('🎵 [PREFERENCES_SPOTIFY_RETURN] ❌ Callback handling failed');
+            localStorage.removeItem('spotify_auth_code');
+            localStorage.removeItem('spotify_auth_state');
+          }
+        } catch (error) {
+          console.error('🎵 [PREFERENCES_SPOTIFY_RETURN] ❌ Error processing Spotify return:', error);
+          localStorage.removeItem('spotify_auth_code');
+          localStorage.removeItem('spotify_auth_state');
+        } finally {
+          setIsConnectingSpotify(false);
+        }
+      }
+    };
+
+    checkSpotifyReturn();
+  }, []);
 
   const isSpotifyConnected = () => {
-    if (!preferences.musicProfile) return false;
+    if (!preferences.musicProfile) {
+      console.log('🎵 [PREFERENCES_SPOTIFY_STATE] No music profile set');
+      return false;
+    }
     
     // Check if the music profile contains Spotify-specific indicators
-    return preferences.musicProfile.includes('Favorite artists include') || 
-           preferences.musicProfile.includes('Primary music genres are') ||
-           preferences.musicProfile.includes('Recent favorite songs include');
+    const hasArtists = preferences.musicProfile.includes('Favorite artists include');
+    const hasGenres = preferences.musicProfile.includes('Primary music genres are');
+    const hasTracks = preferences.musicProfile.includes('Recent favorite songs include');
+    const isConnected = hasArtists || hasGenres || hasTracks;
+    
+    console.log('🎵 [PREFERENCES_SPOTIFY_STATE] Connection check:', {
+      hasArtists,
+      hasGenres,
+      hasTracks,
+      isConnected,
+      profileLength: preferences.musicProfile.length,
+      profilePreview: preferences.musicProfile.substring(0, 100) + '...'
+    });
+    
+    return isConnected;
   };
 
   // Check for changes (in FTE mode, always allow saving if basic data is present)
@@ -73,28 +156,65 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
   };
 
   const handleSpotifyConnect = async () => {
-    if (isConnectingSpotify) return;
+    console.log('🎵 [PREFERENCES_SPOTIFY] Starting Spotify connection...');
+    console.log('🎵 [PREFERENCES_SPOTIFY] Current state:', {
+      isConnectingSpotify,
+      isSpotifyAvailable,
+      isSpotifyConnected: isSpotifyConnected(),
+      currentMusicProfile: preferences.musicProfile?.substring(0, 100) + '...'
+    });
+    
+    if (isConnectingSpotify) {
+      console.log('🎵 [PREFERENCES_SPOTIFY] Already connecting, ignoring duplicate request');
+      return;
+    }
+    
+    if (!isSpotifyAvailable) {
+      console.error('🎵 [PREFERENCES_SPOTIFY] Spotify not available in this configuration');
+      alert('Spotify integration is not available in this deployment. Please use the text field to describe your music preferences instead.');
+      return;
+    }
     
     setIsConnectingSpotify(true);
+    console.log('🎵 [PREFERENCES_SPOTIFY] Set connecting state to true');
+    
     try {
-      console.log('🎵 Attempting to connect to Spotify...');
+      console.log('🎵 [PREFERENCES_SPOTIFY] Calling spotifyService.authenticate()...');
       const success = await spotifyService.authenticate();
+      console.log('🎵 [PREFERENCES_SPOTIFY] Authentication result:', success);
       
       if (success) {
-        console.log('🎵 Spotify connection successful');
+        console.log('🎵 [PREFERENCES_SPOTIFY] ✅ Authentication successful, fetching user preferences...');
         const userPrefs = await spotifyService.getUserPreferences();
+        console.log('🎵 [PREFERENCES_SPOTIFY] User preferences fetched:', {
+          topGenres: userPrefs.topGenres?.length || 0,
+          topArtists: userPrefs.topArtists?.length || 0,
+          topTracks: userPrefs.topTracks?.length || 0
+        });
+        
         // Generate textual music profile for AI understanding
         const textualMusicProfile = spotifyService.generateTextualMusicProfile(userPrefs);
         console.log('🎵 [PREFERENCES_SPOTIFY] Generated textual profile:', textualMusicProfile);
+        
+        console.log('🎵 [PREFERENCES_SPOTIFY] ✅ Music profile created, updating state...');
         handleMusicProfileChange(textualMusicProfile);
+        console.log('🎵 [PREFERENCES_SPOTIFY] ✅ Spotify connection completed successfully!');
       } else {
-        console.warn('🎵 Spotify connection failed');
+        console.error('🎵 [PREFERENCES_SPOTIFY] ❌ Spotify authentication failed');
         alert('Failed to connect to Spotify. Please try again or use the text field instead.');
       }
     } catch (error) {
-      console.error('🎵 Spotify connection error:', error);
-      alert('Error connecting to Spotify. Please try again or use the text field instead.');
+      console.error('🎵 [PREFERENCES_SPOTIFY] ❌ Error connecting to Spotify:', error);
+      
+      // Check if it's a configuration issue
+      if (error instanceof Error && error.message.includes('Client ID not configured')) {
+        console.log('🎵 [PREFERENCES_SPOTIFY] Configuration issue detected - showing user-friendly message');
+        alert('Spotify integration is not available in this deployment. Please use the text field to describe your music preferences instead.');
+      } else {
+        alert('Error connecting to Spotify. Please try again or use the text field instead.');
+      }
     } finally {
+      console.log('🎵 [PREFERENCES_SPOTIFY] Setting connecting state to false');
       setIsConnectingSpotify(false);
     }
   };
