@@ -48,21 +48,25 @@ export class SpotifyService {
   private codeVerifier: string | null = null;
 
   constructor() {
+    console.log('🎵 [SPOTIFY_SERVICE] Constructor starting...');
+    
     // Get configuration (production or development)
     const config = getConfig();
+    console.log('🎵 [SPOTIFY_SERVICE] Config received:', config);
     
     // Load configuration from config system
     this.clientId = config.SPOTIFY_CLIENT_ID;
     this.clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET || null;
     this.redirectUri = config.SPOTIFY_REDIRECT_URI;
     
-    console.log('🎵 [SPOTIFY_SERVICE] Initializing...', {
+    console.log('🎵 [SPOTIFY_SERVICE] Configuration applied:', {
       clientId: this.clientId,
+      clientIdLength: this.clientId ? this.clientId.length : 0,
       hasClientSecret: !!this.clientSecret,
       redirectUri: this.redirectUri,
       currentOrigin: window.location.origin,
       userAgent: navigator.userAgent.substring(0, 50) + '...',
-      configSource: config,
+      rawConfig: config,
       allEnvVars: {
         VITE_SPOTIFY_CLIENT_ID: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
         VITE_SPOTIFY_CLIENT_SECRET: import.meta.env.VITE_SPOTIFY_CLIENT_SECRET,
@@ -72,13 +76,19 @@ export class SpotifyService {
         PROD: import.meta.env.PROD,
         DEV: import.meta.env.DEV
       },
-      isGitHubPages: window.location.hostname === 'yoavtsook2806.github.io',
-      hostname: window.location.hostname,
-      protocol: window.location.protocol
+      windowLocation: {
+        hostname: window.location.hostname,
+        pathname: window.location.pathname,
+        origin: window.location.origin,
+        protocol: window.location.protocol,
+        href: window.location.href
+      }
     });
     
     // Load existing tokens from localStorage
     this.loadTokensFromStorage();
+    
+    console.log('🎵 [SPOTIFY_SERVICE] Initialization complete. Final clientId:', this.clientId);
   }
 
   setRedirectUri(uri: string) {
