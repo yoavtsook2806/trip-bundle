@@ -8,15 +8,15 @@ interface BundlePageProps {
 }
 
 export const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
-  const formatEventDate = (date: string, time: string) => {
-    const eventDate = new Date(date);
+  const formatTimestamp = (timestamp: number) => {
+    const date = new Date(timestamp);
     const options: Intl.DateTimeFormatOptions = { 
       weekday: 'long', 
       year: 'numeric', 
       month: 'long', 
       day: 'numeric' 
     };
-    return `${eventDate.toLocaleDateString('en-US', options)} at ${time}`;
+    return date.toLocaleDateString('en-US', options);
   };
 
   const getInterestIcon = (interestType: string) => {
@@ -30,46 +30,28 @@ export const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
     }
   };
 
-  const getInterestName = (interestType: string) => {
-    switch (interestType) {
-      case 'concerts': return 'Concerts';
-      case 'sports': return 'Sports';
-      case 'artDesign': return 'Art & Design';
-      case 'localCulture': return 'Local Culture';
-      case 'culinary': return 'Culinary';
-      default: return 'Other';
-    }
-  };
-
-  const renderEvent = (event: Event, index: number, isSubEvent = false) => (
-    <div key={index} className={`event-card ${isSubEvent ? 'sub-event' : ''}`}>
+  const renderEvent = (event: Event, index: number) => (
+    <div key={index} className="event-item">
       <div className="event-header">
-        <div className="event-type">
-          <span className="event-icon">{getInterestIcon(event.interestType)}</span>
-          <span className="event-category">{getInterestName(event.interestType)}</span>
-        </div>
-        <div className="event-cost">
-          {event.cost > 0 ? `$${event.cost} ${event.currency}` : 'Free'}
-        </div>
+        <span className="event-icon">{getInterestIcon(event.interestType)}</span>
+        <h3 className="event-title">{event.title}</h3>
       </div>
-      
-      <h3 className="event-venue">{event.venue}</h3>
-      <p className="event-datetime">{formatEventDate(event.date, event.time)}</p>
-      
-      {event.bookingUrl && (
-        <a 
-          href={event.bookingUrl} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="booking-button"
-        >
-          Book Now →
-        </a>
-      )}
+      <div className="event-details">
+        <div className="event-venue">📍 {event.venue}</div>
+        <div className="event-date">📅 {formatTimestamp(event.date)}</div>
+        {event.bookingUrl && (
+          <a 
+            href={event.bookingUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="booking-link"
+          >
+            Book Now →
+          </a>
+        )}
+      </div>
     </div>
   );
-
-  const totalCost = [...bundle.events, ...bundle.subEvents].reduce((sum, event) => sum + event.cost, 0);
 
   return (
     <div className="bundle-page">
@@ -77,69 +59,60 @@ export const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
         <button className="back-button" onClick={onBack}>
           ← Back to Bundles
         </button>
-        <div className="bundle-hero">
-          <div className="hero-background">
-            <div className="city-badge-large">{bundle.city}</div>
-          </div>
-          <div className="hero-content">
-            <h1 className="bundle-title-large">{bundle.title}</h1>
-            <p className="bundle-description-large">{bundle.description}</p>
-            <div className="bundle-meta">
-              <div className="date-range">
-                📅 {new Date(bundle.startDate).toLocaleDateString()} - {new Date(bundle.endDate).toLocaleDateString()}
-              </div>
-              <div className="total-cost">
-                💰 Total Cost: {totalCost > 0 ? `$${totalCost}` : 'Free'}
-              </div>
-              <div className="event-count">
-                🎯 {bundle.events.length + bundle.subEvents.length} Events
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div className="bundle-content">
-        {bundle.events.length > 0 && (
-          <section className="events-section">
-            <h2>🌟 Main Events</h2>
-            <div className="events-grid">
-              {bundle.events.map((event, index) => renderEvent(event, index, false))}
-            </div>
-          </section>
-        )}
+        {/* Bundle Image */}
+        <div className="bundle-image-container">
+          <img 
+            src={bundle.imageUrl} 
+            alt={bundle.title}
+            className="bundle-image"
+            onError={(e) => {
+              // Fallback to a placeholder if image fails to load
+              e.currentTarget.src = 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80';
+            }}
+          />
+        </div>
 
-        {bundle.subEvents.length > 0 && (
-          <section className="events-section">
-            <h2>✨ Additional Experiences</h2>
-            <div className="events-grid">
-              {bundle.subEvents.map((event, index) => renderEvent(event, index, true))}
-            </div>
-          </section>
-        )}
+        {/* Title */}
+        <h1 className="bundle-title">{bundle.title}</h1>
 
-        <section className="bundle-summary">
-          <h2>📋 Trip Summary</h2>
-          <div className="summary-card">
-            <div className="summary-item">
-              <strong>Destination:</strong> {bundle.city}
+        {/* Description */}
+        <p className="bundle-description">{bundle.description}</p>
+
+        {/* Dates */}
+        <div className="bundle-dates">
+          <h2>📅 Trip Dates</h2>
+          <div className="date-range">
+            <div className="date-item">
+              <strong>Start:</strong> {formatTimestamp(bundle.startDate)}
             </div>
-            <div className="summary-item">
-              <strong>Duration:</strong> {new Date(bundle.startDate).toLocaleDateString()} - {new Date(bundle.endDate).toLocaleDateString()}
-            </div>
-            <div className="summary-item">
-              <strong>Total Events:</strong> {bundle.events.length + bundle.subEvents.length}
-            </div>
-            <div className="summary-item">
-              <strong>Estimated Cost:</strong> {totalCost > 0 ? `$${totalCost}` : 'Free'}
-            </div>
-            <div className="summary-item">
-              <strong>Experience Types:</strong> {
-                [...new Set([...bundle.events, ...bundle.subEvents].map(e => getInterestName(e.interestType)))].join(', ')
-              }
+            <div className="date-item">
+              <strong>End:</strong> {formatTimestamp(bundle.endDate)}
             </div>
           </div>
-        </section>
+        </div>
+
+        {/* Key Events List */}
+        {bundle.keyEvents && bundle.keyEvents.events.length > 0 && (
+          <div className="events-section">
+            <h2>🌟 {bundle.keyEvents.title}</h2>
+            <div className="events-list">
+              {bundle.keyEvents.events.map((event, index) => renderEvent(event, index))}
+            </div>
+          </div>
+        )}
+
+        {/* Minor Events List */}
+        {bundle.minorEvents && bundle.minorEvents.events.length > 0 && (
+          <div className="events-section">
+            <h2>✨ {bundle.minorEvents.title}</h2>
+            <div className="events-list">
+              {bundle.minorEvents.events.map((event, index) => renderEvent(event, index))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

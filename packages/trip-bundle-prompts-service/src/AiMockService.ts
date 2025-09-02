@@ -25,399 +25,457 @@ export const getBundlesFromAi = async (
     console.warn('Could not parse user data from prompt, using default dates');
   }
 
-  // All available mock bundles
+  // Helper function to generate timestamps based on user dates or defaults
+  const getStartTimestamp = () => {
+    if (userData) return userData.dateRange.startDate;
+    return Date.now() + (7 * 24 * 60 * 60 * 1000); // 1 week from now
+  };
+
+  const getEndTimestamp = (daysLater: number = 3) => {
+    const start = getStartTimestamp();
+    return start + (daysLater * 24 * 60 * 60 * 1000);
+  };
+
+  // All available mock bundles with popular, specific events
   const allMockBundles: TripBundle[] = [
     {
       id: '1',
-      title: 'Jazz & Gastronomy Weekend',
-      description: 'Experience the best of local jazz scene combined with culinary adventures in the heart of the city.',
-      city: 'New York',
-      startDate: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-      endDate: userData ? new Date(userData.dateRange.endDate).toISOString().split('T')[0] : '2024-01-17',
-      events: [
-        {
-          interestType: 'concerts',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '20:00',
-          venue: 'Blue Note',
-          cost: 45,
-          currency: 'USD',
-          bookingUrl: 'https://bluenote.net'
-        },
-        {
-          interestType: 'culinary',
-          date: userData ? new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0] : '2024-01-16',
-          time: '19:30',
-          venue: 'Le Bernardin',
-          cost: 180,
-          currency: 'USD',
-          bookingUrl: 'https://lebernardiny.com'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'localCulture',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '14:00',
-          venue: 'Central Park',
-          cost: 0,
-          currency: 'USD'
-        }
-      ]
+      title: 'Coldplay London Experience',
+      description: 'See Coldplay live at Wembley Stadium plus explore London\'s music scene and British culture.',
+      city: 'London',
+      imageUrl: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&q=80',
+      startDate: getStartTimestamp(),
+      endDate: getEndTimestamp(4),
+      keyEvents: {
+        title: 'Main Events',
+        events: [
+          {
+            title: 'Coldplay - Music of the Spheres World Tour',
+            interestType: 'concerts',
+            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
+            venue: 'Wembley Stadium',
+            bookingUrl: 'https://www.ticketmaster.co.uk/coldplay-tickets/artist/806'
+          }
+        ]
+      },
+      minorEvents: {
+        title: 'Additional Experiences',
+        events: [
+          {
+            title: 'Abbey Road Studios Tour',
+            interestType: 'localCulture',
+            date: getStartTimestamp(),
+            venue: 'Abbey Road Studios',
+            bookingUrl: 'https://www.abbeyroad.com/visit'
+          },
+          {
+            title: 'British Museum Visit',
+            interestType: 'artDesign',
+            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
+            venue: 'British Museum',
+            bookingUrl: 'https://www.britishmuseum.org/'
+          }
+        ]
+      }
     },
     {
       id: '2',
-      title: 'Art & Sports Fusion',
-      description: 'Blend contemporary art exhibitions with thrilling sports events for an unforgettable experience.',
-      city: 'Los Angeles',
-      startDate: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-      endDate: userData ? new Date(userData.dateRange.endDate).toISOString().split('T')[0] : '2024-01-17',
-      events: [
-        {
-          interestType: 'artDesign',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '11:00',
-          venue: 'LACMA',
-          cost: 25,
-          currency: 'USD',
-          bookingUrl: 'https://lacma.org'
-        },
-        {
-          interestType: 'sports',
-          date: userData ? new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0] : '2024-01-16',
-          time: '19:00',
-          venue: 'Staples Center',
-          cost: 120,
-          currency: 'USD',
-          bookingUrl: 'https://staplescenter.com'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'culinary',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '18:00',
-          venue: 'Grand Central Market',
-          cost: 30,
-          currency: 'USD'
-        }
-      ]
+      title: 'Manchester Derby Weekend',
+      description: 'Experience the legendary Manchester City vs Liverpool match plus explore Manchester\'s football culture.',
+      city: 'Manchester',
+      imageUrl: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80',
+      startDate: getStartTimestamp(),
+      endDate: getEndTimestamp(3),
+      keyEvents: {
+        title: 'Main Events',
+        events: [
+          {
+            title: 'Manchester City vs Liverpool FC',
+            interestType: 'sports',
+            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
+            venue: 'Etihad Stadium',
+            bookingUrl: 'https://www.mancity.com/tickets'
+          }
+        ]
+      },
+      minorEvents: {
+        title: 'Additional Experiences',
+        events: [
+          {
+            title: 'National Football Museum',
+            interestType: 'localCulture',
+            date: getStartTimestamp(),
+            venue: 'National Football Museum',
+            bookingUrl: 'https://www.nationalfootballmuseum.com/'
+          },
+          {
+            title: 'Traditional Manchester Pub Tour',
+            interestType: 'culinary',
+            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
+            venue: 'Various Historic Pubs',
+            bookingUrl: 'https://www.manchesterpubtours.com/'
+          }
+        ]
+      }
     },
     {
       id: '3',
-      title: 'Cultural Heritage Tour',
-      description: 'Dive deep into local traditions, museums, and historical landmarks that define the city.',
-      city: 'San Francisco',
-      startDate: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-      endDate: userData ? new Date(userData.dateRange.endDate).toISOString().split('T')[0] : '2024-01-17',
-      events: [
-        {
-          interestType: 'localCulture',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '10:00',
-          venue: 'Alcatraz Island',
-          cost: 40,
-          currency: 'USD',
-          bookingUrl: 'https://alcatrazcruises.com'
-        },
-        {
-          interestType: 'localCulture',
-          date: userData ? new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0] : '2024-01-16',
-          time: '13:00',
-          venue: 'Chinatown',
-          cost: 15,
-          currency: 'USD'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'culinary',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '12:00',
-          venue: 'Ferry Building Marketplace',
-          cost: 25,
-          currency: 'USD'
-        }
-      ]
+      title: 'Taylor Swift Eras Tour Paris',
+      description: 'Experience Taylor Swift\'s Eras Tour in Paris plus explore the city\'s romantic culture and cuisine.',
+      city: 'Paris',
+      imageUrl: 'https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=800&q=80',
+      startDate: getStartTimestamp(),
+      endDate: getEndTimestamp(4),
+      keyEvents: {
+        title: 'Main Events',
+        events: [
+          {
+            title: 'Taylor Swift - The Eras Tour',
+            interestType: 'concerts',
+            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
+            venue: 'Paris La Défense Arena',
+            bookingUrl: 'https://www.taylorswift.com/tour'
+          }
+        ]
+      },
+      minorEvents: {
+        title: 'Additional Experiences',
+        events: [
+          {
+            title: 'Louvre Museum Private Tour',
+            interestType: 'artDesign',
+            date: getStartTimestamp(),
+            venue: 'Louvre Museum',
+            bookingUrl: 'https://www.louvre.fr/en'
+          },
+          {
+            title: 'Seine River Dinner Cruise',
+            interestType: 'culinary',
+            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
+            venue: 'Seine River',
+            bookingUrl: 'https://www.bateauxparisiens.com/'
+          },
+          {
+            title: 'Montmartre Art District Walk',
+            interestType: 'localCulture',
+            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
+            venue: 'Montmartre District',
+            bookingUrl: 'https://www.paris-walks.com/'
+          }
+        ]
+      }
     },
     {
       id: '4',
-      title: 'Music & Food Festival',
-      description: 'A perfect combination of live music performances and gourmet food experiences.',
-      city: 'Austin',
-      startDate: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-      endDate: userData ? new Date(userData.dateRange.endDate).toISOString().split('T')[0] : '2024-01-17',
-      events: [
-        {
-          interestType: 'concerts',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '21:00',
-          venue: 'The Continental Club',
-          cost: 35,
-          currency: 'USD',
-          bookingUrl: 'https://continentalclub.com'
-        },
-        {
-          interestType: 'culinary',
-          date: userData ? new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0] : '2024-01-16',
-          time: '17:00',
-          venue: 'Franklin Barbecue',
-          cost: 40,
-          currency: 'USD'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'localCulture',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '15:00',
-          venue: 'South by Southwest',
-          cost: 50,
-          currency: 'USD'
-        }
-      ]
+      title: 'Super Bowl Las Vegas Experience',
+      description: 'Attend the Super Bowl in Las Vegas plus experience the city\'s entertainment and culinary scene.',
+      city: 'Las Vegas',
+      imageUrl: 'https://images.unsplash.com/photo-1605063133739-2e6b5c7e1d4b?w=800&q=80',
+      startDate: getStartTimestamp(),
+      endDate: getEndTimestamp(4),
+      keyEvents: {
+        title: 'Main Events',
+        events: [
+          {
+            title: 'Super Bowl LVIII',
+            interestType: 'sports',
+            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
+            venue: 'Allegiant Stadium',
+            bookingUrl: 'https://www.nfl.com/super-bowl/tickets'
+          }
+        ]
+      },
+      minorEvents: {
+        title: 'Additional Experiences',
+        events: [
+          {
+            title: 'Cirque du Soleil Show',
+            interestType: 'artDesign',
+            date: getStartTimestamp(),
+            venue: 'Bellagio Theatre',
+            bookingUrl: 'https://www.cirquedusoleil.com/las-vegas'
+          },
+          {
+            title: 'Gordon Ramsay Hell\'s Kitchen Dinner',
+            interestType: 'culinary',
+            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
+            venue: 'Hell\'s Kitchen Restaurant',
+            bookingUrl: 'https://www.gordonramsayrestaurants.com/hells-kitchen-las-vegas/'
+          }
+        ]
+      }
     },
     {
       id: '5',
-      title: 'Sports & Nightlife Adventure',
-      description: 'Experience the thrill of live sports followed by the vibrant nightlife scene.',
-      city: 'Miami',
-      startDate: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-      endDate: userData ? new Date(userData.dateRange.endDate).toISOString().split('T')[0] : '2024-01-17',
-      events: [
-        {
-          interestType: 'sports',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '20:00',
-          venue: 'American Airlines Arena',
-          cost: 85,
-          currency: 'USD',
-          bookingUrl: 'https://aaarena.com'
-        },
-        {
-          interestType: 'concerts',
-          date: userData ? new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0] : '2024-01-16',
-          time: '23:00',
-          venue: 'LIV Nightclub',
-          cost: 60,
-          currency: 'USD'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'culinary',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '19:00',
-          venue: 'Joe\'s Stone Crab',
-          cost: 95,
-          currency: 'USD'
-        }
-      ]
+      title: 'Barcelona El Clásico Weekend',
+      description: 'Watch Real Madrid vs Barcelona at Camp Nou plus explore Catalonian culture and Gaudí\'s architecture.',
+      city: 'Barcelona',
+      imageUrl: 'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=800&q=80',
+      startDate: getStartTimestamp(),
+      endDate: getEndTimestamp(3),
+      keyEvents: {
+        title: 'Main Events',
+        events: [
+          {
+            title: 'El Clásico: FC Barcelona vs Real Madrid',
+            interestType: 'sports',
+            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
+            venue: 'Camp Nou',
+            bookingUrl: 'https://www.fcbarcelona.com/en/tickets'
+          }
+        ]
+      },
+      minorEvents: {
+        title: 'Additional Experiences',
+        events: [
+          {
+            title: 'Sagrada Familia Tour',
+            interestType: 'artDesign',
+            date: getStartTimestamp(),
+            venue: 'Sagrada Familia',
+            bookingUrl: 'https://sagradafamilia.org/en/tickets'
+          },
+          {
+            title: 'Tapas and Flamenco Evening',
+            interestType: 'culinary',
+            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
+            venue: 'Barrio Gótico',
+            bookingUrl: 'https://www.barcelona-tourist-guide.com/en/eat/tapas-tours.html'
+          }
+        ]
+      }
     },
     {
       id: '6',
-      title: 'Adventure & Wellness Retreat',
-      description: 'Combine outdoor adventures with wellness activities for the perfect balance of excitement and relaxation.',
-      city: 'Denver',
-      startDate: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-      endDate: userData ? new Date(userData.dateRange.endDate).toISOString().split('T')[0] : '2024-01-17',
-      events: [
-        {
-          interestType: 'sports',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '08:00',
-          venue: 'Rocky Mountain National Park',
-          cost: 75,
-          currency: 'USD',
-          bookingUrl: 'https://nps.gov'
-        },
-        {
-          interestType: 'localCulture',
-          date: userData ? new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0] : '2024-01-16',
-          time: '15:00',
-          venue: 'Red Rocks Amphitheatre',
-          cost: 25,
-          currency: 'USD'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'culinary',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '18:00',
-          venue: 'Farm to Table Restaurant',
-          cost: 65,
-          currency: 'USD'
-        }
-      ]
+      title: 'Beyoncé Renaissance World Tour NYC',
+      description: 'Experience Beyoncé\'s Renaissance World Tour at Madison Square Garden plus explore NYC\'s vibrant culture.',
+      city: 'New York',
+      imageUrl: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&q=80',
+      startDate: getStartTimestamp(),
+      endDate: getEndTimestamp(3),
+      keyEvents: {
+        title: 'Main Events',
+        events: [
+          {
+            title: 'Beyoncé - Renaissance World Tour',
+            interestType: 'concerts',
+            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
+            venue: 'Madison Square Garden',
+            bookingUrl: 'https://www.msg.com/beyonce'
+          }
+        ]
+      },
+      minorEvents: {
+        title: 'Additional Experiences',
+        events: [
+          {
+            title: 'Broadway Show: Hamilton',
+            interestType: 'artDesign',
+            date: getStartTimestamp(),
+            venue: 'Richard Rodgers Theatre',
+            bookingUrl: 'https://hamiltonmusical.com/new-york/'
+          },
+          {
+            title: 'Central Park Jazz Brunch',
+            interestType: 'culinary',
+            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
+            venue: 'Central Park Conservatory Garden',
+            bookingUrl: 'https://www.centralparkconservancy.org/'
+          }
+        ]
+      }
     },
     {
       id: '7',
-      title: 'Tech & Innovation Experience',
-      description: 'Explore cutting-edge technology centers and innovative cultural spaces.',
-      city: 'Seattle',
-      startDate: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-      endDate: userData ? new Date(userData.dateRange.endDate).toISOString().split('T')[0] : '2024-01-17',
-      events: [
-        {
-          interestType: 'localCulture',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '10:00',
-          venue: 'Museum of Flight',
-          cost: 30,
-          currency: 'USD',
-          bookingUrl: 'https://museumofflight.org'
-        },
-        {
-          interestType: 'artDesign',
-          date: userData ? new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0] : '2024-01-16',
-          time: '14:00',
-          venue: 'Chihuly Garden and Glass',
-          cost: 35,
-          currency: 'USD'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'culinary',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '17:00',
-          venue: 'Pike Place Market',
-          cost: 40,
-          currency: 'USD'
-        }
-      ]
+      title: 'Formula 1 Monaco Grand Prix',
+      description: 'Experience the glamour of Monaco Grand Prix plus the luxury lifestyle of the French Riviera.',
+      city: 'Monaco',
+      imageUrl: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=800&q=80',
+      startDate: getStartTimestamp(),
+      endDate: getEndTimestamp(4),
+      keyEvents: {
+        title: 'Main Events',
+        events: [
+          {
+            title: 'Monaco Grand Prix Race Day',
+            interestType: 'sports',
+            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
+            venue: 'Circuit de Monaco',
+            bookingUrl: 'https://www.formula1.com/en/racing/2024/Monaco.html'
+          }
+        ]
+      },
+      minorEvents: {
+        title: 'Additional Experiences',
+        events: [
+          {
+            title: 'Monte Carlo Casino Experience',
+            interestType: 'localCulture',
+            date: getStartTimestamp(),
+            venue: 'Monte Carlo Casino',
+            bookingUrl: 'https://www.montecarlocasinos.com/'
+          },
+          {
+            title: 'Michelin Star Dining at Le Louis XV',
+            interestType: 'culinary',
+            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
+            venue: 'Hotel Hermitage',
+            bookingUrl: 'https://www.ducasse-paris.com/en/restaurant/le-louis-xv'
+          }
+        ]
+      }
     },
     {
       id: '8',
-      title: 'Historic & Musical Journey',
-      description: 'Discover the rich history and vibrant music scene of the South.',
-      city: 'Nashville',
-      startDate: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-      endDate: userData ? new Date(userData.dateRange.endDate).toISOString().split('T')[0] : '2024-01-17',
-      events: [
-        {
-          interestType: 'concerts',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '20:00',
-          venue: 'Grand Ole Opry',
-          cost: 55,
-          currency: 'USD',
-          bookingUrl: 'https://opry.com'
-        },
-        {
-          interestType: 'localCulture',
-          date: userData ? new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0] : '2024-01-16',
-          time: '11:00',
-          venue: 'Country Music Hall of Fame',
-          cost: 30,
-          currency: 'USD'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'culinary',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '12:30',
-          venue: 'Honky Tonk Central',
-          cost: 25,
-          currency: 'USD'
-        }
-      ]
+      title: 'Tokyo Art & Anime Culture Week',
+      description: 'Immerse yourself in Tokyo\'s cutting-edge art scene, anime culture, and traditional Japanese experiences.',
+      city: 'Tokyo',
+      imageUrl: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80',
+      startDate: getStartTimestamp(),
+      endDate: getEndTimestamp(5),
+      keyEvents: {
+        title: 'Main Events',
+        events: [
+          {
+            title: 'TeamLab Borderless Digital Art Museum',
+            interestType: 'artDesign',
+            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
+            venue: 'TeamLab Borderless',
+            bookingUrl: 'https://borderless.teamlab.art/en/'
+          }
+        ]
+      },
+      minorEvents: {
+        title: 'Additional Experiences',
+        events: [
+          {
+            title: 'Anime & Manga Museum Tour',
+            interestType: 'localCulture',
+            date: getStartTimestamp(),
+            venue: 'Tokyo Anime Center',
+            bookingUrl: 'https://www.animecenter.jp/'
+          },
+          {
+            title: 'Traditional Kaiseki Dinner',
+            interestType: 'culinary',
+            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
+            venue: 'Kikunoi Restaurant',
+            bookingUrl: 'https://kikunoi.jp/english/'
+          },
+          {
+            title: 'Studio Ghibli Museum',
+            interestType: 'artDesign',
+            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
+            venue: 'Ghibli Museum',
+            bookingUrl: 'https://www.ghibli-museum.jp/en/'
+          }
+        ]
+      }
     },
     {
       id: '9',
-      title: 'Beach & Arts Festival',
-      description: 'Enjoy beautiful beaches combined with world-class art galleries and cultural events.',
-      city: 'San Diego',
-      startDate: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-      endDate: userData ? new Date(userData.dateRange.endDate).toISOString().split('T')[0] : '2024-01-17',
-      events: [
-        {
-          interestType: 'artDesign',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '10:00',
-          venue: 'San Diego Museum of Art',
-          cost: 20,
-          currency: 'USD',
-          bookingUrl: 'https://sdmart.org'
-        },
-        {
-          interestType: 'localCulture',
-          date: userData ? new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0] : '2024-01-16',
-          time: '15:00',
-          venue: 'Balboa Park',
-          cost: 0,
-          currency: 'USD'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'culinary',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '19:00',
-          venue: 'Gaslamp Quarter',
-          cost: 50,
-          currency: 'USD'
-        }
-      ]
+      title: 'Coachella Desert Music Festival',
+      description: 'Experience the iconic Coachella music festival in the California desert with top artists and desert vibes.',
+      city: 'Palm Springs',
+      imageUrl: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=80',
+      startDate: getStartTimestamp(),
+      endDate: getEndTimestamp(4),
+      keyEvents: {
+        title: 'Main Events',
+        events: [
+          {
+            title: 'Coachella Valley Music Festival',
+            interestType: 'concerts',
+            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
+            venue: 'Empire Polo Club',
+            bookingUrl: 'https://www.coachella.com/'
+          }
+        ]
+      },
+      minorEvents: {
+        title: 'Additional Experiences',
+        events: [
+          {
+            title: 'Joshua Tree National Park Sunrise',
+            interestType: 'localCulture',
+            date: getStartTimestamp(),
+            venue: 'Joshua Tree National Park',
+            bookingUrl: 'https://www.nps.gov/jotr/'
+          },
+          {
+            title: 'Desert Hot Springs Spa Day',
+            interestType: 'localCulture',
+            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
+            venue: 'Two Bunch Palms Resort',
+            bookingUrl: 'https://www.twobunchpalms.com/'
+          }
+        ]
+      }
     },
     {
       id: '10',
-      title: 'Mountain Adventure & Craft Culture',
-      description: 'Experience outdoor adventures paired with local craft breweries and artisan markets.',
-      city: 'Portland',
-      startDate: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-      endDate: userData ? new Date(userData.dateRange.endDate).toISOString().split('T')[0] : '2024-01-17',
-      events: [
-        {
-          interestType: 'localCulture',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '09:00',
-          venue: 'Mount Hood',
-          cost: 45,
-          currency: 'USD',
-          bookingUrl: 'https://mthood.gov'
-        },
-        {
-          interestType: 'artDesign',
-          date: userData ? new Date(userData.dateRange.startDate + 86400000).toISOString().split('T')[0] : '2024-01-16',
-          time: '13:00',
-          venue: 'Portland Art Museum',
-          cost: 25,
-          currency: 'USD'
-        }
-      ],
-      subEvents: [
-        {
-          interestType: 'culinary',
-          date: userData ? new Date(userData.dateRange.startDate).toISOString().split('T')[0] : '2024-01-15',
-          time: '16:00',
-          venue: 'Food Truck Pod',
-          cost: 20,
-          currency: 'USD'
-        }
-      ]
+      title: 'Wimbledon Tennis Championships',
+      description: 'Experience the prestige of Wimbledon tennis plus traditional British culture and countryside.',
+      city: 'London',
+      imageUrl: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&q=80',
+      startDate: getStartTimestamp(),
+      endDate: getEndTimestamp(4),
+      keyEvents: {
+        title: 'Main Events',
+        events: [
+          {
+            title: 'Wimbledon Men\'s Final',
+            interestType: 'sports',
+            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
+            venue: 'All England Lawn Tennis Club',
+            bookingUrl: 'https://www.wimbledon.com/en_GB/tickets/index.html'
+          }
+        ]
+      },
+      minorEvents: {
+        title: 'Additional Experiences',
+        events: [
+          {
+            title: 'Traditional Afternoon Tea at Harrods',
+            interestType: 'culinary',
+            date: getStartTimestamp(),
+            venue: 'Harrods Tea Rooms',
+            bookingUrl: 'https://www.harrods.com/en-gb/restaurants/tea-rooms'
+          },
+          {
+            title: 'Royal Botanic Gardens Kew',
+            interestType: 'localCulture',
+            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
+            venue: 'Kew Gardens',
+            bookingUrl: 'https://www.kew.org/'
+          }
+        ]
+      }
     }
   ];
 
   // Filter out existing bundles
-  const existingIds = existingBundles.map(b => b.id);
-  const availableBundles = allMockBundles.filter(bundle => !existingIds.includes(bundle.id));
+  const existingIds = new Set(existingBundles.map(b => b.id));
+  const availableBundles = allMockBundles.filter(bundle => !existingIds.has(bundle.id));
 
-  console.log('🔍 Available bundles after filtering:', availableBundles.map(b => b.id));
-
-  // If no available bundles, return empty array
   if (availableBundles.length === 0) {
-    console.log('⚠️ No more bundles available after filtering');
+    console.log('🤖 [MOCK] No new bundles available after filtering');
     return [];
   }
 
-  // Randomly select up to 5 bundles from available ones
-  const shuffled = [...availableBundles].sort(() => Math.random() - 0.5);
-  const selectedBundles = shuffled.slice(0, 5);
+  // Randomly select up to 5 bundles
+  const maxBundles = Math.min(5, availableBundles.length);
+  const selectedBundles: TripBundle[] = [];
+  const usedIndices = new Set<number>();
 
-  console.log('✅ Selected bundles:', selectedBundles.map(b => `${b.id}: ${b.title}`));
+  while (selectedBundles.length < maxBundles) {
+    const randomIndex = Math.floor(Math.random() * availableBundles.length);
+    if (!usedIndices.has(randomIndex)) {
+      usedIndices.add(randomIndex);
+      selectedBundles.push(availableBundles[randomIndex]);
+    }
+  }
 
+  console.log(`🤖 [MOCK] Generated ${selectedBundles.length} trip bundles:`, selectedBundles.map(b => b.title));
   return selectedBundles;
 };

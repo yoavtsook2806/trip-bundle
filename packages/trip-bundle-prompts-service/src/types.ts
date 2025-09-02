@@ -1,23 +1,27 @@
 export interface Event {
+  title: string;
   interestType: keyof InterestTypes;
-  date: string;
-  time: string;
+  date: number;
   venue: string;
-  cost: number;
-  currency: string;
   bookingUrl?: string;
+}
+
+export interface EventsData {
+    title: string;
+    events: Event[]
 }
 
 // Trip Bundle Type
 export interface TripBundle {
   id: string;
+  imageUrl: string;
   title: string;
   description: string;
   city: string;
-  startDate: string;
-  endDate: string;
-  events: Event[];
-  subEvents: Event[];
+  startDate: number; // timestamp
+  endDate: number; // timestamp
+  keyEvents: EventsData;
+  minorEvents: EventsData;
 }
 
 // GPT Service Response Type
