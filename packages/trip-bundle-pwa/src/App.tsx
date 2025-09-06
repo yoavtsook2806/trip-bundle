@@ -111,7 +111,6 @@ export const App: React.FC = observer(() => {
             canLoadMore={appStore.canLoadMore}
             hasUserData={appStore.hasCompletedSetup}
             isLoading={appStore.isLoading}
-            isMockMode={MOCK_MODE}
           />
         );
 

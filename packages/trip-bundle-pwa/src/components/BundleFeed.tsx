@@ -13,7 +13,6 @@ interface BundleFeedProps {
   canLoadMore?: boolean;
   hasUserData?: boolean;
   isLoading?: boolean;
-  isMockMode?: boolean;
 }
 
 export const BundleFeed: React.FC<BundleFeedProps> = ({
@@ -26,8 +25,7 @@ export const BundleFeed: React.FC<BundleFeedProps> = ({
   onGenerateNew,
   canLoadMore = false,
   hasUserData = false,
-  isLoading = false,
-  isMockMode = false
+  isLoading = false
 }) => {
   const getKeyEventTitles = (bundle: TripBundle) => {
     if (!bundle.keyEvents || !Array.isArray(bundle.keyEvents)) return [];
