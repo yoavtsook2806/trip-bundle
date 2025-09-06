@@ -6,17 +6,19 @@ This PWA can be deployed to two different GitHub Pages URLs with separate enviro
 
 After deployment, your app will be available at:
 
-- **Mock Version (Demo)**: `https://yoavtsook2806.github.io/trip-bundle/`
+- **Main Page**: `https://yoavtsook2806.github.io/trip-bundle/`
+  - Landing page to choose between mock and real AI versions
+  - Explains the difference between free demo and paid AI
+
+- **Mock Version (Demo)**: `https://yoavtsook2806.github.io/trip-bundle/mock/`
   - Serves the mock version with sample data
   - No API costs, perfect for demos and testing
   - Uses pre-built trip bundles, no OpenAI calls
-  - Deploy: `yarn workspace trip-bundle-pwa deploy:mock`
 
-- **Real AI Version (Production)**: Requires GitHub Pages Pro or separate repository
+- **Real AI Version (Production)**: `https://yoavtsook2806.github.io/trip-bundle/real/`
   - Uses real OpenAI GPT-4o-mini API calls
   - Costs ~$0.002 per trip generation
   - Generates unique, personalized trip bundles
-  - Deploy: `yarn workspace trip-bundle-pwa deploy:prod`
 
 ## 📋 Deployment Commands
 
@@ -31,6 +33,12 @@ yarn workspace trip-bundle-pwa build:prod
 yarn workspace trip-bundle-pwa serve:local
 ```
 
+### Deploy Both Versions (Recommended)
+```bash
+# Deploy both mock and real AI to same repository
+OPENAI_API_KEY=$OPENAI_API_KEY yarn workspace trip-bundle-pwa deploy:dual
+```
+
 ### Deploy Mock Version Only
 ```bash
 yarn workspace trip-bundle-pwa deploy:mock
@@ -39,11 +47,6 @@ yarn workspace trip-bundle-pwa deploy:mock
 ### Deploy Production Version Only
 ```bash
 yarn workspace trip-bundle-pwa deploy:prod
-```
-
-### Deploy Both Versions
-```bash
-yarn workspace trip-bundle-pwa deploy:both
 ```
 
 ## 🔧 How It Works

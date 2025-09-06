@@ -16,6 +16,7 @@
     "predeploy:prod": "npm run build:prod",
     "deploy:prod": "gh-pages -d dist -b gh-pages-prod",
     "deploy:real-ai": "bash scripts/deploy-real-ai.sh",
+    "deploy:dual": "bash scripts/deploy-dual.sh",
     "build:both": "npm run build:mock && mkdir -p builds/mock && cp -r dist/* builds/mock/ && npm run build:prod && mkdir -p builds/prod && cp -r dist/* builds/prod/",
     "deploy:both": "npm run deploy:mock && npm run deploy:prod",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="description" content="Trip Bundle AI - Your AI-powered travel companion" />
+    <meta name="theme-color" content="#667eea" />
+    
+    <!-- iOS PWA meta tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Trip Bundle AI" />
+    <link rel="apple-touch-icon" href="/trip-bundle/TripBundleIcon.jpeg" />
+    
+    <!-- PWA manifest -->
+    <link rel="manifest" href="simple-manifest.json" />
+    
+    <title>Trip Bundle AI</title>
+    
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container { 
+            max-width: 400px; 
+            margin: 0 auto; 
+            text-align: center; 
+            padding-top: 50px;
+        }
+        .logo { 
+            width: 120px; 
+            height: 120px; 
+            border-radius: 20px; 
+            margin: 0 auto 30px;
+            display: block;
+        }
+        h1 { 
+            font-size: 2.5em; 
+            margin-bottom: 10px; 
+            font-weight: 600;
+        }
+        p { 
+            font-size: 1.2em; 
+            opacity: 0.9; 
+            margin-bottom: 40px;
+        }
+        .btn { 
+            background: rgba(255,255,255,0.2); 
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white; 
+            padding: 15px 30px; 
+            font-size: 1.1em; 
+            border-radius: 25px; 
+            margin: 10px;
+            display: inline-block;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .btn:hover { 
+            background: rgba(255,255,255,0.3); 
+            transform: translateY(-2px);
+        }
+        .status {
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="/trip-bundle/TripBundleIcon.jpeg" alt="Trip Bundle AI" class="logo">
+        <h1>Trip Bundle AI</h1>
+        <p>Your AI-powered travel companion</p>
+        
+        <a href="javascript:void(0)" onclick="loadFullApp()" class="btn">🚀 Launch Full App</a>
+        <a href="/trip-bundle/debug.html" class="btn">🔧 Debug Mode</a>
+        
+        <div class="status">
+            <p><strong>PWA Status:</strong> <span id="pwa-status">Checking...</span></p>
+            <p><strong>Mode:</strong> <span id="mode">Browser</span></p>
+        </div>
+    </div>
+
+    <script>
+        // Check PWA status
+        document.getElementById('pwa-status') = window.navigator.standalone ? 'Installed ✅' : 'Browser Mode';
+        document.getElementById('mode') = window.navigator.standalone ? 'Standalone App' : 'Web Browser';
+        
+        // Load full app
+        function loadFullApp() {
+            // Show loading
+            document.body.innerHTML = '<div style="text-align:center; padding:50px; color:white; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height:100vh;"><h2>Loading Trip Bundle AI...</h2><p>Please wait...</p></div>';
+            
+            // Redirect to main app
+            setTimeout(() => {
+                window.location.href = '/trip-bundle/index.html';
+            }, 1000);
+        }
+        
+        // Auto-load if in standalone mode
+        if (window.navigator.standalone) {
+            setTimeout(loadFullApp, 2000);
+        }
+    </script>
+</body>
+</html>
