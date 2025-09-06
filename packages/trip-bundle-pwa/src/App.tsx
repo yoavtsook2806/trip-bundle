@@ -105,7 +105,7 @@ export const App: React.FC = observer(() => {
             promptsUsage={appStore.promptsUsage}
             onBundleSelect={handleBundleSelect}
             onOpenPreferences={handleOpenPreferences}
-            onOpenDevelopment={MOCK_MODE ? handleOpenDevelopment : undefined}
+            onOpenDevelopment={handleOpenDevelopment}
             onLoadMore={handleLoadMore}
             onGenerateNew={handleGenerateNew}
             canLoadMore={appStore.canLoadMore}
