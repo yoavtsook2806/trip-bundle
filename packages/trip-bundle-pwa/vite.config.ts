@@ -14,6 +14,11 @@ export default defineConfig(({ command, mode }) => {
 
   return {
     base,
+    define: {
+      // Make environment variables available to the browser
+      'process.env.OPENAI_API_KEY': JSON.stringify(process.env.OPENAI_API_KEY),
+      'process.env.VITE_MOCK': JSON.stringify(process.env.VITE_MOCK),
+    },
     plugins: [
     react(),
     VitePWA({

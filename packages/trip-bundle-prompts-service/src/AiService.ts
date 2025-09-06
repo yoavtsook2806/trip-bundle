@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { GPTResponse, TripBundle, DateRange, Event } from './types.js';
+import { GPTResponse } from './types.js';
 import { createSystemPrompt } from './prompt.js';
 
 /**
@@ -9,6 +9,7 @@ import { createSystemPrompt } from './prompt.js';
 // Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true, // Required for browser usage
 });
 
 /**
