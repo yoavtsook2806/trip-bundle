@@ -1,7 +1,7 @@
-import { UserData, GPTResponse, TripBundle, GenerateTripBundlesFunction } from './types';
-import { getBundlesFromAi as getMockBundlesFromAi } from './AiMockService';
-import { getBundlesFromAi as getRealBundlesFromAi } from './AiService';
-import { createUserPrompt } from './prompt';
+import { UserData, GPTResponse, TripBundle, GenerateTripBundlesFunction } from './types.js';
+import { getBundlesFromAi as getMockBundlesFromAi } from './AiMockService.js';
+import { getBundlesFromAi as getRealBundlesFromAi } from './AiService.js';
+import { createUserPrompt } from './prompt.js';
 
 /**
  * Generates trip bundles - either mock data or real API call
@@ -37,7 +37,7 @@ export const generateTripBundles: GenerateTripBundlesFunction = async (
     return response;
   } else {
     console.log('🚀 Calling Real AI Service...');
-    const bundles = await getRealBundlesFromAi(userPrompt, existingBundles);
+    const {bundles} = await getRealBundlesFromAi(userPrompt);
     
     console.log(`✅ Real AI generated ${bundles.length} new trip bundles`);
     const response = { bundles };

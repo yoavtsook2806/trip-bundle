@@ -18,6 +18,8 @@
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
     "test": "jest",
+    "test-real-ai": "npm run build && node test-real-ai.js",
+    "test-mock": "npm run build && node example.js",
     "lint": "eslint src --ext .ts",
     "lint-fix": "eslint src --ext .ts --fix",
     "type-check": "tsc --noEmit"
@@ -32,7 +34,8 @@
   "author": "Trip Bundle Team",
   "license": "MIT",
   "dependencies": {
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "openai": "^5.19.1"
   },
   "devDependencies": {
     "@types/jest": "^29.0.0",

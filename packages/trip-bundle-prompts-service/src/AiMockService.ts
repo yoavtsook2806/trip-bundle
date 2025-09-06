@@ -1,4 +1,4 @@
-import { TripBundle } from './types';
+import { TripBundle } from './types.js';
 
 /**
  * Mock AI service that simulates AI responses for trip bundle generation

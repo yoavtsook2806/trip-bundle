@@ -1,4 +1,4 @@
-import { UserData, TripBundle } from './types';
+import { UserData, TripBundle } from './types.js';
 
 /**
  * Generates a list of excluded events from existing bundles
@@ -105,32 +105,83 @@ The user will provide:
 * Ensure all events fall within the user's date range and are not already sold out.
 * Aim for amazing bundles that cater to the user's interests and will make for an amazing travel experience.
 
-### Output Format (strict)
+### Output Format (CRITICAL - MUST BE VALID JSON)
 
-For each bundle, output in the following structure (no extra commentary, no additional text outside this format):
+You MUST return a valid JSON object that matches this exact TypeScript interface:
 
-### Drop <number>: <Drop Title>
+\`\`\`typescript
+interface GPTResponse {
+  bundles: TripBundle[];
+}
 
-Short Description
-<1–2 sentences, max 250 characters, highlighting why this trip is special>
+interface TripBundle {
+  imageUrl: string;
+  title: string;
+  description: string;
+  city: string;
+  dateRange: {
+    startDate: number; // Unix timestamp
+    endDate: number;   // Unix timestamp
+  };
+  keyEvents: Event[];
+  minorEvents: Event[];
+}
 
-Dates
-<4–7 day window around anchor events>
+interface Event {
+  title: string;
+  fullDescription: string;
+  shortDescription: string;
+  interestType: 'concerts' | 'sports' | 'artDesign' | 'localCulture' | 'culinary';
+  dateRange: {
+    startDate: number; // Unix timestamp
+    endDate: number;   // Unix timestamp
+  };
+  eventWebsite?: string;
+}
+\`\`\`
 
-Key Events (2–3)
-1. <Event Title> — <1–2 sentence description>
-Official link: <URL>
-2. <Event Title> — <1–2 sentence description>
-Official link: <URL>
+### JSON Response Requirements
 
-Minor Events (optional)
-- <Event Title> — <short description>
-Official link: <URL>
+1. **ONLY return valid JSON** - no markdown, no explanations, no extra text
+2. **Use Unix timestamps** for all dates (milliseconds since epoch)
+3. **Include 4-5 bundles** in the response
+4. **Each bundle must have 2-3 keyEvents and 0-2 minorEvents**
+5. **Use realistic city names** (e.g., "Berlin, Germany", "Amsterdam, Netherlands")
+6. **Generate appropriate imageUrl** using Unsplash format: "https://source.unsplash.com/random/800x600/?{city-name}-{theme}"
+7. **Match interestType** to user preferences: concerts, sports, artDesign, localCulture, culinary
+8. **Ensure descriptions are engaging** and highlight why the trip is special
 
-### Style Guidance
+### Example JSON Structure:
+\`\`\`json
+{
+  "bundles": [
+    {
+      "imageUrl": "https://source.unsplash.com/random/800x600/?berlin-electronic-music",
+      "title": "Berlin: Electronic Beats & Contemporary Art",
+      "description": "Immerse yourself in Berlin's underground electronic scene while exploring cutting-edge contemporary art galleries and design spaces.",
+      "city": "Berlin, Germany",
+      "dateRange": {
+        "startDate": 1730419200000,
+        "endDate": 1730937600000
+      },
+      "keyEvents": [
+        {
+          "title": "Berlin Atonal Festival",
+          "fullDescription": "A cutting-edge festival showcasing experimental electronic music and audiovisual performances in industrial venues across Berlin.",
+          "shortDescription": "Experimental electronic music festival in industrial Berlin venues.",
+          "interestType": "concerts",
+          "dateRange": {
+            "startDate": 1730419200000,
+            "endDate": 1730505600000
+          },
+          "eventWebsite": "https://berlinatonal.com"
+        }
+      ],
+      "minorEvents": []
+    }
+  ]
+}
+\`\`\`
 
-* Be concise, structured, and inspiring.
-* Focus on cultural richness and variety of experiences.
-* Do not include filler text, explanations, or extra commentary outside the required output format.
-* Ensure readability and engaging trip titles.`;
+Remember: Return ONLY the JSON object, nothing else.`;
 };
