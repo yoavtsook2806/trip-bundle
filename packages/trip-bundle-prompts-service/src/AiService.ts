@@ -6,9 +6,9 @@ import { createSystemPrompt } from './prompt.js';
  * Real AI service that calls actual AI APIs for trip bundle generation
  */
 
-// Initialize OpenAI client
+// Initialize OpenAI client  
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: (process.env as any).OPENAI_API_KEY,
   dangerouslyAllowBrowser: true, // Required for browser usage
 });
 

@@ -22,15 +22,6 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
   onCancel,
   isFTEMode = false
 }) => {
-  console.log('🎵 [PREFERENCES_COMPONENT] Component initializing with props:', {
-    initialPreferences: {
-      interests: Object.entries(initialPreferences.interestTypes).filter(([_, v]) => v.isEnabled).map(([k, _]) => k),
-      freeText: initialPreferences.freeTextInterests,
-      musicProfile: initialPreferences.musicProfile?.substring(0, 50) + '...'
-    },
-    isFTEMode,
-    componentRender: Date.now()
-  });
 
   const [preferences, setPreferences] = useState<UserPreferences>(initialPreferences);
   const [dateRange, setDateRange] = useState<DateRange>(initialDateRange);
@@ -42,12 +33,6 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
   const config = getConfig();
   const isSpotifyAvailable = !!config.SPOTIFY_CLIENT_ID;
   
-  console.log('🎵 [PREFERENCES_INIT] Spotify availability:', {
-    isSpotifyAvailable,
-    clientId: config.SPOTIFY_CLIENT_ID,
-    redirectUri: config.SPOTIFY_REDIRECT_URI,
-    isFTEMode
-  });
 
   // Check if we're returning from Spotify authentication
   useEffect(() => {
@@ -56,11 +41,6 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
       const spotifyAuthReturn = urlParams.get('spotify_auth_return');
       const authCode = localStorage.getItem('spotify_auth_code');
 
-      console.log('🎵 [PREFERENCES_SPOTIFY_RETURN] Checking for Spotify return:', {
-        spotifyAuthReturn: !!spotifyAuthReturn,
-        hasAuthCode: !!authCode,
-        currentUrl: window.location.href
-      });
 
       if (spotifyAuthReturn && authCode && !isSpotifyConnected) {
         console.log('🎵 [PREFERENCES_SPOTIFY_RETURN] Processing Spotify return with auth code');
@@ -110,56 +90,18 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
     checkSpotifyReturn();
   }, []);
 
-  // Update local state when props change (important for preserving data during app re-initialization)
-  useEffect(() => {
-    console.log('🎵 [PREFERENCES_PROPS_UPDATE] Props changed, updating local state:', {
-      newInitialPreferences: {
-        interests: Object.entries(initialPreferences.interestTypes).filter(([_, v]) => v.isEnabled).map(([k, _]) => k),
-        freeText: initialPreferences.freeTextInterests,
-        musicProfile: initialPreferences.musicProfile?.substring(0, 50) + '...'
-      },
-      currentPreferences: {
-        interests: Object.entries(preferences.interestTypes).filter(([_, v]) => v.isEnabled).map(([k, _]) => k),
-        freeText: preferences.freeTextInterests,
-        musicProfile: preferences.musicProfile?.substring(0, 50) + '...'
-      },
-      shouldUpdate: JSON.stringify(initialPreferences) !== JSON.stringify(preferences)
-    });
-
-    // Only update if the initial preferences have actually changed and are different from current state
-    if (JSON.stringify(initialPreferences) !== JSON.stringify(preferences)) {
-      console.log('🎵 [PREFERENCES_PROPS_UPDATE] Updating preferences from props');
-      setPreferences(initialPreferences);
-    }
-    
-    if (JSON.stringify(initialDateRange) !== JSON.stringify(dateRange)) {
-      console.log('🎵 [PREFERENCES_PROPS_UPDATE] Updating date range from props');
-      setDateRange(initialDateRange);
-    }
-  }, [initialPreferences, initialDateRange]);
 
   const isSpotifyConnected = useMemo(() => {
     if (!preferences.musicProfile) {
-      console.log('🎵 [PREFERENCES_SPOTIFY_STATE] No music profile set');
-      return false;
+  return false;
     }
     
     // Check if the music profile contains Spotify-specific indicators
     const hasArtists = preferences.musicProfile.includes('Favorite artists include');
     const hasGenres = preferences.musicProfile.includes('Primary music genres are');
     const hasTracks = preferences.musicProfile.includes('Recent favorite songs include');
-    const isConnected = hasArtists || hasGenres || hasTracks;
     
-    console.log('🎵 [PREFERENCES_SPOTIFY_STATE] Connection check:', {
-      hasArtists,
-      hasGenres,
-      hasTracks,
-      isConnected,
-      profileLength: preferences.musicProfile.length,
-      profilePreview: preferences.musicProfile.substring(0, 100) + '...'
-    });
-    
-    return isConnected;
+    return hasArtists || hasGenres || hasTracks;
   }, [preferences.musicProfile]);
 
   // Check for changes (in FTE mode, always allow saving if basic data is present)
@@ -187,7 +129,6 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
       };
       
       // Save to storage immediately to persist through app reinitializations
-      console.log('🎵 [PREFERENCES_INTEREST_CHANGE] Saving updated preferences to storage');
       saveUserPreferences(updated);
       
       return updated;
@@ -195,29 +136,13 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
   };
 
   const handleMusicProfileChange = (value: string) => {
-    console.log('🎵 [PREFERENCES_MUSIC_CHANGE] Updating music profile:', {
-      oldProfile: preferences.musicProfile?.substring(0, 50) + '...',
-      newProfile: value.substring(0, 50) + '...',
-      currentPreferences: {
-        interests: Object.entries(preferences.interestTypes).filter(([_, v]) => v.isEnabled).map(([k, _]) => k),
-        freeText: preferences.freeTextInterests,
-        hasData: !!preferences
-      }
-    });
-    
     setPreferences(prev => {
       const updated = {
         ...prev,
         musicProfile: value
       };
-      console.log('🎵 [PREFERENCES_MUSIC_CHANGE] Updated preferences:', {
-        interests: Object.entries(updated.interestTypes).filter(([_, v]) => v.isEnabled).map(([k, _]) => k),
-        freeText: updated.freeTextInterests,
-        musicProfile: updated.musicProfile?.substring(0, 50) + '...'
-      });
       
       // Save to storage immediately to persist through app reinitializations
-      console.log('🎵 [PREFERENCES_MUSIC_CHANGE] Saving updated preferences to storage');
       saveUserPreferences(updated);
       
       return updated;
@@ -296,7 +221,6 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
       };
       
       // Save to storage immediately to persist through app reinitializations
-      console.log('🎵 [PREFERENCES_FREETEXT_CHANGE] Saving updated preferences to storage');
       saveUserPreferences(updated);
       
       return updated;
@@ -313,7 +237,6 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
       };
       
       // Save to storage immediately to persist through app reinitializations
-      console.log('🎵 [PREFERENCES_DATE_CHANGE] Saving updated date range to storage');
       saveDateRange(updated);
       
       return updated;
@@ -329,7 +252,6 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
       };
       
       // Save to storage immediately to persist through app reinitializations
-      console.log('🎵 [PREFERENCES_DATE_CHANGE] Saving updated date range to storage');
       saveDateRange(updated);
       
       return updated;
