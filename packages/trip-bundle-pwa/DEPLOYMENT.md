@@ -1,20 +1,22 @@
 # Trip Bundle PWA - Deployment Guide
 
-This PWA can be deployed to two different GitHub Pages URLs:
+This PWA can be deployed to two different GitHub Pages URLs with separate environments:
 
 ## 🚀 Deployment URLs
 
 After deployment, your app will be available at:
 
-- **Current Deployment (Mock Version)**: `https://yoavtsook2806.github.io/trip-bundle/`
-  - Currently serves the mock version with sample data
+- **Mock Version (Demo)**: `https://yoavtsook2806.github.io/trip-bundle/`
+  - Serves the mock version with sample data
   - No API costs, perfect for demos and testing
-  - Deploy mock version: `yarn workspace trip-bundle-pwa deploy:mock`
+  - Uses pre-built trip bundles, no OpenAI calls
+  - Deploy: `yarn workspace trip-bundle-pwa deploy:mock`
 
-- **Production Version (Future)**: `https://yoavtsook2806.github.io/trip-bundle/`
-  - Same URL, but will serve production version when deployed
-  - Uses real OpenAI API calls, requires valid API key
-  - Deploy production version: `yarn workspace trip-bundle-pwa deploy:prod`
+- **Real AI Version (Production)**: Requires GitHub Pages Pro or separate repository
+  - Uses real OpenAI GPT-4o-mini API calls
+  - Costs ~$0.002 per trip generation
+  - Generates unique, personalized trip bundles
+  - Deploy: `yarn workspace trip-bundle-pwa deploy:prod`
 
 ## 📋 Deployment Commands
 
@@ -84,10 +86,34 @@ GitHub Pages is configured to serve from:
    - Mock data displays (for mock build)
    - API calls work (for prod build with real API keys)
 
-## 🛠️ Environment Variables
+## 🛠️ Environment Variables & GitHub Setup
 
-For production deployment, ensure these are set:
-- `VITE_OPENAI_API_KEY` - Your OpenAI API key
+### For Real AI Deployment:
+
+1. **Set OpenAI API Key** (required for real AI):
+   ```bash
+   export OPENAI_API_KEY="sk-proj-your-api-key-here"
+   ```
+
+2. **Deploy Real AI Version**:
+   ```bash
+   OPENAI_API_KEY=$OPENAI_API_KEY yarn workspace trip-bundle-pwa deploy:prod
+   ```
+
+3. **GitHub Pages Setup for Real AI**:
+   
+   **Option A: Separate Repository (Recommended)**
+   - Create new repo: `trip-bundle-real`
+   - Deploy there: `gh-pages -d dist -r https://github.com/yoavtsook2806/trip-bundle-real.git`
+   - URL: `https://yoavtsook2806.github.io/trip-bundle-real/`
+   
+   **Option B: GitHub Pages Pro (Multiple Sites)**
+   - Upgrade to GitHub Pro
+   - Configure multiple GitHub Pages sites
+   - Deploy to `gh-pages-prod` branch
+
+### Environment Variables:
+- `OPENAI_API_KEY` - Your OpenAI API key (required for real AI)
 - `VITE_SPOTIFY_CLIENT_ID` - Spotify client ID (optional)
 - `VITE_SPOTIFY_CLIENT_SECRET` - Spotify client secret (optional)
 
