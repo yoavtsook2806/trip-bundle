@@ -8,8 +8,17 @@ export default defineConfig(({ command, mode }) => {
   let base = '/'
   
   if (command === 'build' && process.env.GITHUB_PAGES) {
-    // For now, deploy everything to /trip-bundle/ since that's what GitHub Pages is configured for
-    base = '/trip-bundle/'
+    // Check if we're building for a specific subdirectory
+    if (process.env.VITE_MOCK === 'true') {
+      // Mock version goes to /trip-bundle/mock/
+      base = '/trip-bundle/mock/'
+    } else if (process.env.VITE_MOCK === 'false') {
+      // Real AI version goes to /trip-bundle/real/
+      base = '/trip-bundle/real/'
+    } else {
+      // Landing page goes to /trip-bundle/
+      base = '/trip-bundle/'
+    }
   }
 
   return {
@@ -35,8 +44,8 @@ export default defineConfig(({ command, mode }) => {
         background_color: '#f0f0f0', // Light background to complement the icon
         display: 'standalone',
         orientation: 'portrait-primary',
-        scope: command === 'build' && process.env.GITHUB_PAGES ? '/trip-bundle/' : '/',
-        start_url: command === 'build' && process.env.GITHUB_PAGES ? '/trip-bundle/index.html' : '/',
+        scope: base,
+        start_url: base === '/' ? '/' : `${base}index.html`,
         categories: ['travel', 'productivity', 'lifestyle'],
         lang: 'en-US',
         icons: [
@@ -121,7 +130,7 @@ export default defineConfig(({ command, mode }) => {
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpeg}'],
-        navigateFallback: command === 'build' && process.env.GITHUB_PAGES ? '/trip-bundle/index.html' : '/index.html',
+        navigateFallback: base === '/' ? '/index.html' : `${base}index.html`,
         navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
         runtimeCaching: [
           {
