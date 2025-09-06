@@ -135,13 +135,13 @@ export const App: React.FC = observer(() => {
         ) : null;
 
       case 'development':
-        return MOCK_MODE ? (
+        return (
           <DevelopmentTab
             promptsUsage={appStore.promptsUsage}
             onClose={handleCloseDevelopment}
             onResetLocalStorage={handleResetLocalStorage}
           />
-        ) : null;
+        );
 
       default:
         return (

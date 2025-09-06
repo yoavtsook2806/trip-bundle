@@ -107,7 +107,7 @@ export const BundleFeed: React.FC<BundleFeedProps> = ({
             <button className="preferences-button" onClick={onOpenPreferences}>
               ⚙️ Preferences
             </button>
-            {isMockMode && onOpenDevelopment && (
+            {onOpenDevelopment && (
               <button className="dev-button" onClick={onOpenDevelopment}>
                 🛠️ Dev
               </button>
