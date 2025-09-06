@@ -149,7 +149,7 @@ export const navigateToScreen = (screen: typeof appStore.currentScreen) => {
  * Select a bundle for detailed view
  */
 export const selectBundle = (bundle: typeof appStore.selectedBundle) => {
-  console.log('📋 Selecting bundle:', bundle?.id);
+  console.log('📋 Selecting bundle:', bundle?.title);
   appStore.setSelectedBundle(bundle);
   if (bundle) {
     appStore.setCurrentScreen('bundlePage');

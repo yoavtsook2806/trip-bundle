@@ -12,19 +12,19 @@ const generateExcludedEvents = (existingBundles: TripBundle[]): string => {
   
   existingBundles.forEach(bundle => {
     // Add key events from existing bundles to excluded list
-    if (bundle.keyEvents && bundle.keyEvents.events) {
-      bundle.keyEvents.events.forEach(event => {
-        excludedEvents.push(`${event.title} (${event.venue})`);
+    if (bundle.keyEvents && Array.isArray(bundle.keyEvents)) {
+      bundle.keyEvents.forEach((event: any) => {
+        excludedEvents.push(`${event.title} (${event.shortDescription})`);
       });
     }
-    
+
     // Add minor events from existing bundles to excluded list
-    if (bundle.minorEvents && bundle.minorEvents.events) {
-      bundle.minorEvents.events.forEach(event => {
-        excludedEvents.push(`${event.title} (${event.venue})`);
+    if (bundle.minorEvents && Array.isArray(bundle.minorEvents)) {
+      bundle.minorEvents.forEach((event: any) => {
+        excludedEvents.push(`${event.title} (${event.shortDescription})`);
       });
     }
-    
+
     // Also include the bundle location/city as a general exclusion
     excludedEvents.push(`Events in ${bundle.city} (already covered by ${bundle.title})`);
   });

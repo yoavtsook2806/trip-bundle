@@ -14,7 +14,7 @@ export const getBundlesFromAi = async (
 ): Promise<TripBundle[]> => {
   console.log('🤖 [REAL] Getting bundles from AI...');
   console.log('📝 User prompt:', userPrompt);
-  console.log('📦 Existing bundles to filter:', existingBundles.map(b => b.id));
+  console.log('📦 Existing bundles to filter:', existingBundles.map(b => b.title));
 
   // TODO: Implement real AI API calls here
   // This should:

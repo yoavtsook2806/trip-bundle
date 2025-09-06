@@ -1,35 +1,30 @@
+export interface DateRange {
+  startDate: number; //timestamp
+  endDate: number; //timestamp
+}
+
 export interface Event {
-  title: string;
-  interestType: keyof InterestTypes;
-  date: number;
-  venue: string;
-  bookingUrl?: string;
+title: string;
+fullDescription: string;
+shortDescription: string;
+interestType: 'concerts' | 'sports' | 'artDesign' | 'localCulture' | 'culinary';
+dateRange: DateRange;
+eventWebsite?: string;
 }
 
-export interface EventsData {
-    title: string;
-    events: Event[]
-}
-
-// Trip Bundle Type
 export interface TripBundle {
-  id: string;
-  imageUrl: string;
-  title: string;
-  description: string;
-  city: string;
-  startDate: number; // timestamp
-  endDate: number; // timestamp
-  keyEvents: EventsData;
-  minorEvents: EventsData;
+imageUrl: string;
+title: string;
+description: string;
+city: string;
+dateRange: DateRange;
+keyEvents: Event[];
+minorEvents: Event[];
 }
 
-// GPT Service Response Type
 export interface GPTResponse {
-  bundles: TripBundle[];
-}
-
-// =============================================================================
+bundles: TripBundle[];
+}// =============================================================================
 // USER DATA TYPES (Input to the service)
 // =============================================================================
 

@@ -1,12 +1,16 @@
-import { TripBundle, UserData } from './types';
+import { TripBundle } from './types';
 
 /**
  * Mock AI service that simulates AI responses for trip bundle generation
  */
 
+// Helper function to generate timestamps
+const getStartTimestamp = () => Date.now() + (30 * 24 * 60 * 60 * 1000); // 30 days from now
+const getEndTimestamp = (daysFromStart: number = 3) => getStartTimestamp() + (daysFromStart * 24 * 60 * 60 * 1000);
+
 /**
  * Gets trip bundles from AI (mock implementation)
- * Randomly selects bundles but filters out existing ones
+ * Returns TripBundle[] - the service layer wraps it in GPTResponse
  */
 export const getBundlesFromAi = async (
   userPrompt: string,
@@ -14,758 +18,255 @@ export const getBundlesFromAi = async (
 ): Promise<TripBundle[]> => {
   console.log('🤖 [MOCK] Getting bundles from AI...');
   console.log('📝 User prompt:', userPrompt);
-  console.log('📦 Existing bundles to filter:', existingBundles.map(b => b.id));
+  console.log('📦 Existing bundles to filter:', existingBundles.map(b => b.title));
 
-  // Parse userData from prompt to get proper dates
-  let userData: UserData | null = null;
-  try {
-    const promptData = JSON.parse(userPrompt);
-    userData = promptData.userData;
-  } catch (e) {
-    console.warn('Could not parse user data from prompt, using default dates');
-  }
-
-  // Helper function to generate timestamps based on user dates or defaults
-  const getStartTimestamp = () => {
-    if (userData) return userData.dateRange.startDate;
-    return Date.now() + (7 * 24 * 60 * 60 * 1000); // 1 week from now
-  };
-
-  const getEndTimestamp = (daysLater: number = 3) => {
-    const start = getStartTimestamp();
-    return start + (daysLater * 24 * 60 * 60 * 1000);
-  };
-
-  // All available mock bundles with popular, specific events
+  // All available mock bundles using new simplified structure
   const allMockBundles: TripBundle[] = [
     {
-      id: '1',
-      title: 'Coldplay London Experience',
-      description: 'See Coldplay live at Wembley Stadium plus explore London\'s music scene and British culture.',
-      city: 'London',
-      imageUrl: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&q=80',
-      startDate: getStartTimestamp(),
-      endDate: getEndTimestamp(4),
-      keyEvents: {
-        title: 'Main Events',
-        events: [
-          {
-            title: 'Coldplay - Music of the Spheres World Tour',
-            interestType: 'concerts',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'Wembley Stadium',
-            bookingUrl: 'https://www.ticketmaster.co.uk/coldplay-tickets/artist/806'
-          },
-          {
-            title: 'London Symphony Orchestra at Royal Albert Hall',
-            interestType: 'concerts',
-            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
-            venue: 'Royal Albert Hall',
-            bookingUrl: 'https://www.royalalberthall.com/'
-          }
-        ]
+      imageUrl: "https://source.unsplash.com/random/800x600/?amsterdam-concert,electronic-music",
+      title: "Amsterdam: ADE Weekender — Electronic Peaks & Local Flavours",
+      description: "Five days in Amsterdam timed to Amsterdam Dance Event + AMF: immersive electronic and house showcases, late-night club culture, and fresh market food runs.",
+      city: "Amsterdam, Netherlands",
+      dateRange: {
+        startDate: getStartTimestamp(),
+        endDate: getEndTimestamp(5)
       },
-      minorEvents: {
-        title: 'Additional Experiences',
-        events: [
-          {
-            title: 'Abbey Road Studios Tour',
-            interestType: 'localCulture',
-            date: getStartTimestamp(),
-            venue: 'Abbey Road Studios',
-            bookingUrl: 'https://www.abbeyroad.com/visit'
+      keyEvents: [
+        {
+          title: "Amsterdam Dance Event (ADE) Festival",
+          fullDescription: "ADE is Europe's biggest electronic-music conference and club festival, staging hundreds of club shows, panels and label showcases across Amsterdam from October 22–26, 2025. Expect world-class DJs, label nights, and daytime showcases that map directly to your electronic/house tastes.",
+          shortDescription: "Europe's biggest electronic-week: 22–26 Oct 2025, citywide club and festival programme.",
+          interestType: "concerts",
+          dateRange: {
+            startDate: getStartTimestamp() + (24 * 60 * 60 * 1000),
+            endDate: getStartTimestamp() + (5 * 24 * 60 * 60 * 1000)
           },
-          {
-            title: 'British Museum Visit',
-            interestType: 'artDesign',
-            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
-            venue: 'British Museum',
-            bookingUrl: 'https://www.britishmuseum.org/'
+          eventWebsite: "https://www.amsterdam-dance-event.nl/en/"
+        },
+        {
+          title: "AMF (Amsterdam Music Festival) at Johan Cruijff ArenA",
+          fullDescription: "AMF is ADE's stadium-scale electronica night that transforms Johan Cruijff ArenA into a one-night mega-club with headline DJs and production on a grand scale. If you like festival energy and arena-level electronic shows, AMF is a must.",
+          shortDescription: "Arena-scale electronic spectacle at Johan Cruijff ArenA.",
+          interestType: "concerts",
+          dateRange: {
+            startDate: getStartTimestamp() + (4 * 24 * 60 * 60 * 1000),
+            endDate: getStartTimestamp() + (4 * 24 * 60 * 60 * 1000)
           },
-          {
-            title: 'Camden Market Food Tour',
-            interestType: 'culinary',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'Camden Market',
-            bookingUrl: 'https://www.camdenmarket.com/'
+          eventWebsite: "https://www.amsterdam-dance-event.nl/en/program/2025/amf-2025/2682387/"
+        }
+      ],
+      minorEvents: [
+        {
+          title: "Paradiso — Historic club & live-music programme",
+          fullDescription: "Paradiso (a converted church) is Amsterdam's iconic live-music venue with club nights and intimate concerts covering hip hop, electronic, jazz-adjacent acts and crossover sets.",
+          shortDescription: "Legendary Amsterdam club hosting ADE-related shows, late nights and eclectic gigs.",
+          interestType: "concerts",
+          dateRange: {
+            startDate: getStartTimestamp(),
+            endDate: getStartTimestamp() + (5 * 24 * 60 * 60 * 1000)
           },
-          {
-            title: 'Thames River Evening Cruise',
-            interestType: 'localCulture',
-            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
-            venue: 'Thames River',
-            bookingUrl: 'https://www.thamesrivercruises.co.uk/'
-          },
-          {
-            title: 'Tate Modern Gallery Visit',
-            interestType: 'artDesign',
-            date: getStartTimestamp() + (12 * 60 * 60 * 1000), // Day 1 afternoon
-            venue: 'Tate Modern',
-            bookingUrl: 'https://www.tate.org.uk/visit/tate-modern'
+          eventWebsite: "https://www.paradiso.nl/en"
+        },
+        {
+          title: "Albert Cuyp Market — De Pijp daytime food & street culture",
+          fullDescription: "A stroll-and-sample stop: Albert Cuyp is Amsterdam's largest daytime market (open Mon–Sat). Taste stroopwafels, herring, poffertjes and international street food stalls.",
+          shortDescription: "Historic De Pijp market for local snacks, cheeses and street-food discovery.",
+          interestType: "culinary",
+          dateRange: {
+            startDate: getStartTimestamp() + (24 * 60 * 60 * 1000),
+            endDate: getStartTimestamp() + (24 * 60 * 60 * 1000)
           }
-        ]
-      }
+          // No eventWebsite for this one (testing optional field)
+        }
+      ]
     },
     {
-      id: '2',
-      title: 'Manchester Derby Weekend',
-      description: 'Experience the legendary Manchester City vs Liverpool match plus explore Manchester\'s football culture.',
-      city: 'Manchester',
-      imageUrl: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80',
-      startDate: getStartTimestamp(),
-      endDate: getEndTimestamp(3),
-      keyEvents: {
-        title: 'Main Events',
-        events: [
-          {
-            title: 'Manchester City vs Liverpool FC',
-            interestType: 'sports',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'Etihad Stadium',
-            bookingUrl: 'https://www.mancity.com/tickets'
-          },
-          {
-            title: 'Manchester United Stadium Tour',
-            interestType: 'sports',
-            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
-            venue: 'Old Trafford',
-            bookingUrl: 'https://www.manutd.com/en/visit-old-trafford'
-          },
-          {
-            title: 'City vs United Legends Match',
-            interestType: 'sports',
-            date: getStartTimestamp() + (12 * 60 * 60 * 1000), // Day 1 afternoon
-            venue: 'Manchester Academy',
-            bookingUrl: 'https://www.manchesteracademy.net/'
-          }
-        ]
+      imageUrl: "https://source.unsplash.com/random/800x600/?berlin-art,gallery-exhibition",
+      title: "Berlin: Autumn Art Surge — Biennale + Art Week",
+      description: "Five days in Berlin centered on Berlin Art Week and the 13th Berlin Biennale — gallery openings, contemporary performance, and literary & local culture side-programmes.",
+      city: "Berlin, Germany",
+      dateRange: {
+        startDate: getStartTimestamp() + (10 * 24 * 60 * 60 * 1000),
+        endDate: getEndTimestamp(15)
       },
-      minorEvents: {
-        title: 'Additional Experiences',
-        events: [
-          {
-            title: 'National Football Museum',
-            interestType: 'localCulture',
-            date: getStartTimestamp(),
-            venue: 'National Football Museum',
-            bookingUrl: 'https://www.nationalfootballmuseum.com/'
+      keyEvents: [
+        {
+          title: "Berlin Art Week",
+          fullDescription: "Berlin Art Week is the city's fall contemporary-art moment: museum exhibitions, gallery openings, talks, and late-night project-space programs concentrate over five days.",
+          shortDescription: "Citywide contemporary-art festival and gallery program.",
+          interestType: "artDesign",
+          dateRange: {
+            startDate: getStartTimestamp() + (10 * 24 * 60 * 60 * 1000),
+            endDate: getStartTimestamp() + (15 * 24 * 60 * 60 * 1000)
           },
-          {
-            title: 'Traditional Manchester Pub Tour',
-            interestType: 'culinary',
-            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
-            venue: 'Various Historic Pubs',
-            bookingUrl: 'https://www.manchesterpubtours.com/'
-          },
-          {
-            title: 'Curry Mile Food Experience',
-            interestType: 'culinary',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'Curry Mile, Rusholme',
-            bookingUrl: 'https://www.visitmanchester.com/curry-mile'
-          },
-          {
-            title: 'Manchester Music History Tour',
-            interestType: 'localCulture',
-            date: getStartTimestamp() + (36 * 60 * 60 * 1000), // Day 2 evening
-            venue: 'Northern Quarter',
-            bookingUrl: 'https://www.manchestermusictours.com/'
-          },
-          {
-            title: 'John Rylands Library Visit',
-            interestType: 'artDesign',
-            date: getStartTimestamp() + (6 * 60 * 60 * 1000), // Day 1 morning
-            venue: 'John Rylands Library',
-            bookingUrl: 'https://www.library.manchester.ac.uk/rylands/'
+          eventWebsite: "https://berlinartweek.de/en/"
+        },
+        {
+          title: "13th Berlin Biennale for Contemporary Art",
+          fullDescription: "The 13th Berlin Biennale presents a cross-venue program of site-specific works, installations and performances by international artists.",
+          shortDescription: "Berlin Biennale — major contemporary-art exhibition.",
+          interestType: "artDesign",
+          dateRange: {
+            startDate: getStartTimestamp() + (10 * 24 * 60 * 60 * 1000),
+            endDate: getStartTimestamp() + (15 * 24 * 60 * 60 * 1000)
           }
-        ]
-      }
+          // No eventWebsite for this one (testing optional field)
+        }
+      ],
+      minorEvents: [
+        {
+          title: "International Literature Festival Berlin",
+          fullDescription: "The International Literature Festival Berlin runs with readings, panels and multilingual talks across city venues.",
+          shortDescription: "Citywide festival of readings, panels and author events.",
+          interestType: "localCulture",
+          dateRange: {
+            startDate: getStartTimestamp() + (11 * 24 * 60 * 60 * 1000),
+            endDate: getStartTimestamp() + (14 * 24 * 60 * 60 * 1000)
+          },
+          eventWebsite: "https://literaturfestival.com/en/"
+        },
+        {
+          title: "Open Monument Day",
+          fullDescription: "Open Monument Day offers special access to historic buildings, restoration workshops and curated tours.",
+          shortDescription: "Special-access heritage weekend with tours and behind-the-scenes visits.",
+          interestType: "localCulture",
+          dateRange: {
+            startDate: getStartTimestamp() + (13 * 24 * 60 * 60 * 1000),
+            endDate: getStartTimestamp() + (14 * 24 * 60 * 60 * 1000)
+          },
+          eventWebsite: "https://www.tag-des-offenen-denkmals.de/"
+        }
+      ]
     },
     {
-      id: '3',
-      title: 'Taylor Swift Eras Tour Paris',
-      description: 'Experience Taylor Swift\'s Eras Tour in Paris plus explore the city\'s romantic culture and cuisine.',
-      city: 'Paris',
-      imageUrl: 'https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=800&q=80',
-      startDate: getStartTimestamp(),
-      endDate: getEndTimestamp(4),
-      keyEvents: {
-        title: 'Main Events',
-        events: [
-          {
-            title: 'Taylor Swift - The Eras Tour',
-            interestType: 'concerts',
-            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
-            venue: 'Paris La Défense Arena',
-            bookingUrl: 'https://www.taylorswift.com/tour'
-          },
-          {
-            title: 'French Cabaret Show at Moulin Rouge',
-            interestType: 'concerts',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'Moulin Rouge',
-            bookingUrl: 'https://www.moulinrouge.fr/en'
-          }
-        ]
+      imageUrl: "https://source.unsplash.com/random/800x600/?paris-art-basel,grand-palais",
+      title: "Paris: Art-Week Immersion — Art Basel Paris + Paris Internationale",
+      description: "Five-day Paris pick during Paris Art Week: Art Basel Paris and Paris Internationale lock the city into an intense art-and-design beat with museum highlights and culinary side-stops.",
+      city: "Paris, France",
+      dateRange: {
+        startDate: getStartTimestamp() + (20 * 24 * 60 * 60 * 1000),
+        endDate: getEndTimestamp(25)
       },
-      minorEvents: {
-        title: 'Additional Experiences',
-        events: [
-          {
-            title: 'Louvre Museum Private Tour',
-            interestType: 'artDesign',
-            date: getStartTimestamp(),
-            venue: 'Louvre Museum',
-            bookingUrl: 'https://www.louvre.fr/en'
+      keyEvents: [
+        {
+          title: "Art Basel Paris (Paris+ par Art Basel) — Grand Palais",
+          fullDescription: "Art Basel Paris gathers leading international galleries at the Grand Palais and runs a wide public program in the city: talks, outdoor sculpture projects and museum tie-ins.",
+          shortDescription: "Major contemporary-art fair at the Grand Palais, citywide public program.",
+          interestType: "artDesign",
+          dateRange: {
+            startDate: getStartTimestamp() + (20 * 24 * 60 * 60 * 1000),
+            endDate: getStartTimestamp() + (25 * 24 * 60 * 60 * 1000)
           },
-          {
-            title: 'Seine River Dinner Cruise',
-            interestType: 'culinary',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'Seine River',
-            bookingUrl: 'https://www.bateauxparisiens.com/'
+          eventWebsite: "https://www.artbasel.com/paris?lang=en"
+        },
+        {
+          title: "Paris Internationale",
+          fullDescription: "Paris Internationale is a curated, discovery-focused fair showcasing emerging galleries and experimental projects.",
+          shortDescription: "Nomadic contemporary fair for emerging galleries and experimental projects.",
+          interestType: "artDesign",
+          dateRange: {
+            startDate: getStartTimestamp() + (20 * 24 * 60 * 60 * 1000),
+            endDate: getStartTimestamp() + (25 * 24 * 60 * 60 * 1000)
           },
-          {
-            title: 'Montmartre Art District Walk',
-            interestType: 'localCulture',
-            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
-            venue: 'Montmartre District',
-            bookingUrl: 'https://www.paris-walks.com/'
-          },
-          {
-            title: 'Versailles Palace Day Trip',
-            interestType: 'artDesign',
-            date: getStartTimestamp() + (12 * 60 * 60 * 1000), // Day 1 afternoon
-            venue: 'Palace of Versailles',
-            bookingUrl: 'https://www.chateauversailles.fr/'
-          },
-          {
-            title: 'Latin Quarter Wine Tasting',
-            interestType: 'culinary',
-            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
-            venue: 'Latin Quarter',
-            bookingUrl: 'https://www.pariswinetasting.com/'
+          eventWebsite: "https://parisinternationale.com/"
+        }
+      ],
+      minorEvents: [
+        {
+          title: "Gerhard Richter retrospective — Fondation Louis Vuitton",
+          fullDescription: "A major Gerhard Richter retrospective at Fondation Louis Vuitton — timed perfectly to coincide with Art Week.",
+          shortDescription: "Gerhard Richter retrospective at Fondation Louis Vuitton.",
+          interestType: "artDesign",
+          dateRange: {
+            startDate: getStartTimestamp() + (17 * 24 * 60 * 60 * 1000),
+            endDate: getStartTimestamp() + (90 * 24 * 60 * 60 * 1000)
           }
-        ]
-      }
+          // No eventWebsite for this one (testing optional field)
+        },
+        {
+          title: "Paris museum & culinary route",
+          fullDescription: "During Art Week many Paris museums open special late nights and the Tuileries/Jardin public programs run pop-up installations.",
+          shortDescription: "Late-night museum programs and Tuileries pop-ups with bistro/wine pairings during Art Week.",
+          interestType: "culinary",
+          dateRange: {
+            startDate: getStartTimestamp() + (20 * 24 * 60 * 60 * 1000),
+            endDate: getStartTimestamp() + (25 * 24 * 60 * 60 * 1000)
+          },
+          eventWebsite: "https://www.parismusees.paris.fr/"
+        }
+      ]
     },
     {
-      id: '4',
-      title: 'Super Bowl Las Vegas Experience',
-      description: 'Attend the Super Bowl in Las Vegas plus experience the city\'s entertainment and culinary scene.',
-      city: 'Las Vegas',
-      imageUrl: 'https://images.unsplash.com/photo-1605063133739-2e6b5c7e1d4b?w=800&q=80',
-      startDate: getStartTimestamp(),
-      endDate: getEndTimestamp(4),
-      keyEvents: {
-        title: 'Main Events',
-        events: [
-          {
-            title: 'Super Bowl LVIII',
-            interestType: 'sports',
-            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
-            venue: 'Allegiant Stadium',
-            bookingUrl: 'https://www.nfl.com/super-bowl/tickets'
-          },
-          {
-            title: 'NBA All-Star Weekend',
-            interestType: 'sports',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'T-Mobile Arena',
-            bookingUrl: 'https://www.nba.com/allstar'
-          },
-          {
-            title: 'Super Bowl Halftime Show After-Party',
-            interestType: 'concerts',
-            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3 night
-            venue: 'MGM Grand',
-            bookingUrl: 'https://www.mgmgrand.com/'
-          }
-        ]
+      imageUrl: "https://source.unsplash.com/random/800x600/?barcelona-festival,la-merce",
+      title: "Barcelona: La Mercè — City Festival, Street Spectacle & Taste",
+      description: "Six days in Barcelona for La Mercè: citywide free concerts, BAM showcases, human-tower tradition, and Terra i Gust sustainable food programming.",
+      city: "Barcelona, Spain",
+      dateRange: {
+        startDate: getStartTimestamp() + (30 * 24 * 60 * 60 * 1000),
+        endDate: getEndTimestamp(36)
       },
-      minorEvents: {
-        title: 'Additional Experiences',
-        events: [
-          {
-            title: 'Cirque du Soleil Show',
-            interestType: 'artDesign',
-            date: getStartTimestamp(),
-            venue: 'Bellagio Theatre',
-            bookingUrl: 'https://www.cirquedusoleil.com/las-vegas'
+      keyEvents: [
+        {
+          title: "La Mercè (Festes de la Mercè) — Barcelona's city festival",
+          fullDescription: "La Mercè is Barcelona's biggest annual festival — a packed programme of free concerts, castellers (human towers), parades, fireworks (Piromusical) and public art across the city.",
+          shortDescription: "Barcelona's citywide festival of music, street-art and tradition.",
+          interestType: "localCulture",
+          dateRange: {
+            startDate: getStartTimestamp() + (30 * 24 * 60 * 60 * 1000),
+            endDate: getStartTimestamp() + (36 * 24 * 60 * 60 * 1000)
           },
-          {
-            title: 'Gordon Ramsay Hell\'s Kitchen Dinner',
-            interestType: 'culinary',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'Hell\'s Kitchen Restaurant',
-            bookingUrl: 'https://www.gordonramsayrestaurants.com/hells-kitchen-las-vegas/'
-          },
-          {
-            title: 'High Roller Observation Wheel',
-            interestType: 'localCulture',
-            date: getStartTimestamp() + (12 * 60 * 60 * 1000), // Day 1 afternoon
-            venue: 'The LINQ Promenade',
-            bookingUrl: 'https://www.caesars.com/linq/things-to-do/attractions/high-roller'
-          },
-          {
-            title: 'Fremont Street Experience',
-            interestType: 'localCulture',
-            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
-            venue: 'Fremont Street',
-            bookingUrl: 'https://vegasexperience.com/'
-          },
-          {
-            title: 'Bellagio Fountain Show & Buffet',
-            interestType: 'culinary',
-            date: getStartTimestamp() + (36 * 60 * 60 * 1000), // Day 2 evening
-            venue: 'Bellagio Hotel',
-            bookingUrl: 'https://www.bellagio.com/'
+          eventWebsite: "https://www.barcelona.cat/lamerce/en/"
+        },
+        {
+          title: "BAM (Barcelona Acció Musical) — La Mercè's music strand",
+          fullDescription: "BAM runs inside La Mercè and highlights experimental, indie and electronic sounds on multiple stages throughout the city.",
+          shortDescription: "BAM — the festival's edgy musical programme across multiple stages during La Mercè.",
+          interestType: "concerts",
+          dateRange: {
+            startDate: getStartTimestamp() + (30 * 24 * 60 * 60 * 1000),
+            endDate: getStartTimestamp() + (36 * 24 * 60 * 60 * 1000)
           }
-        ]
-      }
-    },
-    {
-      id: '5',
-      title: 'Barcelona El Clásico Weekend',
-      description: 'Watch Real Madrid vs Barcelona at Camp Nou plus explore Catalonian culture and Gaudí\'s architecture.',
-      city: 'Barcelona',
-      imageUrl: 'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=800&q=80',
-      startDate: getStartTimestamp(),
-      endDate: getEndTimestamp(3),
-      keyEvents: {
-        title: 'Main Events',
-        events: [
-          {
-            title: 'El Clásico: FC Barcelona vs Real Madrid',
-            interestType: 'sports',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'Camp Nou',
-            bookingUrl: 'https://www.fcbarcelona.com/en/tickets'
+          // No eventWebsite for this one (testing optional field)
+        }
+      ],
+      minorEvents: [
+        {
+          title: "Terra i Gust — Mercè's sustainable gastronomy programme",
+          fullDescription: "Terra i Gust (part of La Mercè) is Barcelona's sustainable-food hub offering tastings, debates and local-produce showcases in Parc de la Ciutadella.",
+          shortDescription: "Sustainable-food fair within La Mercè (Parc de la Ciutadella).",
+          interestType: "culinary",
+          dateRange: {
+            startDate: getStartTimestamp() + (33 * 24 * 60 * 60 * 1000),
+            endDate: getStartTimestamp() + (36 * 24 * 60 * 60 * 1000)
           },
-          {
-            title: 'FC Barcelona vs Atletico Madrid',
-            interestType: 'sports',
-            date: getStartTimestamp() + (12 * 60 * 60 * 1000), // Day 1 afternoon
-            venue: 'Camp Nou',
-            bookingUrl: 'https://www.fcbarcelona.com/en/tickets'
-          }
-        ]
-      },
-      minorEvents: {
-        title: 'Additional Experiences',
-        events: [
-          {
-            title: 'Sagrada Familia Tour',
-            interestType: 'artDesign',
-            date: getStartTimestamp(),
-            venue: 'Sagrada Familia',
-            bookingUrl: 'https://sagradafamilia.org/en/tickets'
+          eventWebsite: "https://ajuntament.barcelona.cat/"
+        },
+        {
+          title: "BAM & Mercè free-stage highlights",
+          fullDescription: "La Mercè's open-air stages (Bogatell beach, Ciutadella, Plaça Catalunya) host headline and local acts — often free — spanning electronic DJ sets, hip hop showcases and neo-soul.",
+          shortDescription: "Free concerts across city stages (Bogatell, Ciutadella, Plaça Catalunya) during La Mercè.",
+          interestType: "concerts",
+          dateRange: {
+            startDate: getStartTimestamp() + (30 * 24 * 60 * 60 * 1000),
+            endDate: getStartTimestamp() + (36 * 24 * 60 * 60 * 1000)
           },
-          {
-            title: 'Tapas and Flamenco Evening',
-            interestType: 'culinary',
-            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
-            venue: 'Barrio Gótico',
-            bookingUrl: 'https://www.barcelona-tourist-guide.com/en/eat/tapas-tours.html'
-          },
-          {
-            title: 'Park Güell Guided Tour',
-            interestType: 'artDesign',
-            date: getStartTimestamp() + (6 * 60 * 60 * 1000), // Day 1 morning
-            venue: 'Park Güell',
-            bookingUrl: 'https://www.parkguell.cat/en'
-          },
-          {
-            title: 'Barcelona Beach & Seafood',
-            interestType: 'culinary',
-            date: getStartTimestamp() + (36 * 60 * 60 * 1000), // Day 2 evening
-            venue: 'Barceloneta Beach',
-            bookingUrl: 'https://www.barcelona.com/barceloneta'
-          },
-          {
-            title: 'Gothic Quarter Walking Tour',
-            interestType: 'localCulture',
-            date: getStartTimestamp() + (48 * 60 * 60 * 1000), // Day 3 morning
-            venue: 'Gothic Quarter',
-            bookingUrl: 'https://www.barcelona-tourist-guide.com/en/tours/gothic-quarter.html'
-          }
-        ]
-      }
-    },
-    {
-      id: '6',
-      title: 'Beyoncé Renaissance World Tour NYC',
-      description: 'Experience Beyoncé\'s Renaissance World Tour at Madison Square Garden plus explore NYC\'s vibrant culture.',
-      city: 'New York',
-      imageUrl: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&q=80',
-      startDate: getStartTimestamp(),
-      endDate: getEndTimestamp(3),
-      keyEvents: {
-        title: 'Main Events',
-        events: [
-          {
-            title: 'Beyoncé - Renaissance World Tour',
-            interestType: 'concerts',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'Madison Square Garden',
-            bookingUrl: 'https://www.msg.com/beyonce'
-          },
-          {
-            title: 'Alicia Keys Live at Apollo Theater',
-            interestType: 'concerts',
-            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
-            venue: 'Apollo Theater',
-            bookingUrl: 'https://www.apollotheater.org/'
-          }
-        ]
-      },
-      minorEvents: {
-        title: 'Additional Experiences',
-        events: [
-          {
-            title: 'Broadway Show: Hamilton',
-            interestType: 'artDesign',
-            date: getStartTimestamp(),
-            venue: 'Richard Rodgers Theatre',
-            bookingUrl: 'https://hamiltonmusical.com/new-york/'
-          },
-          {
-            title: 'Central Park Jazz Brunch',
-            interestType: 'culinary',
-            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
-            venue: 'Central Park Conservatory Garden',
-            bookingUrl: 'https://www.centralparkconservancy.org/'
-          },
-          {
-            title: 'Metropolitan Museum of Art',
-            interestType: 'artDesign',
-            date: getStartTimestamp() + (6 * 60 * 60 * 1000), // Day 1 morning
-            venue: 'Metropolitan Museum',
-            bookingUrl: 'https://www.metmuseum.org/'
-          },
-          {
-            title: 'Brooklyn Bridge & DUMBO Food Tour',
-            interestType: 'culinary',
-            date: getStartTimestamp() + (36 * 60 * 60 * 1000), // Day 2 evening
-            venue: 'Brooklyn Bridge',
-            bookingUrl: 'https://www.brooklynfoodtours.com/'
-          },
-          {
-            title: 'Statue of Liberty & Ellis Island',
-            interestType: 'localCulture',
-            date: getStartTimestamp() + (12 * 60 * 60 * 1000), // Day 1 afternoon
-            venue: 'Liberty Island',
-            bookingUrl: 'https://www.nps.gov/stli/'
-          }
-        ]
-      }
-    },
-    {
-      id: '7',
-      title: 'Formula 1 Monaco Grand Prix',
-      description: 'Experience the glamour of Monaco Grand Prix plus the luxury lifestyle of the French Riviera.',
-      city: 'Monaco',
-      imageUrl: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=800&q=80',
-      startDate: getStartTimestamp(),
-      endDate: getEndTimestamp(4),
-      keyEvents: {
-        title: 'Main Events',
-        events: [
-          {
-            title: 'Monaco Grand Prix Race Day',
-            interestType: 'sports',
-            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
-            venue: 'Circuit de Monaco',
-            bookingUrl: 'https://www.formula1.com/en/racing/2024/Monaco.html'
-          },
-          {
-            title: 'Monaco Grand Prix Qualifying',
-            interestType: 'sports',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'Circuit de Monaco',
-            bookingUrl: 'https://www.formula1.com/en/racing/2024/Monaco.html'
-          },
-          {
-            title: 'Monaco Historic Grand Prix',
-            interestType: 'sports',
-            date: getStartTimestamp() + (12 * 60 * 60 * 1000), // Day 1 afternoon
-            venue: 'Circuit de Monaco',
-            bookingUrl: 'https://www.acm.mc/en/evenements/grand-prix-de-monaco-historique'
-          }
-        ]
-      },
-      minorEvents: {
-        title: 'Additional Experiences',
-        events: [
-          {
-            title: 'Monte Carlo Casino Experience',
-            interestType: 'localCulture',
-            date: getStartTimestamp(),
-            venue: 'Monte Carlo Casino',
-            bookingUrl: 'https://www.montecarlocasinos.com/'
-          },
-          {
-            title: 'Michelin Star Dining at Le Louis XV',
-            interestType: 'culinary',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'Hotel Hermitage',
-            bookingUrl: 'https://www.ducasse-paris.com/en/restaurant/le-louis-xv'
-          },
-          {
-            title: 'Prince\'s Palace & Changing of Guard',
-            interestType: 'localCulture',
-            date: getStartTimestamp() + (6 * 60 * 60 * 1000), // Day 1 morning
-            venue: 'Prince\'s Palace',
-            bookingUrl: 'https://www.palais.mc/en'
-          },
-          {
-            title: 'Yacht Club de Monaco Tour',
-            interestType: 'localCulture',
-            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
-            venue: 'Yacht Club de Monaco',
-            bookingUrl: 'https://www.yacht-club-monaco.mc/'
-          },
-          {
-            title: 'French Riviera Wine Tasting',
-            interestType: 'culinary',
-            date: getStartTimestamp() + (36 * 60 * 60 * 1000), // Day 2 evening
-            venue: 'Côtes de Provence Vineyards',
-            bookingUrl: 'https://www.provence-wine.com/'
-          }
-        ]
-      }
-    },
-    {
-      id: '8',
-      title: 'Tokyo Art & Anime Culture Week',
-      description: 'Immerse yourself in Tokyo\'s cutting-edge art scene, anime culture, and traditional Japanese experiences.',
-      city: 'Tokyo',
-      imageUrl: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80',
-      startDate: getStartTimestamp(),
-      endDate: getEndTimestamp(5),
-      keyEvents: {
-        title: 'Main Events',
-        events: [
-          {
-            title: 'TeamLab Borderless Digital Art Museum',
-            interestType: 'artDesign',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'TeamLab Borderless',
-            bookingUrl: 'https://borderless.teamlab.art/en/'
-          },
-          {
-            title: 'Tokyo International Anime Fair',
-            interestType: 'artDesign',
-            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
-            venue: 'Tokyo Big Sight',
-            bookingUrl: 'https://www.animejapan.jp/en/'
-          }
-        ]
-      },
-      minorEvents: {
-        title: 'Additional Experiences',
-        events: [
-          {
-            title: 'Anime & Manga Museum Tour',
-            interestType: 'localCulture',
-            date: getStartTimestamp(),
-            venue: 'Tokyo Anime Center',
-            bookingUrl: 'https://www.animecenter.jp/'
-          },
-          {
-            title: 'Traditional Kaiseki Dinner',
-            interestType: 'culinary',
-            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
-            venue: 'Kikunoi Restaurant',
-            bookingUrl: 'https://kikunoi.jp/english/'
-          },
-          {
-            title: 'Studio Ghibli Museum',
-            interestType: 'artDesign',
-            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
-            venue: 'Ghibli Museum',
-            bookingUrl: 'https://www.ghibli-museum.jp/en/'
-          },
-          {
-            title: 'Harajuku Fashion & Street Culture',
-            interestType: 'localCulture',
-            date: getStartTimestamp() + (6 * 60 * 60 * 1000), // Day 1 morning
-            venue: 'Harajuku District',
-            bookingUrl: 'https://www.gotokyo.org/en/destinations/shibuya/harajuku.html'
-          },
-          {
-            title: 'Tsukiji Outer Market Food Tour',
-            interestType: 'culinary',
-            date: getStartTimestamp() + (4 * 24 * 60 * 60 * 1000), // Day 5
-            venue: 'Tsukiji Outer Market',
-            bookingUrl: 'https://www.tsukiji.or.jp/english/'
-          }
-        ]
-      }
-    },
-    {
-      id: '9',
-      title: 'Coachella Desert Music Festival',
-      description: 'Experience the iconic Coachella music festival in the California desert with top artists and desert vibes.',
-      city: 'Palm Springs',
-      imageUrl: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=80',
-      startDate: getStartTimestamp(),
-      endDate: getEndTimestamp(4),
-      keyEvents: {
-        title: 'Main Events',
-        events: [
-          {
-            title: 'Coachella Valley Music Festival - Weekend 1',
-            interestType: 'concerts',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'Empire Polo Club',
-            bookingUrl: 'https://www.coachella.com/'
-          },
-          {
-            title: 'Coachella After-Party: Desert Oasis',
-            interestType: 'concerts',
-            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
-            venue: 'Desert Air Hotel',
-            bookingUrl: 'https://www.coachella.com/after-parties'
-          },
-          {
-            title: 'Stagecoach Country Music Festival',
-            interestType: 'concerts',
-            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
-            venue: 'Empire Polo Club',
-            bookingUrl: 'https://www.stagecoachfestival.com/'
-          }
-        ]
-      },
-      minorEvents: {
-        title: 'Additional Experiences',
-        events: [
-          {
-            title: 'Joshua Tree National Park Sunrise',
-            interestType: 'localCulture',
-            date: getStartTimestamp(),
-            venue: 'Joshua Tree National Park',
-            bookingUrl: 'https://www.nps.gov/jotr/'
-          },
-          {
-            title: 'Desert Hot Springs Spa Day',
-            interestType: 'localCulture',
-            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
-            venue: 'Two Bunch Palms Resort',
-            bookingUrl: 'https://www.twobunchpalms.com/'
-          },
-          {
-            title: 'Palm Springs Aerial Tramway',
-            interestType: 'localCulture',
-            date: getStartTimestamp() + (6 * 60 * 60 * 1000), // Day 1 morning
-            venue: 'Palm Springs Aerial Tramway',
-            bookingUrl: 'https://www.pstramway.com/'
-          },
-          {
-            title: 'Desert Food & Wine Festival',
-            interestType: 'culinary',
-            date: getStartTimestamp() + (12 * 60 * 60 * 1000), // Day 1 afternoon
-            venue: 'Indian Wells',
-            bookingUrl: 'https://www.desertfoodandwine.com/'
-          },
-          {
-            title: 'Salton Sea Art Installation Tour',
-            interestType: 'artDesign',
-            date: getStartTimestamp() + (36 * 60 * 60 * 1000), // Day 2 evening
-            venue: 'Salton Sea',
-            bookingUrl: 'https://www.saltonsea.ca.gov/'
-          }
-        ]
-      }
-    },
-    {
-      id: '10',
-      title: 'Wimbledon Tennis Championships',
-      description: 'Experience the prestige of Wimbledon tennis plus traditional British culture and countryside.',
-      city: 'London',
-      imageUrl: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&q=80',
-      startDate: getStartTimestamp(),
-      endDate: getEndTimestamp(4),
-      keyEvents: {
-        title: 'Main Events',
-        events: [
-          {
-            title: 'Wimbledon Men\'s Final',
-            interestType: 'sports',
-            date: getStartTimestamp() + (2 * 24 * 60 * 60 * 1000), // Day 3
-            venue: 'All England Lawn Tennis Club',
-            bookingUrl: 'https://www.wimbledon.com/en_GB/tickets/index.html'
-          },
-          {
-            title: 'Wimbledon Ladies\' Final',
-            interestType: 'sports',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'All England Lawn Tennis Club',
-            bookingUrl: 'https://www.wimbledon.com/en_GB/tickets/index.html'
-          },
-          {
-            title: 'Wimbledon Qualifying Tournament',
-            interestType: 'sports',
-            date: getStartTimestamp() + (12 * 60 * 60 * 1000), // Day 1 afternoon
-            venue: 'All England Lawn Tennis Club',
-            bookingUrl: 'https://www.wimbledon.com/en_GB/tickets/index.html'
-          }
-        ]
-      },
-      minorEvents: {
-        title: 'Additional Experiences',
-        events: [
-          {
-            title: 'Traditional Afternoon Tea at Harrods',
-            interestType: 'culinary',
-            date: getStartTimestamp(),
-            venue: 'Harrods Tea Rooms',
-            bookingUrl: 'https://www.harrods.com/en-gb/restaurants/tea-rooms'
-          },
-          {
-            title: 'Royal Botanic Gardens Kew',
-            interestType: 'localCulture',
-            date: getStartTimestamp() + (24 * 60 * 60 * 1000), // Day 2
-            venue: 'Kew Gardens',
-            bookingUrl: 'https://www.kew.org/'
-          },
-          {
-            title: 'Hampton Court Palace Tour',
-            interestType: 'localCulture',
-            date: getStartTimestamp() + (6 * 60 * 60 * 1000), // Day 1 morning
-            venue: 'Hampton Court Palace',
-            bookingUrl: 'https://www.hrp.org.uk/hampton-court-palace/'
-          },
-          {
-            title: 'Thames Valley Wine Tasting',
-            interestType: 'culinary',
-            date: getStartTimestamp() + (3 * 24 * 60 * 60 * 1000), // Day 4
-            venue: 'Thames Valley Vineyards',
-            bookingUrl: 'https://www.thamesvalleywinery.co.uk/'
-          },
-          {
-            title: 'Royal Observatory Greenwich',
-            interestType: 'artDesign',
-            date: getStartTimestamp() + (36 * 60 * 60 * 1000), // Day 2 evening
-            venue: 'Royal Observatory',
-            bookingUrl: 'https://www.rmg.co.uk/royal-observatory'
-          }
-        ]
-      }
+          eventWebsite: "https://www.barcelona.cat/lamerce/en/"
+        }
+      ]
     }
   ];
 
-  // Filter out existing bundles
-  const existingIds = new Set(existingBundles.map(b => b.id));
-  const availableBundles = allMockBundles.filter(bundle => !existingIds.has(bundle.id));
+  // Filter out existing bundles (using title for identification since no id)
+  const existingTitles = new Set(existingBundles.map(b => b.title));
+  const availableBundles = allMockBundles.filter(bundle => !existingTitles.has(bundle.title));
 
   if (availableBundles.length === 0) {
     console.log('🤖 [MOCK] No new bundles available after filtering');
     return [];
   }
 
-  // Randomly select up to 5 bundles
-  const maxBundles = Math.min(5, availableBundles.length);
+  // Randomly select up to 4 bundles
+  const maxBundles = Math.min(4, availableBundles.length);
   const selectedBundles: TripBundle[] = [];
   const usedIndices = new Set<number>();
 

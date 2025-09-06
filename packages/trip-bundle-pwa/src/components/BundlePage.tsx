@@ -37,16 +37,17 @@ export const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
         <h3 className="event-title">{event.title}</h3>
       </div>
       <div className="event-details">
-        <div className="event-venue">📍 {event.venue}</div>
-        <div className="event-date">📅 {formatTimestamp(event.date)}</div>
-        {event.bookingUrl && (
+        <div className="event-description">📝 {event.shortDescription}</div>
+        <div className="event-date">📅 {formatTimestamp(event.dateRange.startDate)}</div>
+        <div className="event-full-description">{event.fullDescription}</div>
+        {event.eventWebsite && (
           <a 
-            href={event.bookingUrl} 
+            href={event.eventWebsite} 
             target="_blank" 
             rel="noopener noreferrer"
             className="booking-link"
           >
-            Book Now →
+            Visit Website →
           </a>
         )}
       </div>
@@ -86,30 +87,30 @@ export const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
           <h2>📅 Trip Dates</h2>
           <div className="date-range">
             <div className="date-item">
-              <strong>Start:</strong> {formatTimestamp(bundle.startDate)}
+              <strong>Start:</strong> {formatTimestamp(bundle.dateRange.startDate)}
             </div>
             <div className="date-item">
-              <strong>End:</strong> {formatTimestamp(bundle.endDate)}
+              <strong>End:</strong> {formatTimestamp(bundle.dateRange.endDate)}
             </div>
           </div>
         </div>
 
         {/* Key Events List */}
-        {bundle.keyEvents && bundle.keyEvents.events.length > 0 && (
+        {bundle.keyEvents && Array.isArray(bundle.keyEvents) && bundle.keyEvents.length > 0 && (
           <div className="events-section">
-            <h2>🌟 {bundle.keyEvents.title}</h2>
+            <h2>🌟 Key Events</h2>
             <div className="events-list">
-              {bundle.keyEvents.events.map((event, index) => renderEvent(event, index))}
+              {bundle.keyEvents.map((event: any, index: any) => renderEvent(event, index))}
             </div>
           </div>
         )}
 
         {/* Minor Events List */}
-        {bundle.minorEvents && bundle.minorEvents.events.length > 0 && (
+        {bundle.minorEvents && Array.isArray(bundle.minorEvents) && bundle.minorEvents.length > 0 && (
           <div className="events-section">
-            <h2>✨ {bundle.minorEvents.title}</h2>
+            <h2>✨ Additional Experiences</h2>
             <div className="events-list">
-              {bundle.minorEvents.events.map((event, index) => renderEvent(event, index))}
+              {bundle.minorEvents.map((event: any, index: any) => renderEvent(event, index))}
             </div>
           </div>
         )}

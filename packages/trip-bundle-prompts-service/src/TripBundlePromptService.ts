@@ -17,7 +17,7 @@ export const generateTripBundles: GenerateTripBundlesFunction = async (
     userData.userPreferences.interestTypes[key as keyof typeof userData.userPreferences.interestTypes].isEnabled
   ));
   console.log('📅 Date range:', `${userData.dateRange.startDate} to ${userData.dateRange.endDate}`);
-  console.log('📦 Existing bundles to filter:', existingBundles.map(b => `${b.id}: ${b.title}`));
+  console.log('📦 Existing bundles to filter:', existingBundles.map(b => b.title));
   
   // Create user prompt for AI
   const userPrompt = createUserPrompt(userData, existingBundles);
@@ -32,13 +32,17 @@ export const generateTripBundles: GenerateTripBundlesFunction = async (
     const bundles = await getMockBundlesFromAi(userPrompt, existingBundles);
     
     console.log(`✅ Mock AI generated ${bundles.length} new trip bundles`);
-    return { bundles };
+    const response = { bundles };
+    console.log('📋 GPTResponse:', JSON.stringify(response, null, 2));
+    return response;
   } else {
     console.log('🚀 Calling Real AI Service...');
     const bundles = await getRealBundlesFromAi(userPrompt, existingBundles);
     
     console.log(`✅ Real AI generated ${bundles.length} new trip bundles`);
-    return { bundles };
+    const response = { bundles };
+    console.log('📋 GPTResponse:', JSON.stringify(response, null, 2));
+    return response;
   }
 };
 

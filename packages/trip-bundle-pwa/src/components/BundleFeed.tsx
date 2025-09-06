@@ -30,8 +30,8 @@ export const BundleFeed: React.FC<BundleFeedProps> = ({
   isMockMode = false
 }) => {
   const getKeyEventTitles = (bundle: TripBundle) => {
-    if (!bundle.keyEvents || !bundle.keyEvents.events) return [];
-    return bundle.keyEvents.events.map(event => event.title);
+    if (!bundle.keyEvents || !Array.isArray(bundle.keyEvents)) return [];
+    return bundle.keyEvents.map((event: any) => event.title);
   };
 
   const getInterestIcon = (interestType: string) => {
@@ -50,7 +50,7 @@ export const BundleFeed: React.FC<BundleFeedProps> = ({
 
     return (
       <div 
-        key={bundle.id} 
+        key={bundle.title} 
         className="bundle-card" 
         onClick={() => onBundleSelect(bundle)}
       >
@@ -82,9 +82,9 @@ export const BundleFeed: React.FC<BundleFeedProps> = ({
               <div className="key-events-list">
                 {keyEventTitles.map((title, index) => (
                   <div key={index} className="key-event-item">
-                    {bundle.keyEvents?.events[index] && (
+                    {bundle.keyEvents?.[index] && (
                       <span className="event-icon">
-                        {getInterestIcon(bundle.keyEvents.events[index].interestType)}
+                        {getInterestIcon(bundle.keyEvents[index].interestType)}
                       </span>
                     )}
                     <span className="event-title">{title}</span>
