@@ -63,6 +63,7 @@ async function testRealAI() {
   }
   
   console.log('✅ OpenAI API key is set');
+  console.log('🔑 API key starts with:', process.env.OPENAI_API_KEY.substring(0, 20) + '...');
   console.log('');
   
   try {

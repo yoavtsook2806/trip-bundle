@@ -2,87 +2,65 @@
 // EXAMPLE USAGE OF TRIP BUNDLE PROMPTS SERVICE
 // =============================================================================
 
-const { TripBundlePromptService } = require('./dist/index.js');
+import { generateTripBundles } from './dist/index.js';
 
-// Example user data
-const userData = {
+// Example user data matching the current API
+const mockUserData = {
   userPreferences: {
-    budget: { min: 800, max: 2000, currency: 'EUR' },
-    duration: { min: 3, max: 7 },
-    preferredCountries: ['FR', 'IT', 'ES', 'GB'],
-    musicGenres: ['rock', 'pop', 'electronic'],
-    sportsInterests: ['football', 'tennis'],
-    groupSize: 2,
-    travelDates: { flexible: true }
-  },
-  integrations: {
-    spotify: {
-      summary: "Love rock music and specifically Led Zeppelin, Pink Floyd, and The Beatles. High energy, guitar-driven music preferred."
+    interestTypes: {
+      concerts: { isEnabled: true },
+      sports: { isEnabled: false },
+      artDesign: { isEnabled: true },
+      localCulture: { isEnabled: true },
+      culinary: { isEnabled: false }
     },
-    strava: {
-      summary: "Active runner who enjoys marathons and cycling. Interested in sports events and outdoor activities."
-    }
+    musicProfile: "I love electronic music, especially house and techno. My top artists include Disclosure, Four Tet, Caribou, and Bonobo. I enjoy both underground club scenes and larger festival experiences.",
+    freeTextInterests: "I'm interested in contemporary art galleries, design museums, and local cultural events. I prefer authentic experiences over tourist traps."
+  },
+  dateRange: {
+    startDate: Date.now() + (30 * 24 * 60 * 60 * 1000), // 30 days from now
+    endDate: Date.now() + (90 * 24 * 60 * 60 * 1000)    // 90 days from now
   }
 };
 
 async function demonstrateService() {
-  console.log('🎯 Trip Bundle Prompts Service Demo\n');
+  console.log('🎯 Trip Bundle Prompts Service Demo (Mock Mode)\n');
 
-  // Create service instance (requires API key for real usage)
-  const service = new TripBundlePromptService(userData, {
-    // apiKey: 'your-openai-api-key', // Uncomment and add your API key for real usage
-    model: 'gpt-4o-mini',
-    temperature: 0.7
-  });
-
-  console.log('✅ Service created with user data:');
-  console.log('   - Budget: €800-2000');
-  console.log('   - Duration: 3-7 days');
-  console.log('   - Countries: France, Italy, Spain, UK');
-  console.log('   - Music: Rock, Pop, Electronic');
-  console.log('   - Sports: Football, Tennis');
-  console.log('   - Integrations: Spotify (Led Zeppelin fan), Strava (runner)');
+  console.log('✅ Using mock data:');
+  console.log('   - Interests: concerts, artDesign, localCulture');
+  console.log('   - Music: Electronic, House, Techno');
+  console.log('   - Date Range: Next 30-90 days');
   console.log('');
 
   try {
-    // Note: This example will fail without a valid API key
-    console.log('🤖 Generating trip bundles...');
-    console.log('⚠️  Note: This requires a valid OpenAI API key to work');
-    const response = await service.generateTripBundles({ page: 1, limit: 3 });
+    console.log('🤖 Generating trip bundles with mock AI...');
+    
+    // Use mock mode (isMock = true)
+    const response = await generateTripBundles(mockUserData, true);
     
     console.log(`✅ Generated ${response.bundles.length} trip bundles:`);
-    console.log(`   Processing time: ${response.processingTime}ms`);
     console.log('');
 
     response.bundles.forEach((bundle, index) => {
       console.log(`📦 Bundle ${index + 1}: ${bundle.title}`);
-      console.log(`   📍 ${bundle.city}, ${bundle.country}`);
-      console.log(`   💰 €${bundle.totalCost.amount} (${bundle.duration} days)`);
-      console.log(`   🎯 Confidence: ${bundle.confidence}%`);
-      console.log(`   🎪 Events: ${bundle.events.length}`);
-      bundle.events.forEach(event => {
-        console.log(`      - ${event.entertainment.name} (${event.entertainment.category})`);
-      });
+      console.log(`   📍 ${bundle.city}`);
+      console.log(`   📝 ${bundle.description}`);
+      console.log(`   🎯 Key Events: ${bundle.keyEvents.length}`);
+      console.log(`   📅 Minor Events: ${bundle.minorEvents.length}`);
+      
+      // Show first key event as example
+      if (bundle.keyEvents.length > 0) {
+        console.log(`   🎪 Example: ${bundle.keyEvents[0].title}`);
+      }
       console.log('');
     });
 
-    // Get events for a specific city
-    console.log('🎪 Getting events for Paris...');
-    const events = await service.getEvents('Paris', '2024-12-01', '2024-12-07');
-    
-    console.log(`✅ Found ${events.events.length} events in Paris:`);
-    console.log(`   Processing time: ${events.processingTime}ms`);
-    events.events.forEach(event => {
-      console.log(`   🎭 ${event.entertainment.name} - €${event.cost}`);
-      console.log(`      📅 ${event.date} at ${event.time}`);
-      console.log(`      📍 ${event.venue}`);
-    });
-    console.log('');
-
-    console.log('🎉 Demo completed successfully!');
+    console.log('🎉 Mock demo completed successfully!');
+    console.log('💡 To test with real AI, set OPENAI_API_KEY and use isMock=false');
 
   } catch (error) {
     console.error('❌ Error:', error.message);
+    console.error(error);
   }
 }
 
