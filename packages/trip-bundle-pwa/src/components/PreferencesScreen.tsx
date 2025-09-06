@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { UserPreferences, DateRange, PromptsUsage } from '../types';
 import { canMakePromptCall, saveUserPreferences, saveDateRange } from '../storage';
 import { spotifyService } from '../services';
@@ -62,7 +62,7 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
         currentUrl: window.location.href
       });
 
-      if (spotifyAuthReturn && authCode && !isSpotifyConnected()) {
+      if (spotifyAuthReturn && authCode && !isSpotifyConnected) {
         console.log('🎵 [PREFERENCES_SPOTIFY_RETURN] Processing Spotify return with auth code');
         setIsConnectingSpotify(true);
 
@@ -138,7 +138,7 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
     }
   }, [initialPreferences, initialDateRange]);
 
-  const isSpotifyConnected = () => {
+  const isSpotifyConnected = useMemo(() => {
     if (!preferences.musicProfile) {
       console.log('🎵 [PREFERENCES_SPOTIFY_STATE] No music profile set');
       return false;
@@ -160,7 +160,7 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
     });
     
     return isConnected;
-  };
+  }, [preferences.musicProfile]);
 
   // Check for changes (in FTE mode, always allow saving if basic data is present)
   useEffect(() => {
@@ -229,7 +229,7 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
     console.log('🎵 [PREFERENCES_SPOTIFY] Current state:', {
       isConnectingSpotify,
       isSpotifyAvailable,
-      isSpotifyConnected: isSpotifyConnected(),
+      isSpotifyConnected: isSpotifyConnected,
       currentMusicProfile: preferences.musicProfile?.substring(0, 100) + '...'
     });
     
@@ -418,23 +418,23 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
             <h2>Music Taste</h2>
             <div className="music-options">
               <button 
-                className={`music-option ${isSpotifyConnected() ? 'active' : ''} ${!isSpotifyAvailable ? 'disabled' : ''}`}
+                className={`music-option ${isSpotifyConnected ? 'active' : ''} ${!isSpotifyAvailable ? 'disabled' : ''}`}
                 onClick={handleSpotifyConnect}
                 disabled={isConnectingSpotify || !isSpotifyAvailable}
                 title={!isSpotifyAvailable ? 'Spotify integration not available in this deployment' : ''}
               >
                 {!isSpotifyAvailable ? '🚫 Spotify Not Available' : 
                  isConnectingSpotify ? '🔄 Connecting...' : 
-                 (isSpotifyConnected() ? '✅ Spotify Connected' : '🎵 Connect Spotify')}
+                 (isSpotifyConnected ? '✅ Spotify Connected' : '🎵 Connect Spotify')}
               </button>
               <div className="music-text-option">
                 <label>Or describe your music taste:</label>
                 <textarea
-                  value={isSpotifyConnected() ? '🎵 Spotify Connected! Your music preferences have been imported.' : preferences.musicProfile}
+                  value={isSpotifyConnected ? '🎵 Spotify Connected! Your music preferences have been imported.' : preferences.musicProfile}
                   onChange={(e) => handleMusicProfileChange(e.target.value)}
                   placeholder="e.g., I love indie rock, jazz, and electronic music..."
                   rows={3}
-                  readOnly={isSpotifyConnected()}
+                  readOnly={isSpotifyConnected}
                 />
               </div>
             </div>
