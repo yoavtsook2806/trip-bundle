@@ -21,7 +21,10 @@ import {
 } from './actions';
 import './App.css';
 
-const MOCK_MODE = import.meta.env.VITE_MOCK === 'true' || true; // Force mock mode for now
+const MOCK_MODE = import.meta.env.VITE_MOCK === 'true'; // Use environment variable to determine mock mode
+
+console.log('🎯 [APP] AI Mode:', MOCK_MODE ? 'MOCK (Free)' : 'REAL (Costs Money)');
+console.log('🎯 [APP] VITE_MOCK env var:', import.meta.env.VITE_MOCK);
 
 export const App: React.FC = observer(() => {
   // Initialize app state on mount
