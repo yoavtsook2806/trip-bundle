@@ -432,8 +432,8 @@ For real devices, make sure to:
   async getUserPreferences(): Promise<SpotifyUserPreferences> {
     console.log('🎵 Fetching user preferences...');
     const [topArtists, topTracks] = await Promise.all([
-      this.getTopArtists(),
-      this.getTopTracks()
+      this.getTopArtists('long_term'),
+      this.getTopTracks('long_term')
     ]);
 
     // Extract genres from top artists
