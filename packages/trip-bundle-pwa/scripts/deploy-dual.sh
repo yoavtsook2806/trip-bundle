@@ -31,6 +31,10 @@ OPENAI_API_KEY=$OPENAI_API_KEY npm run build:prod
 mkdir -p deploy-temp/real
 cp -r dist/* deploy-temp/real/
 
+# Copy spotify-callback.html to root level for shared access
+echo "📋 Copying Spotify callback to root level..."
+cp dist/spotify-callback.html deploy-temp/spotify-callback.html
+
 # Create index.html that redirects to mock by default
 cat > deploy-temp/index.html << 'EOF'
 <!DOCTYPE html>

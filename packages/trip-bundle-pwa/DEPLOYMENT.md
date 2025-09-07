@@ -109,6 +109,7 @@ GitHub Pages is configured to serve from:
    - Create new repo: `trip-bundle-real`
    - Deploy there: `gh-pages -d dist -r https://github.com/yoavtsook2806/trip-bundle-real.git`
    - URL: `https://yoavtsook2806.github.io/trip-bundle-real/`
+   - **IMPORTANT**: Add `https://yoavtsook2806.github.io/trip-bundle-real/spotify-callback.html` to your Spotify app's redirect URIs
    
    **Option B: GitHub Pages Pro (Multiple Sites)**
    - Upgrade to GitHub Pro

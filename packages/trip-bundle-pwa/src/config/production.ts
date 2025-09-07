@@ -10,6 +10,7 @@ interface AppConfig {
 export const PRODUCTION_CONFIG: AppConfig = {
   // Spotify configuration for GitHub Pages
   SPOTIFY_CLIENT_ID: 'bc5f89044c854343a3408f12a4f4a0be', // Your actual Spotify Client ID
+  // For dual deployment, both /mock/ and /real/ use the same callback at the root level
   SPOTIFY_REDIRECT_URI: 'https://yoavtsook2806.github.io/trip-bundle/spotify-callback.html'
 };
 
