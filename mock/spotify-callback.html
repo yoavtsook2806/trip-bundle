@@ -172,10 +172,11 @@
                     message.textContent = 'Redirecting back to app...';
                     
                     setTimeout(() => {
-                        // Get the base URL without query parameters
+                        // Get the base URL without query parameters and add a flag to indicate we're returning from auth
                         const baseUrl = window.location.origin + window.location.pathname.replace('/spotify-callback.html', '/');
-                        console.log('🎵 [CALLBACK DEBUG] Redirecting to:', baseUrl);
-                        window.location.href = baseUrl;
+                        const redirectUrl = baseUrl + '?spotify_auth_return=true';
+                        console.log('🎵 [CALLBACK DEBUG] Redirecting to:', redirectUrl);
+                        window.location.href = redirectUrl;
                     }, 1500);
                 }
             } catch (error) {
