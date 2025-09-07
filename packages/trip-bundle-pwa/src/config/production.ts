@@ -7,11 +7,28 @@ interface AppConfig {
   SPOTIFY_REDIRECT_URI: string;
 }
 
+// Dynamic production configuration based on deployment path
+const getProductionSpotifyRedirectUri = (): string => {
+  const hostname = window.location.hostname;
+  const pathname = window.location.pathname;
+  
+  // For dual deployment, determine if we're in /mock/ or /real/ subdirectory
+  if (hostname === 'yoavtsook2806.github.io' && pathname.startsWith('/trip-bundle')) {
+    if (pathname.includes('/real/')) {
+      return 'https://yoavtsook2806.github.io/trip-bundle/real/spotify-callback.html';
+    } else if (pathname.includes('/mock/')) {
+      return 'https://yoavtsook2806.github.io/trip-bundle/mock/spotify-callback.html';
+    }
+  }
+  
+  // Fallback to root level
+  return 'https://yoavtsook2806.github.io/trip-bundle/spotify-callback.html';
+};
+
 export const PRODUCTION_CONFIG: AppConfig = {
   // Spotify configuration for GitHub Pages
   SPOTIFY_CLIENT_ID: 'bc5f89044c854343a3408f12a4f4a0be', // Your actual Spotify Client ID
-  // For dual deployment, both /mock/ and /real/ use the same callback at the root level
-  SPOTIFY_REDIRECT_URI: 'https://yoavtsook2806.github.io/trip-bundle/spotify-callback.html'
+  SPOTIFY_REDIRECT_URI: getProductionSpotifyRedirectUri()
 };
 
 // Helper to get configuration based on environment

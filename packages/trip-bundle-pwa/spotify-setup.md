@@ -22,10 +22,11 @@ http://127.0.0.1:5176/spotify-callback.html
 
 #### Production URIs:
 ```
-https://yoavtsook2806.github.io/trip-bundle/spotify-callback.html
+https://yoavtsook2806.github.io/trip-bundle/mock/spotify-callback.html
+https://yoavtsook2806.github.io/trip-bundle/real/spotify-callback.html
 ```
 
-**Note**: For dual deployment (mock and real versions in same repository), both versions share the same callback URL at the root level.
+**Note**: For dual deployment, each version (mock and real) has its own callback URL in its respective subdirectory.
 
 **Notes:** 
 - `localhost` URIs will NOT work with Spotify OAuth. Always use `127.0.0.1` for local development.
