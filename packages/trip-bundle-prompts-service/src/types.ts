@@ -1,6 +1,6 @@
 export interface DateRange {
-  startDate: number; //timestamp
-  endDate: number; //timestamp
+  startDate: string; // ISO date string (e.g., "2025-12-06")
+  endDate: string;   // ISO date string (e.g., "2025-12-13") 
 }
 
 export interface Event {
@@ -54,11 +54,6 @@ export interface UserPreferences {
   freeTextInterests: string;
 }
 
-// Date Range Type
-export interface DateRange {
-  startDate: number;
-  endDate: number;
-}
 
 // User Data Input Type (what the service receives)
 export interface UserData {

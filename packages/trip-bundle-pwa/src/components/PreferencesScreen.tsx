@@ -228,12 +228,17 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
   };
 
   const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newStartDate = new Date(e.target.value).getTime();
+    const newStartDate = e.target.value; // Already in YYYY-MM-DD format
     setDateRange(prev => {
+      // Ensure endDate is not before startDate
+      const endDate = new Date(prev.endDate) < new Date(newStartDate) ? 
+        new Date(new Date(newStartDate).getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] : 
+        prev.endDate;
+        
       const updated = {
         ...prev,
         startDate: newStartDate,
-        endDate: Math.max(prev.endDate, newStartDate + (24 * 60 * 60 * 1000))
+        endDate: endDate
       };
       
       // Save to storage immediately to persist through app reinitializations

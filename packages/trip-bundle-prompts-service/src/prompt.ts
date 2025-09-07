@@ -110,7 +110,11 @@ Expect the user to provide:
 
 
 ## Output Format (Strict)
-Respond solely with JSON containing actual trip data, not schema definitions. Use this exact format:
+Respond solely with JSON containing actual trip data, not schema definitions. 
+
+**IMPORTANT: Use ISO date strings (YYYY-MM-DD format) for all startDate and endDate fields, NOT timestamps.**
+
+Use this exact format:
 
 {
   "bundles": [
@@ -120,8 +124,8 @@ Respond solely with JSON containing actual trip data, not schema definitions. Us
       "description": "Dive into Berlin's legendary electronic scene while exploring cutting-edge art galleries and design spaces.",
       "city": "Berlin, Germany",
       "dateRange": {
-        "startDate": 1730419200,
-        "endDate": 1730937600
+        "startDate": "2024-11-01",
+        "endDate": "2024-11-07"
       },
       "keyEvents": [
         {
@@ -130,8 +134,8 @@ Respond solely with JSON containing actual trip data, not schema definitions. Us
           "shortDescription": "Experimental electronic music festival in industrial Berlin venues.",
           "interestType": "concerts",
           "dateRange": {
-            "startDate": 1730419200,
-            "endDate": 1730505600
+            "startDate": "2024-11-01",
+            "endDate": "2024-11-02"
           },
           "eventWebsite": "https://berlinatonal.com"
         }
