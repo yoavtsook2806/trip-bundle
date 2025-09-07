@@ -45,7 +45,7 @@ export default defineConfig(({ command, mode }) => {
         display: 'standalone',
         orientation: 'portrait-primary',
         scope: base,
-        start_url: base === '/' ? '/' : `${base}index.html`,
+        start_url: base,
         categories: ['travel', 'productivity', 'lifestyle'],
         lang: 'en-US',
         icons: [
@@ -130,7 +130,7 @@ export default defineConfig(({ command, mode }) => {
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpeg}'],
-        navigateFallback: base === '/' ? '/index.html' : `${base}index.html`,
+        navigateFallback: `${base}index.html`,
         navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
         runtimeCaching: [
           {
