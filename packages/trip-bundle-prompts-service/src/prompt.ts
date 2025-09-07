@@ -38,7 +38,7 @@ const generateExcludedEvents = (existingBundles: TripBundle[]): string => {
 export const createUserPrompt = (userData: UserData, existingBundles: TripBundle[]): string => {
   // Format interests into readable text
   const interests = Object.entries(userData.userPreferences.interestTypes)
-    .filter(([_, isSelected]) => isSelected)
+    .filter(([_, interestType]) => interestType.isEnabled)
     .map(([interest, _]) => interest)
     .join(', ');
 

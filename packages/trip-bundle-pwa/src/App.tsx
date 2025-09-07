@@ -9,6 +9,17 @@ import {
 } from './components';
 import { appStore } from './store';
 import { getDefaultUserPreferences } from './storage';
+
+// Helper function to create default date range in ISO format
+const getDefaultDateRange = () => {
+  const now = new Date();
+  const future = new Date();
+  future.setMonth(future.getMonth() + 4); // 4 months from now
+  return {
+    startDate: now.toISOString().split('T')[0],
+    endDate: future.toISOString().split('T')[0]
+  };
+};
 import {
   initializeApp,
   completeFirstTimeSetup,
@@ -84,10 +95,7 @@ export const App: React.FC = observer(() => {
         return (
           <PreferencesScreen
             initialPreferences={appStore.userPreferences || getDefaultUserPreferences()}
-            initialDateRange={appStore.dateRange || {
-              startDate: Date.now(),
-              endDate: Date.now() + (4 * 30 * 24 * 60 * 60 * 1000) // 4 months from now
-            }}
+            initialDateRange={appStore.dateRange || getDefaultDateRange()}
             promptsUsage={appStore.promptsUsage}
             onSave={handleFirstTimeComplete}
             onCancel={() => {}} // No cancel in FTE mode
@@ -146,10 +154,7 @@ export const App: React.FC = observer(() => {
         return (
           <PreferencesScreen
             initialPreferences={appStore.userPreferences || getDefaultUserPreferences()}
-            initialDateRange={appStore.dateRange || {
-              startDate: Date.now(),
-              endDate: Date.now() + (4 * 30 * 24 * 60 * 60 * 1000) // 4 months from now
-            }}
+            initialDateRange={appStore.dateRange || getDefaultDateRange()}
             promptsUsage={appStore.promptsUsage}
             onSave={handleFirstTimeComplete}
             onCancel={() => {}} // No cancel in FTE mode

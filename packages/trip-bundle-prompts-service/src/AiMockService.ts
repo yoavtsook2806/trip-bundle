@@ -12,7 +12,6 @@ const getDateString = (daysFromNow: number): string => {
 };
 
 const getStartDate = () => getDateString(30); // 30 days from now
-const getEndDate = (daysFromStart: number = 3) => getDateString(30 + daysFromStart);
 
 /**
  * Gets trip bundles from AI (mock implementation)

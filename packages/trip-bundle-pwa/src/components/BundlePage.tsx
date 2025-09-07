@@ -8,8 +8,8 @@ interface BundlePageProps {
 }
 
 export const BundlePage: React.FC<BundlePageProps> = ({ bundle, onBack }) => {
-  const formatTimestamp = (timestamp: number) => {
-    const date = new Date(timestamp);
+  const formatTimestamp = (dateString: string) => {
+    const date = new Date(dateString);
     const options: Intl.DateTimeFormatOptions = { 
       weekday: 'long', 
       year: 'numeric', 

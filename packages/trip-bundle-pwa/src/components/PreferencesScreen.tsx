@@ -249,7 +249,7 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
   };
 
   const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newEndDate = new Date(e.target.value).getTime();
+    const newEndDate = e.target.value; // Already in YYYY-MM-DD format
     setDateRange(prev => {
       const updated = {
         ...prev,
@@ -288,8 +288,8 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
     onCancel();
   };
 
-  const formatDateForInput = (timestamp: number) => {
-    return new Date(timestamp).toISOString().split('T')[0];
+  const formatDateForInput = (dateString: string) => {
+    return dateString; // Already in YYYY-MM-DD format
   };
 
   const canSave = isFormValid() && hasChanges && canMakePromptCall();
@@ -376,7 +376,7 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
                   type="date"
                   value={formatDateForInput(dateRange.startDate)}
                   onChange={handleStartDateChange}
-                  min={formatDateForInput(Date.now())}
+                  min={new Date().toISOString().split('T')[0]}
                 />
               </div>
               <div className="date-input">
@@ -385,7 +385,7 @@ export const PreferencesScreen: React.FC<PreferencesScreenProps> = ({
                   type="date"
                   value={formatDateForInput(dateRange.endDate)}
                   onChange={handleEndDateChange}
-                  min={formatDateForInput(dateRange.startDate + (24 * 60 * 60 * 1000))}
+                  min={new Date(new Date(dateRange.startDate).getTime() + (24 * 60 * 60 * 1000)).toISOString().split('T')[0]}
                 />
               </div>
             </div>
