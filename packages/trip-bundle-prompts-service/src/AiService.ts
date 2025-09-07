@@ -62,7 +62,7 @@ const parseAiResponse = (responseText: string): GPTResponse => {
 export const getBundlesFromAi = async (
   userPrompt: string
 ): Promise<GPTResponse> => {
-  console.log('🚀 [REAL_AI] Calling OpenAI GPT-4o-mini...');
+  console.log('🚀 [REAL_AI] Calling OpenAI GPT-5-mini...');
   
   if (!process.env.OPENAI_API_KEY) {
     throw new Error('OPENAI_API_KEY environment variable is not set. Please set your OpenAI API key.');
@@ -72,12 +72,12 @@ export const getBundlesFromAi = async (
     const systemPrompt = createSystemPrompt();
     
     console.log('📤 [REAL_AI] Sending request to OpenAI...');
-    console.log('🎯 [REAL_AI] Model: gpt-4o-mini');
+    console.log('🎯 [REAL_AI] Model: gpt-5-mini');
     console.log('📝 [REAL_AI] System prompt length:', systemPrompt.length);
     console.log('👤 [REAL_AI] User prompt length:', userPrompt.length);
     
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-5-mini",
       messages: [
         {
           role: "system",
@@ -88,14 +88,14 @@ export const getBundlesFromAi = async (
           content: userPrompt
         }
       ],
-      temperature: 0.7,
-      max_tokens: 4000,
+      max_completion_tokens: 16000,
       response_format: { type: "json_object" }, // Force JSON response
     });
     
     const responseText = completion.choices[0]?.message?.content;
     
     if (!responseText) {
+      console.error('❌ [REAL_AI] Empty response from OpenAI');
       throw new Error('No response content from OpenAI');
     }
     

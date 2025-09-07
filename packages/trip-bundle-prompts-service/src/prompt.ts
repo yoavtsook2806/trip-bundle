@@ -102,9 +102,9 @@ Expect the user to provide:
 - Each bundle must feature at least 2 major anchor events of one of the following types: concerts, sports, art and design, culinary, or local culture. Events can be music concerts, soccer matches, festivals, exhibition openings, design weeks, etc. Anchor events must be annual, one-time, or special—not standard attractions like 'guided museum tours.'
 - Optionally, add up to 2 minor/local events (e.g., neighborhood fairs, pop-up shows, markets, small exhibits, local design events).
 - Match all events to the user's listed interests and music profile.
-- Only include events within the user's specified date range and that are not sold out.
+- Focus on events that would typically occur within the user's specified date range. For future dates, suggest events based on annual patterns and typical scheduling.
 - Do not include the same artist (musician, performer, or visual artist) in more than one Trip Bundle, regardless of event type.
-- If no anchor events can be identified within the date range in a city, do not output a Trip Bundle for that city.
+- If creating hypothetical or typical annual events, ensure they align with the user's interests and the specified timeframe.
 - Trip Bundles should maximize relevance and appeal, ordered according to user interests and music taste.
 - For each event, anchor or minor, include a link to the official event website when possible.
 
@@ -146,6 +146,7 @@ Use this exact format:
 }
 
 
+- Always aim to create 3 compelling Trip Bundles unless the user's criteria are extremely restrictive. Be creative with annual events, festivals, and cultural happenings that align with their interests.
 - If no bundles fit the user's criteria, return: { "bundles": [] }
 - All fields must be included unless specifically optional. Arrays must be present and empty if no elements (do not omit or set to null).
 

@@ -16,7 +16,7 @@ After deployment, your app will be available at:
   - Uses pre-built trip bundles, no OpenAI calls
 
 - **Real AI Version (Production)**: `https://yoavtsook2806.github.io/trip-bundle/real/`
-  - Uses real OpenAI GPT-4o-mini API calls
+  - Uses real OpenAI GPT-5-mini API calls
   - Costs ~$0.002 per trip generation
   - Generates unique, personalized trip bundles
 

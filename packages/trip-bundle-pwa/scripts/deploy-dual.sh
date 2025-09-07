@@ -97,7 +97,7 @@ cat > deploy-temp/index.html << 'EOF'
         
         <div class="version-card">
             <h2>🤖 Real AI Version</h2>
-            <p>Powered by OpenAI GPT-4o-mini</p>
+            <p>Powered by OpenAI GPT-5-mini</p>
             <p>Generates personalized trip bundles</p>
             <a href="./real/" class="btn real">Use Real AI</a>
             <div class="cost">💰 ~$0.002 per trip generation</div>

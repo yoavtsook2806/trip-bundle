@@ -3,7 +3,7 @@
 /**
  * Test script for the real AI service
  * This script tests the generateTripBundles function with mock user data
- * and calls the real OpenAI GPT-4o-mini API
+ * and calls the real OpenAI GPT-5-mini API
  */
 
 import { generateTripBundles } from './dist/index.js';
